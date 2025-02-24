@@ -1,0 +1,22 @@
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Payments Made Easy!</title>
+</head>
+<body layout:fragment="content" class="centered-body">
+
+<div class="payment-form-container" id="demoForm">
+    <h2>Select Demo</h2>
+    <ul>
+        <li><a href="/sessions">Sessions Flow</a></li>
+        <li><a href="/payments">Advanced Flow</a></li>
+        <li><a href="/management">Transaction Management</a></li>
+    </ul>
+    <p class="note">
+        To learn more about client-side integration solutions, <br>check out <a href="https://docs.adyen.com/checkout" target="_blank">Online payments.</a>
+    </p>
+</div>
+
+</body>

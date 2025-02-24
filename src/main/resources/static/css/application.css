@@ -1,0 +1,201 @@
+/* ---------- General Body Styling ---------- */
+.centered-body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.top-body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* ---------- Containers ---------- */
+.payment-form-container {
+    width: 100%;
+    max-width: 500px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.manage-form-container {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 1200px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ---------- Headings ---------- */
+h1 {
+    text-align: center;
+    color: #444;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* ---------- Table Styling ---------- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table td {
+    padding: 10px;
+}
+
+table td:first-child {
+    width: 40%;
+    text-align: right;
+    font-weight: bold;
+    color: #555;
+}
+
+table td:last-child {
+    width: 60%;
+}
+
+#transactionTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#transactionTable th,
+#transactionTable td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+#transactionTable th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+#transactionTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#transactionTable tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* ---------- Form Elements ---------- */
+input,
+select {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #007BFF;
+}
+
+/* ---------- Filters and Labels ---------- */
+.filters {
+    display: inline-flex;
+    margin-bottom: 20px;
+}
+
+label {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+/* ---------- Button Styling ---------- */
+button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+button {
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 4px;
+}
+
+/* Form container buttons get a full-width, bolder style */
+.payment-form-container button {
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+button:hover,
+.back-button:hover {
+    background-color: #0056b3;
+}
+
+button:disabled {
+    background-color: #e0e0e0;
+    color: #a0a0a0;
+    cursor: not-allowed;
+}
+
+/* ---------- Back Button Styling ---------- */
+.back-button {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 16px;
+    background-color: #007BFF;
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+/* ---------- Footer Note ---------- */
+.note {
+    text-align: center;
+    font-size: 14px;
+    color: #777;
+    margin-top: 20px;
+}
+
+.note a {
+    text-decoration: none;
+    color: #007BFF;
+}
+
+.note a:hover {
+    text-decoration: underline;
+}
+
+/* ---------- Miscellaneous ---------- */
+
+.hidden {
+    display: none;
+}
+
+ul {
+    display: inline-block;
+}

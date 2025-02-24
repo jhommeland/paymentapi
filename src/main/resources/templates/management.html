@@ -1,0 +1,41 @@
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <title>Manage Transactions</title>
+</head>
+<body layout:fragment="content" class="top-body">
+  <div class="manage-form-container">
+    <a href="/" class="back-button">← Back</a>
+
+    <h1>Transaction Management</h1>
+    <div class="filters">
+      <label for="statusFilter">Filter by Status:</label>
+      <select id="statusFilter">
+        <option value="all">All</option>
+        <!-- Options will be dynamically added here -->
+      </select>
+    </div>
+    <table id="transactionTable">
+      <thead>
+        <tr>
+          <th>Transaction ID</th>
+          <th>Merchant Account</th>
+          <th>Payment Method</th>
+          <th>Status</th>
+          <th>Amount</th>
+          <th>Currency</th>
+          <th>Error Reason</th>
+          <th>Created At</th>
+          <th>Last Modified At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Table rows will be populated dynamically using JavaScript -->
+      </tbody>
+    </table>
+  </div>
+  <script src="/js/management.js"></script>
+</body>

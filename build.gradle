@@ -1,0 +1,48 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.1'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'no.jhommeland'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+	implementation 'com.adyen:adyen-java-api-library:32.1.0'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+	//TODO: Refine dependencies
+	runtimeOnly "org.testcontainers:testcontainers:1.20.4"
+	runtimeOnly 'org.testcontainers:mysql:1.20.4'
+	runtimeOnly 'org.testcontainers:jdbc:1.20.4'
+	runtimeOnly 'com.mysql:mysql-connector-j:9.1.0'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+tasks.register('run', JavaExec) {
+	group = 'application'
+	description = 'Run the API'
+	mainClass.set('no.jhommeland.paymentapi.PaymentapiApplication')
+	classpath = sourceSets.main.runtimeClasspath
+}

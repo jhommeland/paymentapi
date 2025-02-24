@@ -1,0 +1,25 @@
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Payment Completed</title>
+</head>
+<body layout:fragment="content" class="centered-body">
+
+<!-- Hidden divs with data passed from the server -->
+<div id="base64Result" class="hidden" th:text="${base64Result}"></div>
+
+<div class="payment-form-container" id="checkoutForm">
+    <h2>3. Result</h2>
+    <table id="result-table"></table>
+    <p class="note">
+        <a href="/" rel="noopener noreferrer">Return to start</a>
+        <span style="display: inline-block; width: 20px;"></span>
+        <a href="/management" rel="noopener noreferrer">Manage Transactions</a>
+    </p>
+</div>
+
+<script src="/js/result.js"></script>
+
+</body>
