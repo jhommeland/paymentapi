@@ -34,4 +34,4 @@ After running, by default the application can be accessed at http://localhost:80
 For Adyen API reference, please access:
 
 * [Adyen Docs](https://docs.adyen.com)
-* [Adyen API Explorerer](https://docs.adyen.com/api-explorer/)
+* [Adyen API Explorer](https://docs.adyen.com/api-explorer/)
