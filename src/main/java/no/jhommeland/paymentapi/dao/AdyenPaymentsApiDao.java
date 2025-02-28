@@ -42,6 +42,7 @@ public class AdyenPaymentsApiDao {
             logger.info("Adyen Response: {}", PaymentUtil.convertToJsonString(result));
             return result;
         } catch (ApiException e) {
+            logger.info("Adyen Error Response: {}", e.getResponseBody());
             throw new ResponseStatusException(e.getStatusCode(), e.getMessage(), e);
         } catch (Exception e) {
             throw new InternalServerErrorException(e.getMessage());
