@@ -1,4 +1,6 @@
 
+let merchants = [];
+
 async function getMerchants() {
     try {
         // Direct use of await to wait for the response
@@ -15,7 +17,7 @@ async function getMerchants() {
 }
 
 async function initializeDropdown() {
-    const merchants = await getMerchants();
+    merchants = await getMerchants();
     merchants.forEach(merchant => {
         const option = document.createElement("option");
         option.value = merchant.merchantId;
@@ -25,7 +27,6 @@ async function initializeDropdown() {
 
     const savedValue = localStorage.getItem("selectedMerchant");
     if (savedValue) {
-        // Set the dropdown to the saved value
         merchantDropdown.value = savedValue;
         console.log("Restored saved value:", savedValue);
     }
@@ -37,6 +38,14 @@ merchantDropdown.addEventListener("change", function(event) {
     const selectedValue = event.target.value;
     localStorage.setItem("selectedMerchant", selectedValue);
     console.log("Saved to localStorage:", selectedValue);
+    merchants.forEach(merchant => {
+        if (merchant.merchantId === selectedValue) {
+            localStorage.setItem("selectedMerchantSettings", merchant.merchantSettings);
+            console.log("Saved to localStorage:", merchant.merchantSettings);
+        }
+    });
+
+    window.location.reload();
 });
 
 initializeDropdown();
