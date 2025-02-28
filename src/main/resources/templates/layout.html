@@ -18,6 +18,8 @@
             integrity="sha384-GDA6txYXS6ka6zCgDtLmgI80TQMlYST32KjDtdiyFi/k/zp9rXP64qbziIXVOI5h"
             crossorigin="anonymous"></script>
 
+    <script type="module" src="/js/selectMerchant.js"></script>
+
     <link rel="stylesheet"
           href="https://checkoutshopper-test.cdn.adyen.com/checkoutshopper/sdk/6.0.0/adyen.css"
           integrity="sha384-Gngchfiq4JxdVPMOwrUaDK70raLnMJ7IgBKi2OE0VSlbUeHysN7Mwd4aHREEvEAw"
@@ -25,7 +27,13 @@
 
     <link rel="stylesheet" href="/css/application.css" />
 </head>
-<body>
+<body class="page-style">
+<div class="merchant-dropdown-container">
+    <select id="merchant-select" class="merchant-dropdown">
+        <option value='' selected disabled>Select a Merchant</option>
+        <!-- Options will be dynamically added here -->
+    </select>
+</div>
 <div class="container">
     <th:block layout:fragment="content" />
 </div>

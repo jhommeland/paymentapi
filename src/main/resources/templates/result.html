@@ -5,7 +5,7 @@
 <head>
     <title>Payment Completed</title>
 </head>
-<body layout:fragment="content" class="centered-body">
+<div layout:fragment="content" class="centered-container">
 
 <!-- Hidden divs with data passed from the server -->
 <div id="base64Result" class="hidden" th:text="${base64Result}"></div>
@@ -22,4 +22,4 @@
 
 <script src="/js/result.js"></script>
 
-</body>
+</div>

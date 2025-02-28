@@ -248,22 +248,4 @@ public class PaymentsService {
         return paymentDetailsResponse;
     }
 
-    public void processPaymentNotification(AdyenWebhookModel requestModel) {
-        requestModel.getNotificationItems().forEach(notificationItem -> {
-            NotificationRequestItem item = notificationItem.getNotificationRequestItem();
-            logger.info("Event Received: {}", PaymentUtil.convertToJsonString(item));
-            try {
-                TransactionModel transactionModel = transactionRepository.findById(item.getMerchantReference()).orElseThrow(() -> new EntityNotFoundException("Transaction not found"));
-                transactionModel.setStatus(item.getEventCode());
-                if (!item.isSuccess()) {
-                    transactionModel.setErrorReason(item.getReason());
-                }
-                transactionModel.setPspReference(item.getPspReference());
-                transactionModel.setLastModifiedAt(OffsetDateTime.now());
-                transactionRepository.save(transactionModel);
-            } catch (Exception e) {
-                logger.error("Error processing notification: eventCode={}, reference={}, message={}", item.getEventCode(), item.getMerchantReference(), e.getMessage());
-            }
-        });
-    }
 }

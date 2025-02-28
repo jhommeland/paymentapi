@@ -5,8 +5,13 @@
 This repository provides samples on how to integrate with Adyen in Java 
 with Springboot and Thymeleaf.
 
-By default, [Testcontainers](https://testcontainers.com) is used to create and 
-ephemereal DB at runtime. As such, transactions are not stored between runs.
+By default, the application expects a postgres database running on localhost:5432 with user:postgres password:password.
+
+Such a database can be set up with docker using:
+```
+docker run --name postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres
+```
+
 
 ### How to run
 

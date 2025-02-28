@@ -1,7 +1,6 @@
 /* ---------- General Body Styling ---------- */
-.centered-body {
+.centered-container {
     font-family: 'Arial', sans-serif;
-    background-color: #f4f4f9;
     color: #333;
     margin: 0;
     padding: 20px;
@@ -11,15 +10,22 @@
     height: 100vh;
 }
 
-.top-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+.top-container {
+    font-family: 'Arial', sans-serif;
     color: #333;
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.page-style {
+    background-color: #f4f4f9;
 }
 
 /* ---------- Containers ---------- */
+
 .payment-form-container {
     width: 100%;
     max-width: 500px;
@@ -198,4 +204,27 @@ button:disabled {
 
 ul {
     display: inline-block;
+}
+
+.merchant-dropdown-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: gray;
+    color: white;
+    border-radius: 5px;
+}
+
+.merchant-dropdown {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-color: transparent;
+    border: 1px solid gray;
+    border-radius: 5px;
+    padding: 8px;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
 }

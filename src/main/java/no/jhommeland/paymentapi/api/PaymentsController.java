@@ -82,14 +82,4 @@ public class PaymentsController {
         return "result";
     }
 
-    @PostMapping("/payments/notification")
-    public ResponseEntity<String> paymentNotification(@RequestBody AdyenWebhookModel requestModel) {
-        HttpHeaders headers = new HttpHeaders();
-
-        //TODO: Validation HMAC and Basic Authentication
-
-        paymentsService.processPaymentNotification(requestModel);
-        return new ResponseEntity<>("", headers, HttpStatus.NO_CONTENT);
-    }
-
 }

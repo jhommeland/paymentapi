@@ -28,9 +28,6 @@ dependencies {
 
 	//TODO: Refine dependencies
 	runtimeOnly 'org.postgresql:postgresql'
-	runtimeOnly 'org.testcontainers:testcontainers:1.20.4'
-	runtimeOnly 'org.testcontainers:mysql:1.20.4'
-	runtimeOnly 'org.testcontainers:jdbc:1.20.4'
 	runtimeOnly 'com.mysql:mysql-connector-j:9.1.0'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
