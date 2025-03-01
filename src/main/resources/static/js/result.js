@@ -5,7 +5,7 @@ window.onload = function () {
         data = document.getElementById("base64Result").innerHTML;
     }
     const decodedString = atob(data);
-    console.log(decodedString);
+    console.log("Decoded Result: " + decodedString);
     const jsonData = JSON.parse(decodedString);
     const tableBody = document.getElementById("result-table");
 
