@@ -7,9 +7,6 @@
 </head>
 <div layout:fragment="content" class="centered-container">
 
-<!-- Hidden divs with data passed from the server -->
-<div id="clientKey" class="hidden" th:text="${clientKey}"></div>
-
 <div class="payment-form-container" id="inputForm">
     <a href="/" class="back-button">← Back</a>
     <h2>1. Enter Payment Details</h2>
@@ -26,10 +23,7 @@
                 <td><label for="currency">Currency:</label></td>
                 <td>
                     <select id="currency" name="currency" required>
-                        <option value="USD">USD - US Dollar</option>
-                        <option value="EUR">EUR - Euro</option>
-                        <option value="GBP">GBP - British Pound</option>
-                        <option value="JPY" selected>JPY - Japanese Yen</option>
+                        <!-- Options will be dynamically added here -->
                     </select>
                 </td>
             </tr>
@@ -39,11 +33,7 @@
                 <td><label for="language">Language:</label></td>
                 <td>
                     <select id="language" name="language" required>
-                        <option value="en-US">English (United States)</option>
-                        <option value="en-GB">English (United Kingdom)</option>
-                        <option value="fr-FR">French (France)</option>
-                        <option value="de-DE">German (Germany)</option>
-                        <option value="ja-JP" selected>Japanese (Japan)</option>
+                        <!-- Options will be dynamically added here -->
                     </select>
                 </td>
             </tr>

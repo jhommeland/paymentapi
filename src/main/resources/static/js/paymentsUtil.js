@@ -186,4 +186,26 @@ export class PaymentsUtil {
         return dropinConfiguration;
     }
 
+    static populatePaymentOptions() {
+
+        const merchantSettings = JSON.parse(localStorage.getItem("selectedMerchantSettings"));
+
+        const currencyDropdown = document.getElementById("currency");
+        Object.entries(merchantSettings.currency).forEach(([key, value]) => {
+            const option = document.createElement("option");
+            option.value = key;
+            option.textContent = value;
+            currencyDropdown.appendChild(option);
+        });
+
+        const languageDropdown = document.getElementById("language");
+        Object.entries(merchantSettings.language).forEach(([key, value]) => {
+            const option = document.createElement("option");
+            option.value = key;
+            option.textContent = value;
+            languageDropdown.appendChild(option);
+        });
+
+    }
+
 }
