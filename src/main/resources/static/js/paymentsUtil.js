@@ -97,6 +97,53 @@ export class PaymentsUtil {
         }
     }
 
+    static async getTransactions() {
+        try {
+            // Direct use of await to wait for the response
+            const response = await axios.get('/transactions');
+
+            // Log and return the server response data
+            console.log('Success:', response.data);
+            return response.data;
+        } catch (error) {
+            // Handle error and return null in case of failure
+            console.error('Error:', error);
+            return null;
+        }
+    }
+
+    static async capturePayment(transactionId) {
+        try {
+            // Direct use of await to wait for the response
+            const response = await axios.post('/payments/capture', {
+                transactionId: transactionId
+            });
+
+            // Log the response and reload page
+            console.log('Success:', response.data);
+            window.location.reload();
+        } catch (error) {
+            // Handle error and return null in case of failure
+            console.error('Error:', error);
+        }
+    }
+
+    static async revertPayment(transactionId) {
+        try {
+            // Direct use of await to wait for the response
+            const response = await axios.post('/payments/reverse', {
+                transactionId: transactionId
+            });
+
+            // Log the response and reload page
+            console.log('Success:', response.data);
+            window.location.reload();
+        } catch (error) {
+            // Handle error and return null in case of failure
+            console.error('Error:', error);
+        }
+    }
+
     static async onSubmitPayment(state, component, actions, merchantId, amount, currency, countryCode, locale) {
         try {
             // Make a POST /payments request from your server.

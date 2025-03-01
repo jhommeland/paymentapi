@@ -1,53 +1,9 @@
+//Utility Class Import
+import { PaymentsUtil } from './paymentsUtil.js';
+
 // DOM references
 const transactionTable = document.querySelector("#transactionTable tbody");
 const statusFilter = document.getElementById("statusFilter");
-
-async function getTransactions() {
-  try {
-    // Direct use of await to wait for the response
-    const response = await axios.get('/transactions');
-
-    // Log and return the server response data
-    console.log('Success:', response.data);
-    return response.data;
-  } catch (error) {
-    // Handle error and return null in case of failure
-    console.error('Error:', error);
-    return null;
-  }
-}
-
-async function capturePayment(transactionId) {
-  try {
-    // Direct use of await to wait for the response
-    const response = await axios.post('/payments/capture', {
-      transactionId: transactionId
-    });
-
-    // Log the response and reload page
-    console.log('Success:', response.data);
-    window.location.reload();
-  } catch (error) {
-    // Handle error and return null in case of failure
-    console.error('Error:', error);
-  }
-}
-
-async function revertPayment(transactionId) {
-  try {
-    // Direct use of await to wait for the response
-    const response = await axios.post('/payments/reverse', {
-      transactionId: transactionId
-    });
-
-    // Log the response and reload page
-    console.log('Success:', response.data);
-    window.location.reload();
-  } catch (error) {
-    // Handle error and return null in case of failure
-    console.error('Error:', error);
-  }
-}
 
 // Populate the table with transaction data
 function populateTable(transactions) {
@@ -75,9 +31,9 @@ function populateTable(transactions) {
       <td>${new Date(transaction.createdAt).toLocaleString()}</td>
       <td>${new Date(transaction.lastModifiedAt).toLocaleString()}</td>
       <td>
-        <button style="margin-bottom: 5px;" ${enableCapture ? "" : "disabled"} onclick="capturePayment('${transaction.transactionId}')">Capture</button>
+        <button style="margin-bottom: 5px;" ${enableCapture ? "" : "disabled"} onclick="PaymentsUtil.capturePayment('${transaction.transactionId}')">Capture</button>
         <br>
-        <button ${enableRevert ? "" : "disabled"} onclick="revertPayment('${transaction.transactionId}')">Revert</button>
+        <button ${enableRevert ? "" : "disabled"} onclick="PaymentsUtil.revertPayment('${transaction.transactionId}')">Revert</button>
       </td>
     `;
 
@@ -109,7 +65,7 @@ function filterTransactions(transactions) {
 }
 
 async function initializeTable() {
-  let transactions = await getTransactions();
+  let transactions = await PaymentsUtil.getTransactions();
   populateTable(transactions);
   populateDropdown(transactions);
   statusFilter.addEventListener("change", (event) => filterTransactions(transactions));
