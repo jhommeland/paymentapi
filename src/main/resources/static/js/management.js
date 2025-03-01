@@ -31,8 +31,7 @@ function populateTable(transactions) {
       <td>${new Date(transaction.createdAt).toLocaleString()}</td>
       <td>${new Date(transaction.lastModifiedAt).toLocaleString()}</td>
       <td>
-        <button style="margin-bottom: 5px;" ${enableCapture ? "" : "disabled"} onclick="PaymentsUtil.capturePayment('${transaction.transactionId}')">Capture</button>
-        <br>
+        <button ${enableCapture ? "" : "disabled"} onclick="PaymentsUtil.capturePayment('${transaction.transactionId}')">Capture</button>
         <button ${enableRevert ? "" : "disabled"} onclick="PaymentsUtil.revertPayment('${transaction.transactionId}')">Revert</button>
       </td>
     `;
