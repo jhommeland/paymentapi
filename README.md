@@ -15,18 +15,9 @@ docker run --name postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgre
 
 ### How to run
 
-Before running, please set the credentials through environment variables:
-```shell
-export ADYEN_API_KEY=yourAdyenApiKey
-export ADYEN_MERCHANT_ACCOUNT=yourAdyenMerchantAccount
-export ADYEN_CLIENT_KEY=yourAdyenClientKey
-```
-
-Alternatively, it's possible to define the variables in the `application.properties`.
-```txt
-ADYEN_API_KEY=yourAdyenApiKey
-ADYEN_MERCHANT_ACCOUNT=yourAdyenMerchantAccount
-ADYEN_CLIENT_KEY=yourAdyenClientKey
+Before running, please set the credentials by running the following sql with your merchant credentials:
+```sql
+INSERT INTO merchants (merchant_id, adyen_api_key, adyen_client_key, adyen_merchant_account, merchant_settings) VALUES ('test_merchant_id', 'AdyenApiKey', 'test_AdyenClientKey', 'AdyenMerchantAccount', null);
 ```
 
 The application can be run using the following command:

@@ -4,6 +4,7 @@ import com.adyen.model.checkout.*;
 import com.adyen.model.notification.NotificationRequestItem;
 import jakarta.persistence.EntityNotFoundException;
 import no.jhommeland.paymentapi.dao.AdyenPaymentsApiDao;
+import no.jhommeland.paymentapi.dao.MerchantRepository;
 import no.jhommeland.paymentapi.dao.TransactionRepository;
 import no.jhommeland.paymentapi.model.*;
 import no.jhommeland.paymentapi.util.PaymentUtil;
@@ -27,9 +28,6 @@ public class PaymentsService {
 
     private final Logger logger = LoggerFactory.getLogger(PaymentsService.class);
 
-    @Value("${adyen.merchant.account}")
-    private String merchantAccount;
-
     @Value("${adyen.api.return.url}")
     private String returnUrl;
 
@@ -38,10 +36,13 @@ public class PaymentsService {
 
     AdyenPaymentsApiDao adyenPaymentsApiDao;
 
+    MerchantRepository merchantRepository;
+
     TransactionRepository transactionRepository;
 
-    public PaymentsService(AdyenPaymentsApiDao adyenPaymentsApiDao, TransactionRepository transactionRepository) {
+    public PaymentsService(AdyenPaymentsApiDao adyenPaymentsApiDao, MerchantRepository merchantRepository, TransactionRepository transactionRepository) {
         this.adyenPaymentsApiDao = adyenPaymentsApiDao;
+        this.merchantRepository = merchantRepository;
         this.transactionRepository = transactionRepository;
     }
 
@@ -51,6 +52,9 @@ public class PaymentsService {
 
     public PaymentMethodsResponse getPaymentMethods(PaymentMethodsModel requestModel) {
 
+        MerchantModel merchantModel = merchantRepository.findById(requestModel.getMerchantId()).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
+
         //Create Amount Object
         Amount amountObject = new Amount()
                 .currency(requestModel.getCurrency())
@@ -59,7 +63,7 @@ public class PaymentsService {
         //Create Payment Methods Object
         PaymentMethodsRequest paymentMethodsRequest = new PaymentMethodsRequest()
                 .amount(amountObject)
-                .merchantAccount(merchantAccount)
+                .merchantAccount(merchantModel.getAdyenMerchantAccount())
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())
                 .channel(PaymentMethodsRequest.ChannelEnum.WEB);
@@ -69,9 +73,12 @@ public class PaymentsService {
 
     public CreateCheckoutSessionResponse createCheckoutSession(PaymentModel requestModel) {
 
+        MerchantModel merchantModel = merchantRepository.findById(requestModel.getMerchantId()).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
+
         //Save to Database
         TransactionModel transactionModel = new TransactionModel();
-        transactionModel.setMerchantAccountName(merchantAccount);
+        transactionModel.setMerchantAccountName(merchantModel.getAdyenMerchantAccount());
         transactionModel.setPaymentMethod("session");
         transactionModel.setStatus(TransactionStatus.REGISTERED.getStatus());
         transactionModel.setAmount(requestModel.getAmount());
@@ -109,9 +116,12 @@ public class PaymentsService {
 
     public PaymentResponse makePayment(PaymentModel requestModel) {
 
+        MerchantModel merchantModel = merchantRepository.findById(requestModel.getMerchantId()).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
+
         //Save to Database
         TransactionModel transactionModel = new TransactionModel();
-        transactionModel.setMerchantAccountName(merchantAccount);
+        transactionModel.setMerchantAccountName(merchantModel.getAdyenMerchantAccount());
         transactionModel.setPaymentMethod(PaymentUtil.getPaymentType(requestModel.getPaymentMethod()));
         transactionModel.setStatus(TransactionStatus.REGISTERED.getStatus());
         transactionModel.setAmount(requestModel.getAmount());

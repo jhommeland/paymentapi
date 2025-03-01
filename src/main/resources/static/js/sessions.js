@@ -8,13 +8,15 @@ async function initializeCheckout() {
     const locale = document.getElementById("language").value;
     const countryCode = locale.split('-')[1];
 
-    const sessionsResponse = await PaymentsUtil.makeSessionsCall(amount, currency, countryCode, locale);
+    const merchantId = localStorage.getItem("selectedMerchant");
+
+    const sessionsResponse = await PaymentsUtil.makeSessionsCall(merchantId, amount, currency, countryCode, locale);
     const configuration = {
         session: {
             id: sessionsResponse.id,
             sessionData: sessionsResponse.sessionData
         },
-        clientKey: document.getElementById("clientKey").innerHTML,
+        clientKey: await PaymentsUtil.getCredentials(merchantId),
         environment: "test",
         countryCode: countryCode,
         locale: locale,

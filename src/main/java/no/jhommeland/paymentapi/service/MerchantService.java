@@ -19,4 +19,9 @@ public class MerchantService {
         return merchantRepository.findAllByOrderByAdyenMerchantAccount();
     }
 
+    public String getClientKey(String merchantId) {
+        MerchantModel merchant = merchantRepository.findById(merchantId).orElse(null);
+        return merchant != null ? merchant.getAdyenClientKey() : "";
+    }
+
 }

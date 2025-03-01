@@ -2,6 +2,8 @@ package no.jhommeland.paymentapi.model;
 
 public class PaymentMethodsModel {
 
+    private String merchantId;
+
     private String amount;
 
     private String currency;
@@ -9,6 +11,14 @@ public class PaymentMethodsModel {
     private String countryCode;
 
     private String locale;
+
+    public String getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(String merchantId) {
+        this.merchantId = merchantId;
+    }
 
     public String getAmount() {
         return amount;

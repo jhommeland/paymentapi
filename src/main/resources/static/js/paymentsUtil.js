@@ -1,9 +1,25 @@
 export class PaymentsUtil {
 
-    static async makeSessionsCall(amount, currency, countryCode, locale) {
+    static async getCredentials(merchantId) {
+        try {
+            // Direct use of await to wait for the response
+            const response = await axios.get('/merchants/credentials/' + merchantId);
+
+            // Log and return the server response data
+            console.log('Credentials retrieved');
+            return response.data;
+        } catch (error) {
+            // Handle error and return null in case of failure
+            console.error('Error:', error);
+            return null;
+        }
+    }
+
+    static async makeSessionsCall(merchantId, amount, currency, countryCode, locale) {
         try {
             // Direct use of await to wait for the response
             const response = await axios.post('/sessions', {
+                merchantId: merchantId,
                 amount: amount,
                 currency: currency,
                 countryCode: countryCode,
@@ -24,10 +40,11 @@ export class PaymentsUtil {
         }
     }
 
-    static async makePaymentMethodsCall(amount, currency, countryCode, locale) {
+    static async makePaymentMethodsCall(merchantId, amount, currency, countryCode, locale) {
         try {
             // Direct use of await to wait for the response
             const response = await axios.post('/payment-methods', {
+                merchantId: merchantId,
                 amount: amount,
                 currency: currency,
                 countryCode: countryCode,
@@ -44,10 +61,11 @@ export class PaymentsUtil {
         }
     }
 
-    static async makePaymentsCall(data, amount, currency, countryCode, locale) {
+    static async makePaymentsCall(data, merchantId, amount, currency, countryCode, locale) {
         try {
             // Use await to wait for the axios.post response
             const response = await axios.post('/payments', {
+                merchantId: merchantId,
                 amount: amount,
                 currency: currency,
                 countryCode: countryCode,
@@ -79,10 +97,10 @@ export class PaymentsUtil {
         }
     }
 
-    static async onSubmitPayment(state, component, actions, amount, currency, countryCode, locale) {
+    static async onSubmitPayment(state, component, actions, merchantId, amount, currency, countryCode, locale) {
         try {
             // Make a POST /payments request from your server.
-            const result = await PaymentsUtil.makePaymentsCall(state.data, amount, currency, countryCode, locale);
+            const result = await PaymentsUtil.makePaymentsCall(state.data, merchantId, amount, currency, countryCode, locale);
 
             // If the /payments request from your server fails, or if an unexpected error occurs.
             if (!result.resultCode) {
@@ -142,6 +160,11 @@ export class PaymentsUtil {
             console.error("onSubmit", error);
             actions.reject();
         }
+    }
+
+    static async getClientKeyForSelectedMerchant() {
+        const selectedMerchant = localStorage.getItem("selectedMerchant");
+        return PaymentsUtil.getCredentials(selectedMerchant);
     }
 
     static onPaymentEvent(result, component) {

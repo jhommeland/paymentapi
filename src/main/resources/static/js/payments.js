@@ -8,15 +8,17 @@ async function initializeCheckout() {
     const locale = document.getElementById("language").value;
     const countryCode = locale.split('-')[1];
 
-    const paymentMethodsResponse = await PaymentsUtil.makePaymentMethodsCall(amount, currency, countryCode, locale);
+    const merchantId = localStorage.getItem("selectedMerchant");
+
+    const paymentMethodsResponse = await PaymentsUtil.makePaymentMethodsCall(merchantId, amount, currency, countryCode, locale);
     const configuration = {
-        clientKey: document.getElementById("clientKey").innerHTML,
+        clientKey: await PaymentsUtil.getCredentials(merchantId),
         environment: "test",
         countryCode: countryCode,
         locale: locale,
         paymentMethodsResponse: paymentMethodsResponse,
         onSubmit: async (state, component, actions) => {
-            await PaymentsUtil.onSubmitPayment(state, component, actions, amount, currency, countryCode, locale);
+            await PaymentsUtil.onSubmitPayment(state, component, actions, merchantId, amount, currency, countryCode, locale);
         },
         onAdditionalDetails: async (state, component, actions) => {
             await PaymentsUtil.onAdditionalDetails(state, component, actions);
