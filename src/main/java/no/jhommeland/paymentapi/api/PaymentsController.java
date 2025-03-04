@@ -4,7 +4,7 @@ import com.adyen.model.checkout.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import no.jhommeland.paymentapi.model.*;
 import no.jhommeland.paymentapi.service.PaymentsService;
-import no.jhommeland.paymentapi.util.HtmlUtil;
+import no.jhommeland.paymentapi.util.UrlUtil;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +19,11 @@ public class PaymentsController {
 
     private final PaymentsService paymentsService;
 
-    private final HtmlUtil htmlUtil;
+    private final UrlUtil urlUtil;
 
-    public PaymentsController(PaymentsService paymentsService, HtmlUtil htmlUtil) {
+    public PaymentsController(PaymentsService paymentsService, UrlUtil urlUtil) {
         this.paymentsService = paymentsService;
-        this.htmlUtil = htmlUtil;
+        this.urlUtil = urlUtil;
     }
 
     @GetMapping("/transactions")
@@ -78,7 +78,7 @@ public class PaymentsController {
     @GetMapping("/payments/complete")
     public String completePayment(@RequestParam String merchantId, @RequestParam String redirectResult, Model model) throws JsonProcessingException {
         PaymentDetailsResponse paymentDetailsResponse = paymentsService.submitPaymentDetailsRedirect(merchantId, redirectResult);
-        model.addAttribute("base64Result", htmlUtil.toBase64(paymentDetailsResponse.toJson()));
+        model.addAttribute("base64Result", urlUtil.toBase64(paymentDetailsResponse.toJson()));
         return "result";
     }
 

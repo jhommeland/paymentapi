@@ -6,6 +6,7 @@ async function initializeCheckout() {
     const amount = document.getElementById("amount").value
     const currency = document.getElementById("currency").value;
     const locale = document.getElementById("language").value;
+    const tdsMode = document.getElementById("tdsMode").value;
     const countryCode = locale.split('-')[1];
 
     const merchantId = localStorage.getItem("selectedMerchant");
@@ -18,7 +19,7 @@ async function initializeCheckout() {
         locale: locale,
         paymentMethodsResponse: paymentMethodsResponse,
         onSubmit: async (state, component, actions) => {
-            await PaymentsUtil.onSubmitPayment(state, component, actions, merchantId, amount, currency, countryCode, locale);
+            await PaymentsUtil.onSubmitPayment(state, component, actions, merchantId, amount, currency, countryCode, locale, tdsMode);
         },
         onAdditionalDetails: async (state, component, actions) => {
             await PaymentsUtil.onAdditionalDetails(merchantId, state, component, actions);

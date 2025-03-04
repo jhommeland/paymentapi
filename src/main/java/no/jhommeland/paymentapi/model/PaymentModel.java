@@ -12,6 +12,8 @@ public class PaymentModel {
 
     private String locale;
 
+    private String tdsMode;
+
     private Object paymentMethod;
 
     public String getMerchantId() {
@@ -52,6 +54,14 @@ public class PaymentModel {
 
     public void setLocale(String locale) {
         this.locale = locale;
+    }
+
+    public String getTdsMode() {
+        return tdsMode;
+    }
+
+    public void setTdsMode(String tdsMode) {
+        this.tdsMode = tdsMode;
     }
 
     public Object getPaymentMethod() {

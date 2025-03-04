@@ -20,6 +20,8 @@ public class MerchantModel {
 
     private String adyenMerchantAccount;
 
+    private String returnUrl;
+
     @JsonIgnore
     private String adyenApiKey;
 
@@ -48,6 +50,14 @@ public class MerchantModel {
 
     public void setAdyenMerchantAccount(String adyenMerchantAccount) {
         this.adyenMerchantAccount = adyenMerchantAccount;
+    }
+
+    public String getReturnUrl() {
+        return returnUrl;
+    }
+
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
     }
 
     public String getAdyenApiKey() {

@@ -6,11 +6,12 @@ async function initializeCheckout() {
     const amount = document.getElementById("amount").value
     const currency = document.getElementById("currency").value;
     const locale = document.getElementById("language").value;
+    const tdsMode = document.getElementById("tdsMode").value;
     const countryCode = locale.split('-')[1];
 
     const merchantId = localStorage.getItem("selectedMerchant");
 
-    const sessionsResponse = await PaymentsUtil.makeSessionsCall(merchantId, amount, currency, countryCode, locale);
+    const sessionsResponse = await PaymentsUtil.makeSessionsCall(merchantId, amount, currency, countryCode, locale, tdsMode);
     const configuration = {
         session: {
             id: sessionsResponse.id,

@@ -15,7 +15,7 @@ export class PaymentsUtil {
         }
     }
 
-    static async makeSessionsCall(merchantId, amount, currency, countryCode, locale) {
+    static async makeSessionsCall(merchantId, amount, currency, countryCode, locale, tdsMode) {
         try {
             // Direct use of await to wait for the response
             const response = await axios.post('/sessions', {
@@ -23,7 +23,8 @@ export class PaymentsUtil {
                 amount: amount,
                 currency: currency,
                 countryCode: countryCode,
-                locale: locale
+                locale: locale,
+                tdsMode: tdsMode
             }, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -61,7 +62,7 @@ export class PaymentsUtil {
         }
     }
 
-    static async makePaymentsCall(data, merchantId, amount, currency, countryCode, locale) {
+    static async makePaymentsCall(data, merchantId, amount, currency, countryCode, locale, tdsMode) {
         try {
             // Use await to wait for the axios.post response
             const response = await axios.post('/payments', {
@@ -70,6 +71,7 @@ export class PaymentsUtil {
                 currency: currency,
                 countryCode: countryCode,
                 locale: locale,
+                tdsMode: tdsMode,
                 paymentMethod: data.paymentMethod
             });
 
@@ -147,10 +149,10 @@ export class PaymentsUtil {
         }
     }
 
-    static async onSubmitPayment(state, component, actions, merchantId, amount, currency, countryCode, locale) {
+    static async onSubmitPayment(state, component, actions, merchantId, amount, currency, countryCode, locale, tdsMode) {
         try {
             // Make a POST /payments request from your server.
-            const result = await PaymentsUtil.makePaymentsCall(state.data, merchantId, amount, currency, countryCode, locale);
+            const result = await PaymentsUtil.makePaymentsCall(state.data, merchantId, amount, currency, countryCode, locale, tdsMode);
 
             // If the /payments request from your server fails, or if an unexpected error occurs.
             if (!result.resultCode) {
@@ -255,6 +257,9 @@ export class PaymentsUtil {
             option.textContent = value;
             languageDropdown.appendChild(option);
         });
+
+        const tdsModeDropdown = document.getElementById("tdsMode");
+
 
     }
 

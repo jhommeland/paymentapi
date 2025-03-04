@@ -7,9 +7,9 @@ import no.jhommeland.paymentapi.dao.MerchantRepository;
 import no.jhommeland.paymentapi.dao.TransactionRepository;
 import no.jhommeland.paymentapi.model.*;
 import no.jhommeland.paymentapi.util.PaymentUtil;
+import no.jhommeland.paymentapi.util.UrlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,12 +26,6 @@ import java.util.List;
 public class PaymentsService {
 
     private final Logger logger = LoggerFactory.getLogger(PaymentsService.class);
-
-    @Value("${adyen.api.return.url}")
-    private String returnUrl;
-
-    @Value("${adyen.api.tds.mode}")
-    private String tdsMode;
 
     AdyenPaymentsApiDao adyenPaymentsApiDao;
 
@@ -90,7 +84,7 @@ public class PaymentsService {
                 .currency(transactionModel.getCurrency())
                 .value(Long.parseLong(transactionModel.getAmount()));
 
-        AuthenticationData authenticationData = TdsMode.fromValue(tdsMode).getAuthenticationData();
+        AuthenticationData authenticationData = TdsMode.fromValue(requestModel.getTdsMode()).getAuthenticationData();
 
         CreateCheckoutSessionRequest checkoutSessionRequest = new CreateCheckoutSessionRequest()
                 .amount(amountObject)
@@ -100,7 +94,7 @@ public class PaymentsService {
                 .shopperLocale(requestModel.getLocale())
                 .reference(transactionModel.getTransactionId())
                 .authenticationData(authenticationData)
-                .returnUrl(returnUrl + "?merchantId=" + merchantModel.getMerchantId());
+                .returnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getMerchantId()));
 
         //Call API
         CreateCheckoutSessionResponse createCheckoutSessionResponse = adyenPaymentsApiDao.callCreateSessionApi(checkoutSessionRequest, merchantModel.getAdyenApiKey());
@@ -137,7 +131,7 @@ public class PaymentsService {
         CheckoutPaymentMethod checkoutPaymentMethod = new CheckoutPaymentMethod();
         checkoutPaymentMethod.setActualInstance(PaymentUtil.getPaymentDetails(requestModel));
 
-        AuthenticationData authenticationData = TdsMode.fromValue(tdsMode).getAuthenticationData();
+        AuthenticationData authenticationData = TdsMode.fromValue(requestModel.getTdsMode()).getAuthenticationData();
 
         //Create Payment Object
         PaymentRequest paymentRequest = new PaymentRequest()
@@ -149,7 +143,7 @@ public class PaymentsService {
                 .paymentMethod(checkoutPaymentMethod)
                 .reference(transactionModel.getTransactionId())
                 .authenticationData(authenticationData)
-                .returnUrl(returnUrl + "?merchantId=" + merchantModel.getMerchantId());
+                .returnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getMerchantId()));
 
         //Call API
         PaymentResponse paymentResponse = adyenPaymentsApiDao.callPaymentApi(paymentRequest, merchantModel.getAdyenApiKey());
