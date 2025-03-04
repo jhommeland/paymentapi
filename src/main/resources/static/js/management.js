@@ -5,6 +5,10 @@ import { PaymentsUtil } from './paymentsUtil.js';
 const transactionTable = document.querySelector("#transactionTable tbody");
 const statusFilter = document.getElementById("statusFilter");
 
+// Register utility methods
+window.capturePayment = PaymentsUtil.capturePayment;
+window.revertPayment = PaymentsUtil.revertPayment;
+
 // Populate the table with transaction data
 function populateTable(transactions) {
 
@@ -31,8 +35,8 @@ function populateTable(transactions) {
       <td>${new Date(transaction.createdAt).toLocaleString()}</td>
       <td>${new Date(transaction.lastModifiedAt).toLocaleString()}</td>
       <td>
-        <button ${enableCapture ? "" : "disabled"} onclick="PaymentsUtil.capturePayment('${transaction.transactionId}')">Capture</button>
-        <button ${enableRevert ? "" : "disabled"} onclick="PaymentsUtil.revertPayment('${transaction.transactionId}')">Revert</button>
+        <button ${enableCapture ? "" : "disabled"} onclick="capturePayment('${transaction.transactionId}')">Capture</button>
+        <button ${enableRevert ? "" : "disabled"} onclick="revertPayment('${transaction.transactionId}')">Revert</button>
       </td>
     `;
 

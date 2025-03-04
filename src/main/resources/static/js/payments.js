@@ -21,7 +21,7 @@ async function initializeCheckout() {
             await PaymentsUtil.onSubmitPayment(state, component, actions, merchantId, amount, currency, countryCode, locale);
         },
         onAdditionalDetails: async (state, component, actions) => {
-            await PaymentsUtil.onAdditionalDetails(state, component, actions);
+            await PaymentsUtil.onAdditionalDetails(merchantId, state, component, actions);
         },
         onPaymentCompleted: (result, component) => {
             PaymentsUtil.onPaymentEvent(result, component);

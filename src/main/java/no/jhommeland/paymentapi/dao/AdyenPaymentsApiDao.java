@@ -7,13 +7,11 @@ import com.adyen.model.checkout.*;
 import com.adyen.service.checkout.ModificationsApi;
 import com.adyen.service.checkout.PaymentsApi;
 import com.adyen.service.exception.ApiException;
-import jakarta.annotation.PostConstruct;
 import no.jhommeland.paymentapi.exception.InternalServerErrorException;
 import no.jhommeland.paymentapi.util.AdyenApiCall;
 import no.jhommeland.paymentapi.util.PaymentUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,20 +20,15 @@ public class AdyenPaymentsApiDao {
 
     public static final Logger logger = LoggerFactory.getLogger(AdyenPaymentsApiDao.class);
 
-    @Value("${adyen.api.key}")
-    private String adyenApiKey;
-
-    private PaymentsApi paymentsService;
-
-    private ModificationsApi modificationsService;
-
-    @PostConstruct
-    void initApiClient() {
-        paymentsService = new PaymentsApi(new Client(adyenApiKey, Environment.TEST));
-        modificationsService = new ModificationsApi(new Client(adyenApiKey, Environment.TEST));
+    private PaymentsApi initializePaymentsApi(String adyenApiKey) {
+        return new PaymentsApi(new Client(adyenApiKey, Environment.TEST));
     }
 
-    public static <T, R> T executeApiCall(AdyenApiCall<T> function, R request) {
+    private ModificationsApi initializeModificationsApi(String adyenApiKey) {
+        return new ModificationsApi(new Client(adyenApiKey, Environment.TEST));
+    }
+
+    private static <T, R> T executeApiCall(AdyenApiCall<T> function, R request) {
         try {
             logger.info("Adyen Request: {}", PaymentUtil.convertToJsonString(request));
             T result = function.apply();
@@ -49,40 +42,46 @@ public class AdyenPaymentsApiDao {
         }
     }
 
-    public PaymentMethodsResponse callPaymentMethodsApi(PaymentMethodsRequest paymentMethodsRequest) {
+    public PaymentMethodsResponse callPaymentMethodsApi(PaymentMethodsRequest paymentMethodsRequest, String adyenApiKey) {
+        PaymentsApi paymentsApi = initializePaymentsApi(adyenApiKey);
         return AdyenPaymentsApiDao.executeApiCall(() ->
-                paymentsService.paymentMethods(paymentMethodsRequest, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()))
+                        paymentsApi.paymentMethods(paymentMethodsRequest, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()))
         , paymentMethodsRequest);
     }
 
-    public CreateCheckoutSessionResponse callCreateSessionApi(CreateCheckoutSessionRequest createCheckoutSessionRequest) {
+    public CreateCheckoutSessionResponse callCreateSessionApi(CreateCheckoutSessionRequest createCheckoutSessionRequest, String adyenApiKey) {
+        PaymentsApi paymentsApi = initializePaymentsApi(adyenApiKey);
         return AdyenPaymentsApiDao.executeApiCall(() ->
-                        paymentsService.sessions(createCheckoutSessionRequest, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()))
+                        paymentsApi.sessions(createCheckoutSessionRequest, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()))
                 , createCheckoutSessionRequest);
     }
 
-    public PaymentResponse callPaymentApi(PaymentRequest paymentRequest) {
+    public PaymentResponse callPaymentApi(PaymentRequest paymentRequest, String adyenApiKey) {
+        PaymentsApi paymentsApi = initializePaymentsApi(adyenApiKey);
         return AdyenPaymentsApiDao.executeApiCall(() ->
-                paymentsService.payments(paymentRequest, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()))
+                        paymentsApi.payments(paymentRequest, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()))
         , paymentRequest);
     }
 
-    public PaymentCaptureResponse callPaymentCaptureApi(String originalPspReference, PaymentCaptureRequest captureRequest) {
+    public PaymentDetailsResponse callPaymentDetailsApi(PaymentDetailsRequest paymentDetailsRequest, String adyenApiKey) {
+        PaymentsApi paymentsApi = initializePaymentsApi(adyenApiKey);
         return AdyenPaymentsApiDao.executeApiCall(() ->
-                        modificationsService.captureAuthorisedPayment(originalPspReference, captureRequest, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()))
+                        paymentsApi.paymentsDetails(paymentDetailsRequest, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()))
+                , paymentDetailsRequest);
+    }
+
+    public PaymentCaptureResponse callPaymentCaptureApi(String originalPspReference, PaymentCaptureRequest captureRequest, String adyenApiKey) {
+        ModificationsApi modificationsApi = initializeModificationsApi(adyenApiKey);
+        return AdyenPaymentsApiDao.executeApiCall(() ->
+                        modificationsApi.captureAuthorisedPayment(originalPspReference, captureRequest, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()))
                 , captureRequest);
     }
 
-    public PaymentReversalResponse callPaymentReversalApi(String originalPspReference, PaymentReversalRequest reversalRequest) {
+    public PaymentReversalResponse callPaymentReversalApi(String originalPspReference, PaymentReversalRequest reversalRequest, String adyenApiKey) {
+        ModificationsApi modificationsApi = initializeModificationsApi(adyenApiKey);
         return AdyenPaymentsApiDao.executeApiCall(() ->
-                        modificationsService.refundOrCancelPayment(originalPspReference, reversalRequest, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()))
+                        modificationsApi.refundOrCancelPayment(originalPspReference, reversalRequest, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()))
                 , reversalRequest);
-    }
-
-    public PaymentDetailsResponse callPaymentDetailsApi(PaymentDetailsRequest paymentDetailsRequest) {
-        return AdyenPaymentsApiDao.executeApiCall(() ->
-                paymentsService.paymentsDetails(paymentDetailsRequest, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()))
-        , paymentDetailsRequest);
     }
 
 }

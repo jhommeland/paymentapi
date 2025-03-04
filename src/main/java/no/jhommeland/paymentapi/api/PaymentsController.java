@@ -69,15 +69,15 @@ public class PaymentsController {
     }
 
     @PostMapping("/payments/details")
-    public ResponseEntity<PaymentDetailsResponse> submitPaymentDetails(@RequestBody PaymentDetailsRequest requestModel) {
+    public ResponseEntity<PaymentDetailsResponse> submitPaymentDetails(@RequestBody PaymentDetailsModel requestModel) {
         HttpHeaders headers = new HttpHeaders();
         PaymentDetailsResponse paymentDetailsResponse = paymentsService.submitPaymentDetails(requestModel);
         return new ResponseEntity<>(paymentDetailsResponse, headers, HttpStatus.OK);
     }
 
     @GetMapping("/payments/complete")
-    public String completePayment(@RequestParam String redirectResult, Model model) throws JsonProcessingException {
-        PaymentDetailsResponse paymentDetailsResponse = paymentsService.submitPaymentDetailsRedirect(redirectResult);
+    public String completePayment(@RequestParam String merchantId, @RequestParam String redirectResult, Model model) throws JsonProcessingException {
+        PaymentDetailsResponse paymentDetailsResponse = paymentsService.submitPaymentDetailsRedirect(merchantId, redirectResult);
         model.addAttribute("base64Result", htmlUtil.toBase64(paymentDetailsResponse.toJson()));
         return "result";
     }

@@ -21,7 +21,7 @@ async function initializeCheckout() {
         countryCode: countryCode,
         locale: locale,
         onAdditionalDetails: async (state, component, actions) => {
-            await PaymentsUtil.onAdditionalDetails(state, component, actions);
+            await PaymentsUtil.onAdditionalDetails(merchantId, state, component, actions);
         },
         onPaymentCompleted: (result, component) => {
             PaymentsUtil.onPaymentEvent(result, component);

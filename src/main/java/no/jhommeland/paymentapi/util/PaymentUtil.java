@@ -1,6 +1,7 @@
 package no.jhommeland.paymentapi.util;
 
 import com.adyen.model.checkout.CardDetails;
+import com.adyen.model.checkout.KlarnaDetails;
 import com.adyen.model.checkout.PaymentDetails;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,6 +31,7 @@ public class PaymentUtil {
         return switch (paymentType) {
             case "scheme" -> objectMapper.convertValue(requestModel.getPaymentMethod(), CardDetails.class);
             case "alipay" -> objectMapper.convertValue(requestModel.getPaymentMethod(), PaymentDetails.class);
+            case "klarna" -> objectMapper.convertValue(requestModel.getPaymentMethod(), KlarnaDetails.class);
             default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported payment method type: " + paymentType);
         };
     }

@@ -83,10 +83,13 @@ export class PaymentsUtil {
         }
     }
 
-    static async makeDetailsCall(data) {
+    static async makeDetailsCall(merchantId, data) {
         try {
             // Direct use of await to wait for the response
-            const response = await axios.post('/payments/details', data);
+            const response = await axios.post('/payments/details', {
+                merchantId: merchantId,
+                paymentDetails: data
+            });
             // Log and return the server response data
             console.log('Success:', response.data);
             return response.data;
@@ -176,11 +179,11 @@ export class PaymentsUtil {
         }
     }
 
-    static async onAdditionalDetails(state, component, actions) {
+    static async onAdditionalDetails(merchantId, state, component, actions) {
         try {
 
             // Make a POST /payments/details request from your server.
-            const result = await PaymentsUtil.makeDetailsCall(state.data);
+            const result = await PaymentsUtil.makeDetailsCall(merchantId, state.data);
 
             // If the /payments/details request from your server fails, or if an unexpected error occurs.
             if (!result.resultCode) {
