@@ -7,7 +7,7 @@ async function initializeCheckout() {
     const currency = document.getElementById("currency").value;
     const locale = document.getElementById("language").value;
     const tdsMode = document.getElementById("tdsMode").value;
-    const countryCode = locale.split('-')[1];
+    const countryCode = document.getElementById("country").value;
 
     const merchantId = localStorage.getItem("selectedMerchant");
 

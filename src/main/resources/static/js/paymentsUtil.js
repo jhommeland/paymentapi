@@ -258,8 +258,13 @@ export class PaymentsUtil {
             languageDropdown.appendChild(option);
         });
 
-        const tdsModeDropdown = document.getElementById("tdsMode");
-
+        const countryDropdown = document.getElementById("country");
+        Object.entries(merchantSettings.country).forEach(([key, value]) => {
+            const option = document.createElement("option");
+            option.value = key;
+            option.textContent = value;
+            countryDropdown.appendChild(option);
+        });
 
     }
 
