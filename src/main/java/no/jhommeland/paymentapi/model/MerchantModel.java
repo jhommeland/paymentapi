@@ -20,6 +20,7 @@ public class MerchantModel {
 
     private String adyenMerchantAccount;
 
+    @JsonIgnore
     private String returnUrl;
 
     @JsonIgnore

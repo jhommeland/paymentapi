@@ -127,10 +127,6 @@ public class PaymentsService {
                 .currency(transactionModel.getCurrency())
                 .value(Long.parseLong(transactionModel.getAmount()));
 
-        //Set Payment Method Details
-        CheckoutPaymentMethod checkoutPaymentMethod = new CheckoutPaymentMethod();
-        checkoutPaymentMethod.setActualInstance(PaymentUtil.getPaymentDetails(requestModel));
-
         AuthenticationData authenticationData = TdsMode.fromValue(requestModel.getTdsMode()).getAuthenticationData();
 
         //Create Payment Object
@@ -140,7 +136,7 @@ public class PaymentsService {
                 .channel(PaymentRequest.ChannelEnum.WEB)
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())
-                .paymentMethod(checkoutPaymentMethod)
+                .paymentMethod(requestModel.getPaymentMethod())
                 .reference(transactionModel.getTransactionId())
                 .authenticationData(authenticationData)
                 .returnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getMerchantId()));

@@ -10,7 +10,7 @@ export class PaymentsUtil {
             return response.data;
         } catch (error) {
             // Handle error and return null in case of failure
-            console.error('Error:', error);
+            console.error('Credentials Retrieval Error:', error);
             return null;
         }
     }
@@ -32,11 +32,11 @@ export class PaymentsUtil {
             });
 
             // Log and return the server response data
-            console.log('Success:', response.data);
+            console.log('Session Created:', response.data);
             return response.data;
         } catch (error) {
             // Handle error and return null in case of failure
-            console.error('Error:', error);
+            console.error('Session Creation Error:', error);
             return null;
         }
     }
@@ -53,16 +53,17 @@ export class PaymentsUtil {
             });
 
             // Log and return the server response data
-            console.log('Success:', response.data);
+            console.log('Payment Methods Retrieved:', response.data);
             return response.data;
         } catch (error) {
             // Handle error and return null in case of failure
-            console.error('Error:', error);
+            console.error('Payments Methods Retrieval Error:', error);
             return null;
         }
     }
 
     static async makePaymentsCall(data, merchantId, amount, currency, countryCode, locale, tdsMode) {
+        console.log('Will call /payments with data:', PaymentsUtil.printObject(data));
         try {
             // Use await to wait for the axios.post response
             const response = await axios.post('/payments', {
@@ -76,11 +77,11 @@ export class PaymentsUtil {
             });
 
             // Log and return the resolved response data
-            console.log('Success:', response.data);
+            console.log('Payments Call Success', PaymentsUtil.printObject(response.data));
             return response.data;
         } catch (error) {
             // Handle the error gracefully and return null
-            console.error('Error:', error);
+            console.error('Payments Call Error:', error);
             return null;
         }
     }
@@ -93,11 +94,11 @@ export class PaymentsUtil {
                 paymentDetails: data
             });
             // Log and return the server response data
-            console.log('Success:', response.data);
+            console.log('Details Call Success:', PaymentsUtil.printObject(response.data));
             return response.data;
         } catch (error) {
             // Handle error and return null in case of failure
-            console.error('Error:', error);
+            console.error('Details Call Error:', error);
             return null;
         }
     }
@@ -108,11 +109,11 @@ export class PaymentsUtil {
             const response = await axios.get('/transactions');
 
             // Log and return the server response data
-            console.log('Success:', response.data);
+            console.log('Transaction Retrieved:', response.data);
             return response.data;
         } catch (error) {
             // Handle error and return null in case of failure
-            console.error('Error:', error);
+            console.error('Transactions Retrieval Error:', error);
             return null;
         }
     }
@@ -125,11 +126,11 @@ export class PaymentsUtil {
             });
 
             // Log the response and reload page
-            console.log('Success:', response.data);
+            console.log('Capture Success:', PaymentsUtil.printObject(response.data));
             window.location.reload();
         } catch (error) {
             // Handle error and return null in case of failure
-            console.error('Error:', error);
+            console.error('Capture Error:', error);
         }
     }
 
@@ -141,11 +142,11 @@ export class PaymentsUtil {
             });
 
             // Log the response and reload page
-            console.log('Success:', response.data);
+            console.log('Revert Success:', PaymentsUtil.printObject(response.data));
             window.location.reload();
         } catch (error) {
             // Handle error and return null in case of failure
-            console.error('Error:', error);
+            console.error('Revert Error:', error);
         }
     }
 
@@ -266,6 +267,10 @@ export class PaymentsUtil {
             countryDropdown.appendChild(option);
         });
 
+    }
+
+    static printObject(obj) {
+        return JSON.stringify(obj).replace(/\\n|\\t/g, '');
     }
 
 }

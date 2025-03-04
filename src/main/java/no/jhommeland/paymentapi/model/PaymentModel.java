@@ -1,5 +1,7 @@
 package no.jhommeland.paymentapi.model;
 
+import com.adyen.model.checkout.CheckoutPaymentMethod;
+
 public class PaymentModel {
 
     private String merchantId;
@@ -14,7 +16,7 @@ public class PaymentModel {
 
     private String tdsMode;
 
-    private Object paymentMethod;
+    private CheckoutPaymentMethod paymentMethod;
 
     public String getMerchantId() {
         return merchantId;
@@ -64,12 +66,11 @@ public class PaymentModel {
         this.tdsMode = tdsMode;
     }
 
-    public Object getPaymentMethod() {
+    public CheckoutPaymentMethod getPaymentMethod() {
         return paymentMethod;
     }
 
-    public void setPaymentMethod(Object paymentMethod) {
+    public void setPaymentMethod(CheckoutPaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
-
 }
