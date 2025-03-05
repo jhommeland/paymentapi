@@ -1,7 +1,7 @@
 package no.jhommeland.paymentapi.api;
 
 import no.jhommeland.paymentapi.model.AdyenWebhookModel;
-import no.jhommeland.paymentapi.service.WebhookService;
+import no.jhommeland.paymentapi.service.EventService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,21 +10,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
-public class WebhookController {
+public class EventController {
 
-    private final WebhookService webhookService;
+    private final EventService eventService;
 
-    public WebhookController(WebhookService webhookService) {
-        this.webhookService = webhookService;
+    public EventController(EventService eventService) {
+        this.eventService = eventService;
     }
 
     @PostMapping("/payments/notification")
     public ResponseEntity<String> paymentNotification(@RequestBody AdyenWebhookModel requestModel) {
         HttpHeaders headers = new HttpHeaders();
-
-        //TODO: Validation HMAC and Basic Authentication
-
-        webhookService.processPaymentNotification(requestModel);
+        eventService.processPaymentNotification(requestModel);
         return new ResponseEntity<>("", headers, HttpStatus.NO_CONTENT);
     }
 

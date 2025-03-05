@@ -29,6 +29,9 @@ public class MerchantModel {
     @JsonIgnore
     private String adyenClientKey;
 
+    @JsonIgnore
+    private String hmacKey;
+
     public String getMerchantId() {
         return merchantId;
     }
@@ -75,5 +78,13 @@ public class MerchantModel {
 
     public void setAdyenClientKey(String adyenClientKey) {
         this.adyenClientKey = adyenClientKey;
+    }
+
+    public String getHmacKey() {
+        return hmacKey;
+    }
+
+    public void setHmacKey(String hmacKey) {
+        this.hmacKey = hmacKey;
     }
 }
