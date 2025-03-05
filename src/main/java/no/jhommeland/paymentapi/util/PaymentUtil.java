@@ -19,11 +19,20 @@ public class PaymentUtil {
         return objectMapper.convertValue(paymentMethod, PaymentType.class).getType();
     }
 
-    public static String convertToJsonString(Object object) {
+    public static String convertToJsonString(Object object, boolean prettyPrint) {
         try {
             objectMapper.registerModule(new JavaTimeModule());
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            return objectMapper.writeValueAsString(object);
+
+            String jsonString;
+            if (prettyPrint) {
+                jsonString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
+            } else {
+                jsonString = objectMapper.writeValueAsString(object);
+            }
+
+            return jsonString;
+
         } catch (JsonProcessingException e) {
             logger.error("Failed to parse JSON");
             throw new InternalServerErrorException(e.getMessage());

@@ -30,9 +30,9 @@ public class AdyenPaymentsApiDao {
 
     private static <T, R> T executeApiCall(AdyenApiCall<T> function, R request) {
         try {
-            logger.info("Adyen Request: {}", PaymentUtil.convertToJsonString(request));
+            logger.info("Adyen Request: {}", PaymentUtil.convertToJsonString(request, false));
             T result = function.apply();
-            logger.info("Adyen Response: {}", PaymentUtil.convertToJsonString(result));
+            logger.info("Adyen Response: {}", PaymentUtil.convertToJsonString(result, false));
             return result;
         } catch (ApiException e) {
             logger.info("Adyen Error Response: {}", e.getResponseBody());

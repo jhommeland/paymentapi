@@ -81,7 +81,7 @@ public class EventService {
         eventModel.setAmount(String.valueOf(item.getAmount().getValue()));
         eventModel.setReason(item.getReason());
         eventModel.setSuccess(item.isSuccess() ? EVENT_IS_SUCCESS : EVENT_IS_NOT_SUCCESS);
-        eventModel.setAdditionalData(PaymentUtil.convertToJsonString(item.getAdditionalData()));
+        eventModel.setAdditionalData(PaymentUtil.convertToJsonString(item.getAdditionalData(), true));
         return eventModel;
     }
 
