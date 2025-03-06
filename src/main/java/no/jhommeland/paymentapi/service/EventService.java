@@ -56,10 +56,16 @@ public class EventService {
                 }
                 TransactionModel transactionModel = transactionRepository.findById(eventModel.getMerchantReference()).orElseThrow(() -> new EntityNotFoundException("Transaction not found"));
                 transactionModel.setStatus(eventModel.getEventCode());
+                transactionModel.setPaymentMethod(eventModel.getPaymentMethod());
                 if (!eventModel.getSuccess().equals(EVENT_IS_SUCCESS)) {
                     transactionModel.setErrorReason(eventModel.getReason());
                 }
-                transactionModel.setPspReference(eventModel.getPspReference());
+                if (transactionModel.getOriginalPspReference() == null) {
+                    transactionModel.setOriginalPspReference(eventModel.getPspReference());
+                } else if (!transactionModel.getOriginalPspReference().equals(eventModel.getPspReference())) {
+                    transactionModel.setPspReference(eventModel.getPspReference());
+                }
+
                 transactionModel.setLastModifiedAt(OffsetDateTime.now());
                 transactionRepository.save(transactionModel);
             } catch (Exception e) {
