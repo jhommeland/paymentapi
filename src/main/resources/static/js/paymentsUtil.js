@@ -150,6 +150,53 @@ export class PaymentsUtil {
         }
     }
 
+    static async makeTerminalPaymentCall(merchantId, poiId, amount, currency, locale, requestMode) {
+        try {
+            // Direct use of await to wait for the response
+            const response = await axios.post('/terminal/payments', {
+                merchantId: merchantId,
+                poiId: poiId,
+                amount: amount,
+                currency: currency,
+                locale: locale,
+                requestMode: requestMode
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Log and return the server response data
+            console.log('Terminal Payment Response:', response.data);
+            return response.data;
+        } catch (error) {
+            // Handle error and return null in case of failure
+            console.error('Terminal Payment Error:', error);
+            return null;
+        }
+    }
+
+    static async getTerminals(merchantId) {
+        try {
+            // Direct use of await to wait for the response
+            const response = await axios.post('/terminals', {
+                merchantId: merchantId
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Log and return the server response data
+            console.log('Terminals Retrieved:', response.data);
+            return response.data;
+        } catch (error) {
+            // Handle error and return null in case of failure
+            console.error('Terminal Retrieval Error:', error);
+            return null;
+        }
+    }
+
     static async onSubmitPayment(state, component, actions, merchantId, amount, currency, countryCode, locale, tdsMode) {
         try {
             // Make a POST /payments request from your server.
@@ -267,6 +314,38 @@ export class PaymentsUtil {
             countryDropdown.appendChild(option);
         });
 
+    }
+
+    static async populateTerminalOptions() {
+
+        const merchantSettings = JSON.parse(localStorage.getItem("selectedMerchantSettings"));
+
+        const currencyDropdown = document.getElementById("currency");
+        Object.entries(merchantSettings.currency).forEach(([key, value]) => {
+            const option = document.createElement("option");
+            option.value = key;
+            option.textContent = value;
+            currencyDropdown.appendChild(option);
+        });
+
+        const languageDropdown = document.getElementById("language");
+        Object.entries(merchantSettings.language).forEach(([key, value]) => {
+            const option = document.createElement("option");
+            option.value = key;
+            option.textContent = value;
+            languageDropdown.appendChild(option);
+        });
+
+        const selectedMerchant = localStorage.getItem("selectedMerchant");
+
+        const terminals = await PaymentsUtil.getTerminals(selectedMerchant);
+        const poiIdDropdown = document.getElementById("poiId");
+        terminals.uniqueTerminalIds.forEach((terminal) => {
+            const option = document.createElement("option");
+            option.value = terminal;
+            option.textContent = terminal;
+            poiIdDropdown.appendChild(option);
+        });
     }
 
     static printObject(obj) {

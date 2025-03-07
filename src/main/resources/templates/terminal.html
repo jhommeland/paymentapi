@@ -1,0 +1,82 @@
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Terminal Payment</title>
+</head>
+<div layout:fragment="content" class="centered-container">
+
+<div class="payment-form-container" id="inputForm">
+    <a href="/" class="back-button">← Back</a>
+    <h2>1. Enter Payment Details</h2>
+    <form id="paymentForm" method="post">
+        <table>
+            <!-- Amount Row -->
+            <tr>
+                <td><label for="amount">Amount:</label></td>
+                <td><input type="number" id="amount" name="amount" placeholder="Enter amount" value="1000" required></td>
+            </tr>
+
+            <!-- Currency Row -->
+            <tr>
+                <td><label for="currency">Currency:</label></td>
+                <td>
+                    <select id="currency" name="currency" required>
+                        <!-- Options will be dynamically added here -->
+                    </select>
+                </td>
+            </tr>
+
+            <!-- Language/Locale Row -->
+            <tr>
+                <td><label for="language">Language:</label></td>
+                <td>
+                    <select id="language" name="language" required>
+                        <!-- Options will be dynamically added here -->
+                    </select>
+                </td>
+            </tr>
+
+            <!-- POI ID -->
+            <tr>
+                <td><label for="poiId">POI ID:</label></td>
+                <td>
+                    <select id="poiId" name="poiId" required>
+                        <!-- Options will be dynamically added here -->
+                    </select>
+                </td>
+            </tr>
+
+            <!-- requestMode -->
+            <tr>
+                <td><label for="requestMode">Connection:</label></td>
+                <td>
+                    <select id="requestMode" name="requestMode" required>
+                        <option value="sync" selected>Synchronous</option>
+                        <option value="async">Asynchronous</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Submit Button -->
+        <button type="submit">Start Payment</button>
+    </form>
+    <p class="note">
+        <a href="/management">Manage Transactions</a>.
+    </p>
+</div>
+<div class="payment-form-container" id="responseForm" style="display: none;">
+    <h2>2. Terminal Response</h2>
+    <table id="result-table"></table>
+    <p class="note">
+        <a href="/" rel="noopener noreferrer">Return to start</a>
+        <span style="display: inline-block; width: 20px;"></span>
+        <a href="/management" rel="noopener noreferrer">Manage Transactions</a>
+    </p>
+</div>
+
+<script type="module" src="/js/terminal.js"></script>
+
+</div>

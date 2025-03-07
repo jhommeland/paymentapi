@@ -21,6 +21,11 @@ public class WebPaymentsController {
         return "payments";
     }
 
+    @GetMapping("/terminal")
+    public String terminal() {
+        return "terminal";
+    }
+
     @GetMapping("/management")
     public String transactionManagement() {
         return "management";
