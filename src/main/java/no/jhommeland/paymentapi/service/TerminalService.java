@@ -72,15 +72,9 @@ public class TerminalService {
                 requestModel.getReferenceServiceId());
 
         TerminalAPIResponse terminalAPIResponse = adyenTerminalApiDao.callCloudTerminalApiSync(terminalAPIRequest, merchantModel.getAdyenApiKey());
+        Response response = terminalAPIResponse.getSaleToPOIResponse().getTransactionStatusResponse().getResponse();
 
-        TerminalPaymentResponseModel responseModel = new TerminalPaymentResponseModel();
-        Response responseDetails = terminalAPIResponse.getSaleToPOIResponse().getTransactionStatusResponse().getResponse();
-        responseModel.setResult(responseDetails.getResult().value());
-        if (responseDetails.getResult() != ResultType.SUCCESS) {
-            responseModel.setReason(responseDetails.getErrorCondition().value());
-        }
-
-        return responseModel;
+        return buildResponseModel(response);
 
     }
 
@@ -104,22 +98,14 @@ public class TerminalService {
         TerminalPaymentResponseModel responseModel = new TerminalPaymentResponseModel();
         if (TERMINAL_SYNC_REQUEST.equals(requestModel.getRequestMode())) {
             TerminalAPIResponse terminalAPIResponse = adyenTerminalApiDao.callCloudTerminalApiSync(terminalAPIRequest, merchantModel.getAdyenApiKey());
-            Response response = terminalAPIResponse.getSaleToPOIResponse().getPaymentResponse().getResponse();
-            switch (response.getResult()) {
-                case SUCCESS:
-                    responseModel.setResult(TERMINAL_SYNC_RESPONSE_SUCCESS);
-                    break;
-                default:
-                    responseModel.setResult(TERMINAL_SYNC_RESPONSE_FAILURE);
-                    responseModel.setReason(response.getErrorCondition().value());
-                    transactionModel.setErrorReason(response.getErrorCondition().value());
-            }
+            responseModel = buildResponseModel(terminalAPIResponse.getSaleToPOIResponse().getPaymentResponse().getResponse());
         } else {
             String response = adyenTerminalApiDao.callCloudTerminalApiAsync(terminalAPIRequest, merchantModel.getAdyenApiKey());
             responseModel.setResult(response);
         }
 
         //Save to Database
+        transactionModel.setErrorReason(responseModel.getReason());
         transactionModel.setStatus(TransactionStatus.AWAITING_AUTHORISATION.getStatus());
         transactionModel.setLastModifiedAt(OffsetDateTime.now());
         transactionRepository.save(transactionModel);
@@ -135,7 +121,7 @@ public class TerminalService {
         messageHeader.setMessageType(MessageType.REQUEST);
         messageHeader.setPOIID(requestModel.getPoiId());
         messageHeader.setSaleID(TERMINAL_SALE_ID);
-        messageHeader.setServiceID(PaymentUtil.generateServiceId());
+        messageHeader.setServiceID(requestModel.getServiceId());
 
         var saleTransactionIdentification = new TransactionIdentification();
         saleTransactionIdentification.setTransactionID(TerminalUtil.buildTransactionId(requestModel.getPoiId(), requestModel.getServiceId()));
@@ -148,8 +134,12 @@ public class TerminalService {
         amountsReq.setCurrency(requestModel.getCurrency());
         amountsReq.setRequestedAmount(new BigDecimal(requestModel.getAmount()));
 
+        var transactionConditions = new TransactionConditions();
+        transactionConditions.setCustomerLanguage(TerminalUtil.localeToIsoLanguage(requestModel.getLocale()));
+
         var paymentTransaction = new PaymentTransaction();
         paymentTransaction.setAmountsReq(amountsReq);
+        paymentTransaction.setTransactionConditions(transactionConditions);
 
         var paymentRequest = new PaymentRequest();
         paymentRequest.setSaleData(saleData);
@@ -195,6 +185,20 @@ public class TerminalService {
 
         return terminalAPIRequest;
 
+    }
+
+    private TerminalPaymentResponseModel buildResponseModel(Response response) {
+        TerminalPaymentResponseModel responseModel = new TerminalPaymentResponseModel();
+        switch (response.getResult()) {
+            case SUCCESS:
+                responseModel.setResult(TERMINAL_SYNC_RESPONSE_SUCCESS);
+                break;
+            default:
+                responseModel.setResult(TERMINAL_SYNC_RESPONSE_FAILURE);
+                responseModel.setReason(response.getErrorCondition().value());
+        }
+
+        return responseModel;
     }
 
 }

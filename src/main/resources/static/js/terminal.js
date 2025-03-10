@@ -1,6 +1,8 @@
 //Utility Class Import
 import { PaymentsUtil } from './paymentsUtil.js';
 
+const PAYMENT_STATUS_POLL_COUNT = 30;
+
 async function initializeTerminalPayment() {
 
     const amount = document.getElementById("amount").value
@@ -8,11 +10,22 @@ async function initializeTerminalPayment() {
     const locale = document.getElementById("language").value;
     const poiId = document.getElementById("poiId").value
     const requestMode = document.getElementById("requestMode").value;
+    const requestTimeout = document.getElementById("requestTimeout").value;
     const merchantId = localStorage.getItem("selectedMerchant");
 
     const serviceId = PaymentsUtil.generateServiceId();
 
-    const terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, requestMode);
+    let terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, requestMode, requestTimeout);
+    if (terminalResponse == null) {
+        console.log("Payment call interrupted. Starting polling.")
+        for (let i = 1; i < PAYMENT_STATUS_POLL_COUNT+1; i++) {
+            console.log("Polling " + i);
+            terminalResponse = await PaymentsUtil.makeTerminalPaymentStatusCall(merchantId, poiId, serviceId);
+            if (terminalResponse.reason != "InProgress") {
+                break;
+            }
+        }
+    }
 
     const inputForm = document.getElementById("inputForm");
     const checkoutForm = document.getElementById("responseForm");
