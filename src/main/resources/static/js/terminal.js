@@ -5,6 +5,15 @@ const PAYMENT_STATUS_POLL_COUNT = 30;
 
 async function initializeTerminalPayment() {
 
+    document.getElementById("inputForm").style.display = "none";
+    document.getElementById("progressForm").style.display = "block";
+    document.getElementById("responseForm").style.display = "none";
+    processPayment();
+
+}
+
+async function processPayment() {
+
     const amount = document.getElementById("amount").value
     const currency = document.getElementById("currency").value;
     const locale = document.getElementById("language").value;
@@ -12,7 +21,6 @@ async function initializeTerminalPayment() {
     const requestMode = document.getElementById("requestMode").value;
     const requestTimeout = document.getElementById("requestTimeout").value;
     const merchantId = localStorage.getItem("selectedMerchant");
-
     const serviceId = PaymentsUtil.generateServiceId();
 
     let terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, requestMode, requestTimeout);
@@ -26,11 +34,6 @@ async function initializeTerminalPayment() {
             }
         }
     }
-
-    const inputForm = document.getElementById("inputForm");
-    const checkoutForm = document.getElementById("responseForm");
-    inputForm.style.display = "none";
-    checkoutForm.style.display = "block";
 
     const tableBody = document.getElementById("result-table");
     Object.entries(terminalResponse).forEach(([key, value]) => {
@@ -47,6 +50,10 @@ async function initializeTerminalPayment() {
 
         tableBody.appendChild(row);
     });
+
+    document.getElementById("inputForm").style.display = "none";
+    document.getElementById("progressForm").style.display = "none";
+    document.getElementById("responseForm").style.display = "block";
 
 }
 

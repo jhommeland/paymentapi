@@ -228,3 +228,128 @@ ul {
     font-size: 14px;
     cursor: pointer;
 }
+
+/* Credit to: https://github.com/adyen-examples/adyen-java-spring-online-payments */
+/* Loading CSS Start */
+
+.loading-grid {
+  text-align: center;
+  display: block;
+  padding: 16px 8px 8px 8px;
+  border-radius: 8px;
+  margin: 10px 0px 16px 0px;
+  transition: opacity 0.4s ease-in;
+  height: 100%;
+  width: auto;
+}
+
+.loading-description {
+  font-weight: 700;
+  color: #0abf53;
+  margin: 8px 0px 8px 0px;
+}
+
+.loading-animation {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.loading-animation div {
+  animation: loading-animation 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  transform-origin: 40px 40px;
+}
+
+.loading-animation div:after {
+  content: " ";
+  display: block;
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0abf53;
+  margin: -4px 0 0 -4px;
+}
+
+.loading-animation div:nth-child(1) {
+  animation-delay: -0.036s;
+}
+
+.loading-animation div:nth-child(1):after {
+  top: 63px;
+  left: 63px;
+}
+
+.loading-animation div:nth-child(2) {
+  animation-delay: -0.072s;
+}
+
+.loading-animation div:nth-child(2):after {
+  top: 68px;
+  left: 56px;
+}
+
+.loading-animation div:nth-child(3) {
+  animation-delay: -0.108s;
+}
+
+.loading-animation div:nth-child(3):after {
+  top: 71px;
+  left: 48px;
+}
+
+.loading-animation div:nth-child(4) {
+  animation-delay: -0.144s;
+}
+
+.loading-animation div:nth-child(4):after {
+  top: 72px;
+  left: 40px;
+}
+
+.loading-animation div:nth-child(5) {
+  animation-delay: -0.18s;
+}
+
+.loading-animation div:nth-child(5):after {
+  top: 71px;
+  left: 32px;
+}
+
+.loading-animation div:nth-child(6) {
+  animation-delay: -0.216s;
+}
+
+.loading-animation div:nth-child(6):after {
+  top: 68px;
+  left: 24px;
+}
+
+.loading-animation div:nth-child(7) {
+  animation-delay: -0.252s;
+}
+
+.loading-animation div:nth-child(7):after {
+  top: 63px;
+  left: 17px;
+}
+
+.loading-animation div:nth-child(8) {
+  animation-delay: -0.288s;
+}
+
+.loading-animation div:nth-child(8):after {
+  top: 56px;
+  left: 12px;
+}
+
+@keyframes loading-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+/* Loading CSS End */
