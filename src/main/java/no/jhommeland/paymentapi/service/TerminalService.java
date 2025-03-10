@@ -10,6 +10,7 @@ import no.jhommeland.paymentapi.dao.MerchantRepository;
 import no.jhommeland.paymentapi.dao.TransactionRepository;
 import no.jhommeland.paymentapi.model.*;
 import no.jhommeland.paymentapi.util.PaymentUtil;
+import no.jhommeland.paymentapi.util.TerminalUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,7 +26,15 @@ public class TerminalService {
 
     public final String TERMINAL_SALE_ID = "TEST_POS";
 
-    public final String TERMINAL_PROTOCOL_VERSION = "3.0";
+    public final String TERMINAL_PAYMENT_METHOD = "terminal";
+
+    public final String TERMINAL_SYNC_REQUEST = "sync";
+
+    public final String TERMINAL_ASYNC_REQUEST = "async";
+
+    public final String TERMINAL_SYNC_RESPONSE_SUCCESS = "success";
+
+    public final String TERMINAL_SYNC_RESPONSE_FAILURE = "failure";
 
     private final AdyenTerminalApiDao adyenTerminalApiDao;
 
@@ -54,6 +63,27 @@ public class TerminalService {
 
     }
 
+    public TerminalPaymentResponseModel getTerminalPaymentStatus(TerminalPaymentStatusModel requestModel) {
+
+        MerchantModel merchantModel = merchantRepository.findById(requestModel.getMerchantId()).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
+
+        TerminalAPIRequest terminalAPIRequest = createTerminalApiTransactionStatusRequest(requestModel.getPoiId(),
+                requestModel.getReferenceServiceId());
+
+        TerminalAPIResponse terminalAPIResponse = adyenTerminalApiDao.callCloudTerminalApiSync(terminalAPIRequest, merchantModel.getAdyenApiKey());
+
+        TerminalPaymentResponseModel responseModel = new TerminalPaymentResponseModel();
+        Response responseDetails = terminalAPIResponse.getSaleToPOIResponse().getTransactionStatusResponse().getResponse();
+        responseModel.setResult(responseDetails.getResult().value());
+        if (responseDetails.getResult() != ResultType.SUCCESS) {
+            responseModel.setReason(responseDetails.getErrorCondition().value());
+        }
+
+        return responseModel;
+
+    }
+
     public TerminalPaymentResponseModel makePayment(TerminalPaymentModel requestModel) {
 
         MerchantModel merchantModel = merchantRepository.findById(requestModel.getMerchantId()).
@@ -62,46 +92,28 @@ public class TerminalService {
         //Save to Database
         TransactionModel transactionModel = new TransactionModel();
         transactionModel.setMerchantAccountName(merchantModel.getAdyenMerchantAccount());
-        transactionModel.setPaymentMethod("terminal");
+        transactionModel.setPaymentMethod(TERMINAL_PAYMENT_METHOD);
         transactionModel.setStatus(TransactionStatus.REGISTERED.getStatus());
         transactionModel.setAmount(requestModel.getAmount());
         transactionModel.setCurrency(requestModel.getCurrency());
         transactionModel.setCreatedAt(OffsetDateTime.now());
         transactionRepository.save(transactionModel);
 
-        TerminalAPIRequest terminalAPIRequest = new TerminalAPIRequest();
-        SaleToPOIRequest saleToPOIRequest = new SaleToPOIRequest();
-        MessageHeader messageHeader = new MessageHeader();
-        messageHeader.setProtocolVersion(TERMINAL_PROTOCOL_VERSION);
-        messageHeader.setMessageClass(MessageClassType.SERVICE);
-        messageHeader.setMessageCategory(MessageCategoryType.PAYMENT);
-        messageHeader.setMessageType(MessageType.REQUEST);
-        messageHeader.setSaleID(TERMINAL_SALE_ID);
-        messageHeader.setServiceID(PaymentUtil.generateServiceId());
-        messageHeader.setPOIID(requestModel.getPoiId());
-        saleToPOIRequest.setMessageHeader(messageHeader);
-        PaymentRequest paymentRequest = new PaymentRequest();
-        SaleData saleData = new SaleData();
-        TransactionIdentification transactionIdentification = new TransactionIdentification();
-        transactionIdentification.setTransactionID(transactionModel.getTransactionId());
-        transactionIdentification.setTimeStamp(datatypeFactory.newXMLGregorianCalendar(new GregorianCalendar()));
-        saleData.setSaleTransactionID(transactionIdentification);
-        saleData.setOperatorID(requestModel.getOperator());
-        paymentRequest.setSaleData(saleData);
-        PaymentTransaction paymentTransaction = new PaymentTransaction();
-        AmountsReq amountsReq = new AmountsReq();
-        amountsReq.setCurrency(requestModel.getCurrency());
-        amountsReq.setRequestedAmount(new BigDecimal(requestModel.getAmount()));
-        paymentTransaction.setAmountsReq(amountsReq);
-        paymentRequest.setPaymentTransaction(paymentTransaction);
-        saleToPOIRequest.setPaymentRequest(paymentRequest);
-        terminalAPIRequest.setSaleToPOIRequest(saleToPOIRequest);
+        TerminalAPIRequest terminalAPIRequest = createTerminalApiPaymentRequest(requestModel);
 
         TerminalPaymentResponseModel responseModel = new TerminalPaymentResponseModel();
-        if (requestModel.getRequestMode().equals("sync")) {
+        if (TERMINAL_SYNC_REQUEST.equals(requestModel.getRequestMode())) {
             TerminalAPIResponse terminalAPIResponse = adyenTerminalApiDao.callCloudTerminalApiSync(terminalAPIRequest, merchantModel.getAdyenApiKey());
-            responseModel.setResult("Success");
-            responseModel.setDetails(terminalAPIResponse.getSaleToPOIResponse().getPaymentResponse().getPaymentResult());
+            Response response = terminalAPIResponse.getSaleToPOIResponse().getPaymentResponse().getResponse();
+            switch (response.getResult()) {
+                case SUCCESS:
+                    responseModel.setResult(TERMINAL_SYNC_RESPONSE_SUCCESS);
+                    break;
+                default:
+                    responseModel.setResult(TERMINAL_SYNC_RESPONSE_FAILURE);
+                    responseModel.setReason(response.getErrorCondition().value());
+                    transactionModel.setErrorReason(response.getErrorCondition().value());
+            }
         } else {
             String response = adyenTerminalApiDao.callCloudTerminalApiAsync(terminalAPIRequest, merchantModel.getAdyenApiKey());
             responseModel.setResult(response);
@@ -114,4 +126,75 @@ public class TerminalService {
 
         return responseModel;
     }
+
+    private TerminalAPIRequest createTerminalApiPaymentRequest(TerminalPaymentModel requestModel) {
+
+        var messageHeader = new MessageHeader();
+        messageHeader.setMessageCategory(MessageCategoryType.PAYMENT);
+        messageHeader.setMessageClass(MessageClassType.SERVICE);
+        messageHeader.setMessageType(MessageType.REQUEST);
+        messageHeader.setPOIID(requestModel.getPoiId());
+        messageHeader.setSaleID(TERMINAL_SALE_ID);
+        messageHeader.setServiceID(PaymentUtil.generateServiceId());
+
+        var saleTransactionIdentification = new TransactionIdentification();
+        saleTransactionIdentification.setTransactionID(TerminalUtil.buildTransactionId(requestModel.getPoiId(), requestModel.getServiceId()));
+        saleTransactionIdentification.setTimeStamp(datatypeFactory.newXMLGregorianCalendar(new GregorianCalendar()));
+
+        var saleData = new SaleData();
+        saleData.setSaleTransactionID(saleTransactionIdentification);
+
+        var amountsReq = new AmountsReq();
+        amountsReq.setCurrency(requestModel.getCurrency());
+        amountsReq.setRequestedAmount(new BigDecimal(requestModel.getAmount()));
+
+        var paymentTransaction = new PaymentTransaction();
+        paymentTransaction.setAmountsReq(amountsReq);
+
+        var paymentRequest = new PaymentRequest();
+        paymentRequest.setSaleData(saleData);
+        paymentRequest.setPaymentTransaction(paymentTransaction);
+
+        var saleToPOIRequest = new SaleToPOIRequest();
+        saleToPOIRequest.setMessageHeader(messageHeader);
+        saleToPOIRequest.setPaymentRequest(paymentRequest);
+
+        var terminalAPIRequest = new TerminalAPIRequest();
+        terminalAPIRequest.setSaleToPOIRequest(saleToPOIRequest);
+
+        return terminalAPIRequest;
+
+    }
+
+    private TerminalAPIRequest createTerminalApiTransactionStatusRequest(String poiId, String referenceServiceId) {
+
+        var messageHeader = new MessageHeader();
+        messageHeader.setMessageCategory(MessageCategoryType.TRANSACTION_STATUS);
+        messageHeader.setMessageClass(MessageClassType.SERVICE);
+        messageHeader.setMessageType(MessageType.REQUEST);
+        messageHeader.setPOIID(poiId);
+        messageHeader.setSaleID(TERMINAL_SALE_ID);
+        messageHeader.setServiceID(PaymentUtil.generateServiceId());
+
+        var messageReference = new MessageReference();
+        messageReference.setSaleID(TERMINAL_SALE_ID);
+        messageReference.setServiceID(referenceServiceId);
+
+        var transactionStatusRequest = new TransactionStatusRequest();
+        transactionStatusRequest.setReceiptReprintFlag(false);
+        transactionStatusRequest.setMessageReference(messageReference);
+        //transactionStatusRequest.getDocumentQualifier().add(DocumentQualifierType.CASHIER_RECEIPT);
+        //transactionStatusRequest.getDocumentQualifier().add(DocumentQualifierType.CUSTOMER_RECEIPT);
+
+        var saleToPOIRequest = new SaleToPOIRequest();
+        saleToPOIRequest.setMessageHeader(messageHeader);
+        saleToPOIRequest.setTransactionStatusRequest(transactionStatusRequest);
+
+        var terminalAPIRequest = new TerminalAPIRequest();
+        terminalAPIRequest.setSaleToPOIRequest(saleToPOIRequest);
+
+        return terminalAPIRequest;
+
+    }
+
 }

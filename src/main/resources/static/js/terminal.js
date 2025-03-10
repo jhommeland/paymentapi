@@ -10,7 +10,9 @@ async function initializeTerminalPayment() {
     const requestMode = document.getElementById("requestMode").value;
     const merchantId = localStorage.getItem("selectedMerchant");
 
-    const terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, poiId, amount, currency, locale, requestMode);
+    const serviceId = PaymentsUtil.generateServiceId();
+
+    const terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, requestMode);
 
     const inputForm = document.getElementById("inputForm");
     const checkoutForm = document.getElementById("responseForm");

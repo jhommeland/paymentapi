@@ -3,6 +3,7 @@ package no.jhommeland.paymentapi.api;
 import com.adyen.model.terminal.ConnectedTerminalsResponse;
 import no.jhommeland.paymentapi.model.TerminalPaymentModel;
 import no.jhommeland.paymentapi.model.TerminalPaymentResponseModel;
+import no.jhommeland.paymentapi.model.TerminalPaymentStatusModel;
 import no.jhommeland.paymentapi.service.TerminalService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,13 @@ public class TerminalController {
     public ResponseEntity<TerminalPaymentResponseModel> makePayment(@RequestBody TerminalPaymentModel requestModel) {
         HttpHeaders headers = new HttpHeaders();
         TerminalPaymentResponseModel paymentResponse = terminalService.makePayment(requestModel);
+        return new ResponseEntity<>(paymentResponse, headers, HttpStatus.OK);
+    }
+
+    @PostMapping("/terminal/payments/status")
+    public ResponseEntity<TerminalPaymentResponseModel> getPaymentStatus(@RequestBody TerminalPaymentStatusModel requestModel) {
+        HttpHeaders headers = new HttpHeaders();
+        TerminalPaymentResponseModel paymentResponse = terminalService.getTerminalPaymentStatus(requestModel);
         return new ResponseEntity<>(paymentResponse, headers, HttpStatus.OK);
     }
 

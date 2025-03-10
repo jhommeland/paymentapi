@@ -1,12 +1,13 @@
 package no.jhommeland.paymentapi.model;
 
-import com.adyen.model.nexo.PaymentResult;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TerminalPaymentResponseModel {
 
     String result;
 
-    PaymentResult details;
+    String reason;
 
     public String getResult() {
         return result;
@@ -16,11 +17,12 @@ public class TerminalPaymentResponseModel {
         this.result = result;
     }
 
-    public PaymentResult getDetails() {
-        return details;
+    public String getReason() {
+        return reason;
     }
 
-    public void setDetails(PaymentResult details) {
-        this.details = details;
+    public void setReason(String reason) {
+        this.reason = reason;
     }
+
 }

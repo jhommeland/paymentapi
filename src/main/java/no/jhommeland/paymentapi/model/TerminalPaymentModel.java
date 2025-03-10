@@ -4,6 +4,8 @@ public class TerminalPaymentModel {
 
     private String merchantId;
 
+    private String serviceId;
+
     private String poiId;
 
     private String operator;
@@ -22,6 +24,14 @@ public class TerminalPaymentModel {
 
     public void setMerchantId(String merchantId) {
         this.merchantId = merchantId;
+    }
+
+    public String getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(String serviceId) {
+        this.serviceId = serviceId;
     }
 
     public String getPoiId() {

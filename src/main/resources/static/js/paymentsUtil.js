@@ -150,11 +150,12 @@ export class PaymentsUtil {
         }
     }
 
-    static async makeTerminalPaymentCall(merchantId, poiId, amount, currency, locale, requestMode) {
+    static async makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, requestMode) {
         try {
             // Direct use of await to wait for the response
             const response = await axios.post('/terminal/payments', {
                 merchantId: merchantId,
+                serviceId: serviceId,
                 poiId: poiId,
                 amount: amount,
                 currency: currency,
@@ -174,6 +175,29 @@ export class PaymentsUtil {
             console.error('Terminal Payment Error:', error);
             return null;
         }
+    }
+
+    static async makeTerminalPaymentStatus(merchantId, poiId, referenceServiceId) {
+         try {
+             // Direct use of await to wait for the response
+             const response = await axios.post('/terminal/payments/status', {
+                 merchantId: merchantId,
+                 poiId: poiId,
+                 referenceServiceId: referenceServiceId
+             }, {
+                 headers: {
+                     'Content-Type': 'application/json'
+                 }
+             });
+
+             // Log and return the server response data
+             console.log('Terminal Payment Status Response:', response.data);
+             return response.data;
+         } catch (error) {
+             // Handle error and return null in case of failure
+             console.error('Terminal Payment Status Error:', error);
+             return null;
+         }
     }
 
     static async getTerminals(merchantId) {
@@ -350,6 +374,10 @@ export class PaymentsUtil {
 
     static printObject(obj) {
         return JSON.stringify(obj).replace(/\\n|\\t/g, '');
+    }
+
+    static generateServiceId() {
+        return crypto.randomUUID().replaceAll("-", "").substring(0,10);
     }
 
 }
