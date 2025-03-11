@@ -99,14 +99,23 @@ public class TerminalService {
         transactionModel.setCreatedAt(OffsetDateTime.now());
         transactionRepository.save(transactionModel);
 
-        TerminalAPIRequest terminalAPIRequest = createTerminalApiPaymentRequest(transactionModel.getTransactionId(), requestModel);
+        TerminalAPIRequest paymentRequest = createTerminalApiPaymentRequest(transactionModel.getTransactionId(), requestModel);
 
         TerminalPaymentResponseModel responseModel = new TerminalPaymentResponseModel();
         if (TERMINAL_SYNC_REQUEST.equals(requestModel.getRequestMode())) {
-            TerminalAPIResponse terminalAPIResponse = adyenTerminalApiDao.callCloudTerminalApiSync(terminalAPIRequest, merchantModel.getAdyenApiKey());
-            responseModel = buildResponseModel(terminalAPIResponse.getSaleToPOIResponse().getPaymentResponse().getResponse());
+
+            //Initiate Payment
+            TerminalAPIResponse paymentResponse = adyenTerminalApiDao.callCloudTerminalApiSync(paymentRequest, merchantModel.getAdyenApiKey());
+            responseModel = buildResponseModel(paymentResponse.getSaleToPOIResponse().getPaymentResponse().getResponse());
+
+            //Print Receipt (Experimental)
+            if (!"none".equals(requestModel.getPrintReceipt())) {
+                TerminalAPIRequest printRequest = createTerminalApiPrintRequest(requestModel.getPoiId(), paymentResponse.getSaleToPOIResponse().getPaymentResponse().getPaymentReceipt().get(0).getOutputContent());
+                adyenTerminalApiDao.callCloudTerminalApiSync(printRequest, merchantModel.getAdyenApiKey());
+            }
+
         } else {
-            String response = adyenTerminalApiDao.callCloudTerminalApiAsync(terminalAPIRequest, merchantModel.getAdyenApiKey());
+            String response = adyenTerminalApiDao.callCloudTerminalApiAsync(paymentRequest, merchantModel.getAdyenApiKey());
             responseModel.setResult(response);
         }
 
@@ -231,6 +240,35 @@ public class TerminalService {
         var saleToPOIRequest = new SaleToPOIRequest();
         saleToPOIRequest.setMessageHeader(messageHeader);
         saleToPOIRequest.setAbortRequest(abortRequest);
+
+        var terminalAPIRequest = new TerminalAPIRequest();
+        terminalAPIRequest.setSaleToPOIRequest(saleToPOIRequest);
+
+        return terminalAPIRequest;
+
+    }
+
+    private TerminalAPIRequest createTerminalApiPrintRequest(String poiId, OutputContent outputContent) {
+
+        var messageHeader = new MessageHeader();
+        messageHeader.setMessageCategory(MessageCategoryType.PRINT);
+        messageHeader.setMessageClass(MessageClassType.DEVICE);
+        messageHeader.setMessageType(MessageType.REQUEST);
+        messageHeader.setPOIID(poiId);
+        messageHeader.setSaleID(TERMINAL_SALE_ID);
+        messageHeader.setServiceID(PaymentUtil.generateServiceId());
+
+        var printOutput = new PrintOutput();
+        printOutput.setDocumentQualifier(DocumentQualifierType.DOCUMENT);
+        printOutput.setResponseMode(ResponseModeType.PRINT_END);
+        printOutput.setOutputContent(outputContent);
+
+        var printRequest = new PrintRequest();
+        printRequest.setPrintOutput(printOutput);
+
+        var saleToPOIRequest = new SaleToPOIRequest();
+        saleToPOIRequest.setMessageHeader(messageHeader);
+        saleToPOIRequest.setPrintRequest(printRequest);
 
         var terminalAPIRequest = new TerminalAPIRequest();
         terminalAPIRequest.setSaleToPOIRequest(saleToPOIRequest);

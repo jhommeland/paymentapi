@@ -63,6 +63,18 @@
                     <td><label for="requestTimeout">Connection Timeout:</label></td>
                     <td><input type="number" id="requestTimeout" name="requestTimeout" placeholder="Enter request timeout" value="30000" required></td>
                 </tr>
+
+                <!-- printReceipt -->
+                <tr>
+                    <td><label for="printReceipt">Print Receipt:</label></td>
+                    <td>
+                        <select id="printReceipt" name="printReceipt" required>
+                            <option value="none" selected>None</option>
+                            <option value="customer">Customer Receipt</option>
+                            <option value="customerAndCashier">Customer & Cashier Receipt</option>
+                        </select>
+                    </td>
+                </tr>
             </table>
 
             <!-- Submit Button -->

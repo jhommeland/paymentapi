@@ -150,7 +150,7 @@ export class PaymentsUtil {
         }
     }
 
-    static async makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, requestMode, timeout) {
+    static async makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, requestMode, printReceipt, timeout) {
         try {
             // Direct use of await to wait for the response
             const response = await axios.post('/terminal/payments', {
@@ -160,7 +160,8 @@ export class PaymentsUtil {
                 amount: amount,
                 currency: currency,
                 locale: locale,
-                requestMode: requestMode
+                requestMode: requestMode,
+                printReceipt: printReceipt
             }, {
                 headers: {
                     'Content-Type': 'application/json'

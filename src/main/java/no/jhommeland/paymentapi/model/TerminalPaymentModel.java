@@ -18,6 +18,8 @@ public class TerminalPaymentModel {
 
     private String locale;
 
+    private String printReceipt;
+
     public String getMerchantId() {
         return merchantId;
     }
@@ -80,5 +82,13 @@ public class TerminalPaymentModel {
 
     public void setLocale(String locale) {
         this.locale = locale;
+    }
+
+    public String getPrintReceipt() {
+        return printReceipt;
+    }
+
+    public void setPrintReceipt(String printReceipt) {
+        this.printReceipt = printReceipt;
     }
 }
