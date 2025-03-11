@@ -72,9 +72,13 @@ public class TerminalService {
                 requestModel.getReferenceServiceId());
 
         TerminalAPIResponse terminalAPIResponse = adyenTerminalApiDao.callCloudTerminalApiSync(terminalAPIRequest, merchantModel.getAdyenApiKey());
-        Response response = terminalAPIResponse.getSaleToPOIResponse().getTransactionStatusResponse().getResponse();
 
-        return buildResponseModel(response);
+        RepeatedMessageResponse repeatedResponse = terminalAPIResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse();
+        if (repeatedResponse != null) {
+            return buildResponseModel(repeatedResponse.getRepeatedResponseMessageBody().getPaymentResponse().getResponse());
+        }
+
+        return buildResponseModel(terminalAPIResponse.getSaleToPOIResponse().getTransactionStatusResponse().getResponse());
 
     }
 
@@ -93,7 +97,7 @@ public class TerminalService {
         transactionModel.setCreatedAt(OffsetDateTime.now());
         transactionRepository.save(transactionModel);
 
-        TerminalAPIRequest terminalAPIRequest = createTerminalApiPaymentRequest(requestModel);
+        TerminalAPIRequest terminalAPIRequest = createTerminalApiPaymentRequest(transactionModel.getTransactionId(), requestModel);
 
         TerminalPaymentResponseModel responseModel = new TerminalPaymentResponseModel();
         if (TERMINAL_SYNC_REQUEST.equals(requestModel.getRequestMode())) {
@@ -113,7 +117,7 @@ public class TerminalService {
         return responseModel;
     }
 
-    private TerminalAPIRequest createTerminalApiPaymentRequest(TerminalPaymentModel requestModel) {
+    private TerminalAPIRequest createTerminalApiPaymentRequest(String transactionId, TerminalPaymentModel requestModel) {
 
         var messageHeader = new MessageHeader();
         messageHeader.setMessageCategory(MessageCategoryType.PAYMENT);
@@ -124,7 +128,7 @@ public class TerminalService {
         messageHeader.setServiceID(requestModel.getServiceId());
 
         var saleTransactionIdentification = new TransactionIdentification();
-        saleTransactionIdentification.setTransactionID(TerminalUtil.buildTransactionId(requestModel.getPoiId(), requestModel.getServiceId()));
+        saleTransactionIdentification.setTransactionID(transactionId);
         saleTransactionIdentification.setTimeStamp(datatypeFactory.newXMLGregorianCalendar(new GregorianCalendar()));
 
         var saleData = new SaleData();
@@ -173,8 +177,8 @@ public class TerminalService {
         var transactionStatusRequest = new TransactionStatusRequest();
         transactionStatusRequest.setReceiptReprintFlag(false);
         transactionStatusRequest.setMessageReference(messageReference);
-        //transactionStatusRequest.getDocumentQualifier().add(DocumentQualifierType.CASHIER_RECEIPT);
-        //transactionStatusRequest.getDocumentQualifier().add(DocumentQualifierType.CUSTOMER_RECEIPT);
+        transactionStatusRequest.getDocumentQualifier().add(DocumentQualifierType.CASHIER_RECEIPT);
+        transactionStatusRequest.getDocumentQualifier().add(DocumentQualifierType.CUSTOMER_RECEIPT);
 
         var saleToPOIRequest = new SaleToPOIRequest();
         saleToPOIRequest.setMessageHeader(messageHeader);
