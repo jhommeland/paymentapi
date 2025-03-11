@@ -8,6 +8,8 @@ public class TerminalPaymentReferenceModel {
 
     private String referenceServiceId;
 
+    private String apiType;
+
     public String getMerchantId() {
         return merchantId;
     }
@@ -30,5 +32,13 @@ public class TerminalPaymentReferenceModel {
 
     public void setReferenceServiceId(String referenceServiceId) {
         this.referenceServiceId = referenceServiceId;
+    }
+
+    public String getApiType() {
+        return apiType;
+    }
+
+    public void setApiType(String apiType) {
+        this.apiType = apiType;
     }
 }

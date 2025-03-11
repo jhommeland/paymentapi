@@ -20,6 +20,8 @@ public class TerminalPaymentModel {
 
     private String printReceipt;
 
+    private String apiType;
+
     public String getMerchantId() {
         return merchantId;
     }
@@ -90,5 +92,13 @@ public class TerminalPaymentModel {
 
     public void setPrintReceipt(String printReceipt) {
         this.printReceipt = printReceipt;
+    }
+
+    public String getApiType() {
+        return apiType;
+    }
+
+    public void setApiType(String apiType) {
+        this.apiType = apiType;
     }
 }

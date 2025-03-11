@@ -38,6 +38,8 @@ public class TerminalService {
 
     public final String TERMINAL_ABORT_CANCELLED_BY_OPERATOR = "Cancelled by Operator";
 
+    public final String TERMINAL_PRINT_RECEIPT_NONE = "none";
+
     private final AdyenTerminalApiDao adyenTerminalApiDao;
 
     private final MerchantRepository merchantRepository;
@@ -61,7 +63,7 @@ public class TerminalService {
         ConnectedTerminalsRequest connectedTerminalsRequest = new ConnectedTerminalsRequest();
         connectedTerminalsRequest.setMerchantAccount(merchantModel.getAdyenMerchantAccount());
 
-        return adyenTerminalApiDao.getConnectedTerminals(connectedTerminalsRequest, merchantModel.getAdyenApiKey());
+        return adyenTerminalApiDao.getConnectedTerminals(connectedTerminalsRequest, merchantModel);
 
     }
 
@@ -73,7 +75,7 @@ public class TerminalService {
         TerminalAPIRequest terminalAPIRequest = createTerminalApiTransactionStatusRequest(requestModel.getPoiId(),
                 requestModel.getReferenceServiceId());
 
-        TerminalAPIResponse terminalAPIResponse = adyenTerminalApiDao.callCloudTerminalApiSync(terminalAPIRequest, merchantModel.getAdyenApiKey());
+        TerminalAPIResponse terminalAPIResponse = adyenTerminalApiDao.callTerminalApiSync(terminalAPIRequest, merchantModel, requestModel.getApiType());
 
         RepeatedMessageResponse repeatedResponse = terminalAPIResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse();
         if (repeatedResponse != null) {
@@ -105,17 +107,17 @@ public class TerminalService {
         if (TERMINAL_SYNC_REQUEST.equals(requestModel.getRequestMode())) {
 
             //Initiate Payment
-            TerminalAPIResponse paymentResponse = adyenTerminalApiDao.callCloudTerminalApiSync(paymentRequest, merchantModel.getAdyenApiKey());
+            TerminalAPIResponse paymentResponse = adyenTerminalApiDao.callTerminalApiSync(paymentRequest, merchantModel, requestModel.getApiType());
             responseModel = buildResponseModel(paymentResponse.getSaleToPOIResponse().getPaymentResponse().getResponse());
 
             //Print Receipt (Experimental)
-            if (!"none".equals(requestModel.getPrintReceipt())) {
+            if (!TERMINAL_PRINT_RECEIPT_NONE.equals(requestModel.getPrintReceipt())) {
                 TerminalAPIRequest printRequest = createTerminalApiPrintRequest(requestModel.getPoiId(), paymentResponse.getSaleToPOIResponse().getPaymentResponse().getPaymentReceipt().get(0).getOutputContent());
-                adyenTerminalApiDao.callCloudTerminalApiSync(printRequest, merchantModel.getAdyenApiKey());
+                adyenTerminalApiDao.callTerminalApiSync(printRequest, merchantModel, requestModel.getApiType());
             }
 
         } else {
-            String response = adyenTerminalApiDao.callCloudTerminalApiAsync(paymentRequest, merchantModel.getAdyenApiKey());
+            String response = adyenTerminalApiDao.callTerminalApiAsync(paymentRequest, merchantModel, requestModel.getApiType());
             responseModel.setResult(response);
         }
 
@@ -136,7 +138,7 @@ public class TerminalService {
         TerminalAPIRequest terminalAPIRequest = createTerminalApiTransactionAbortRequest(requestModel.getPoiId(),
                 requestModel.getReferenceServiceId());
 
-        TerminalAPIResponse terminalAPIResponse = adyenTerminalApiDao.callCloudTerminalApiSync(terminalAPIRequest, merchantModel.getAdyenApiKey());
+        TerminalAPIResponse terminalAPIResponse = adyenTerminalApiDao.callTerminalApiSync(terminalAPIRequest, merchantModel, requestModel.getApiType());
 
         TerminalPaymentResponseModel responseModel = new TerminalPaymentResponseModel();
         responseModel.setResult(TERMINAL_SYNC_RESPONSE_SUCCESS);

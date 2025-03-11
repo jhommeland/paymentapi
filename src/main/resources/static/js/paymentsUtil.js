@@ -150,7 +150,7 @@ export class PaymentsUtil {
         }
     }
 
-    static async makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, requestMode, printReceipt, timeout) {
+    static async makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, apiType, requestMode, printReceipt, timeout) {
         try {
             // Direct use of await to wait for the response
             const response = await axios.post('/terminal/payments', {
@@ -160,6 +160,7 @@ export class PaymentsUtil {
                 amount: amount,
                 currency: currency,
                 locale: locale,
+                apiType: apiType,
                 requestMode: requestMode,
                 printReceipt: printReceipt
             }, {
@@ -179,13 +180,14 @@ export class PaymentsUtil {
         }
     }
 
-    static async makeTerminalPaymentAbortCall(merchantId, poiId, referenceServiceId) {
+    static async makeTerminalPaymentAbortCall(merchantId, poiId, referenceServiceId, apiType) {
         try {
             // Direct use of await to wait for the response
             const response = await axios.post('/terminal/payments/abort', {
                  merchantId: merchantId,
                  poiId: poiId,
-                 referenceServiceId: referenceServiceId
+                 referenceServiceId: referenceServiceId,
+                 apiType: apiType
             }, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -202,13 +204,14 @@ export class PaymentsUtil {
         }
     }
 
-    static async makeTerminalPaymentStatusCall(merchantId, poiId, referenceServiceId) {
+    static async makeTerminalPaymentStatusCall(merchantId, poiId, referenceServiceId, apiType) {
          try {
              // Direct use of await to wait for the response
              const response = await axios.post('/terminal/payments/status', {
                  merchantId: merchantId,
                  poiId: poiId,
-                 referenceServiceId: referenceServiceId
+                 referenceServiceId: referenceServiceId,
+                 apiType: apiType
              }, {
                  headers: {
                      'Content-Type': 'application/json'

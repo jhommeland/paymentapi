@@ -32,6 +32,15 @@ public class MerchantModel {
     @JsonIgnore
     private String hmacKey;
 
+    @JsonIgnore
+    private String securityKeyIdentifier;
+
+    @JsonIgnore
+    private String securityKeyPassphrase;
+
+    @JsonIgnore
+    private String securityKeyVersion;
+
     public String getMerchantId() {
         return merchantId;
     }
@@ -86,5 +95,29 @@ public class MerchantModel {
 
     public void setHmacKey(String hmacKey) {
         this.hmacKey = hmacKey;
+    }
+
+    public String getSecurityKeyIdentifier() {
+        return securityKeyIdentifier;
+    }
+
+    public void setSecurityKeyIdentifier(String securityKeyIdentifier) {
+        this.securityKeyIdentifier = securityKeyIdentifier;
+    }
+
+    public String getSecurityKeyPassphrase() {
+        return securityKeyPassphrase;
+    }
+
+    public void setSecurityKeyPassphrase(String securityKeyPassphrase) {
+        this.securityKeyPassphrase = securityKeyPassphrase;
+    }
+
+    public String getSecurityKeyVersion() {
+        return securityKeyVersion;
+    }
+
+    public void setSecurityKeyVersion(String securityKeyVersion) {
+        this.securityKeyVersion = securityKeyVersion;
     }
 }

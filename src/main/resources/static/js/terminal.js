@@ -18,6 +18,7 @@ async function processPayment() {
     const currency = document.getElementById("currency").value;
     const locale = document.getElementById("language").value;
     const poiId = document.getElementById("poiId").value
+    const apiType = document.getElementById("apiType").value;
     const requestMode = document.getElementById("requestMode").value;
     const requestTimeout = document.getElementById("requestTimeout").value;
     const merchantId = localStorage.getItem("selectedMerchant");
@@ -26,12 +27,12 @@ async function processPayment() {
 
     localStorage.setItem("currentServiceId", serviceId);
 
-    let terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, requestMode, printReceipt, requestTimeout);
+    let terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, apiType, requestMode, printReceipt, requestTimeout);
     if (terminalResponse == null) {
         console.log("Payment call interrupted. Starting polling.")
         for (let i = 1; i < PAYMENT_STATUS_POLL_COUNT+1; i++) {
             console.log("Polling " + i);
-            terminalResponse = await PaymentsUtil.makeTerminalPaymentStatusCall(merchantId, poiId, serviceId);
+            terminalResponse = await PaymentsUtil.makeTerminalPaymentStatusCall(merchantId, poiId, serviceId, apiType);
             if (terminalResponse.reason != "InProgress") {
                 break;
             }
@@ -70,7 +71,8 @@ window.onload = function() {
         const merchantId = localStorage.getItem("selectedMerchant");
         const poiId = document.getElementById("poiId").value
         const serviceId = localStorage.getItem("currentServiceId");
-        PaymentsUtil.makeTerminalPaymentAbortCall(merchantId, poiId, serviceId);
+        const apiType = document.getElementById("apiType").value;
+        PaymentsUtil.makeTerminalPaymentAbortCall(merchantId, poiId, serviceId, apiType);
     });
 };
 
