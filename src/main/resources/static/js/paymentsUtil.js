@@ -178,6 +178,29 @@ export class PaymentsUtil {
         }
     }
 
+    static async makeTerminalPaymentAbortCall(merchantId, poiId, referenceServiceId) {
+        try {
+            // Direct use of await to wait for the response
+            const response = await axios.post('/terminal/payments/abort', {
+                 merchantId: merchantId,
+                 poiId: poiId,
+                 referenceServiceId: referenceServiceId
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Log and return the server response data
+            console.log('Terminal Payment Abort Response:', response.data);
+            return response.data;
+        } catch (error) {
+            // Handle error and return null in case of failure
+            console.error('Terminal Payment Abort Error:', error);
+            return null;
+        }
+    }
+
     static async makeTerminalPaymentStatusCall(merchantId, poiId, referenceServiceId) {
          try {
              // Direct use of await to wait for the response

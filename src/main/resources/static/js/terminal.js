@@ -23,6 +23,8 @@ async function processPayment() {
     const merchantId = localStorage.getItem("selectedMerchant");
     const serviceId = PaymentsUtil.generateServiceId();
 
+    localStorage.setItem("currentServiceId", serviceId);
+
     let terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, requestMode, requestTimeout);
     if (terminalResponse == null) {
         console.log("Payment call interrupted. Starting polling.")
@@ -61,6 +63,13 @@ window.onload = function() {
     document.getElementById("paymentForm").addEventListener("submit", function(event) {
         event.preventDefault(); // Prevent the default form submission
         initializeTerminalPayment();
+    });
+    document.getElementById("cancel-button").addEventListener("click", function(event) {
+        document.getElementById("cancel-button").disabled = true;
+        const merchantId = localStorage.getItem("selectedMerchant");
+        const poiId = document.getElementById("poiId").value
+        const serviceId = localStorage.getItem("currentServiceId");
+        PaymentsUtil.makeTerminalPaymentAbortCall(merchantId, poiId, serviceId);
     });
 };
 

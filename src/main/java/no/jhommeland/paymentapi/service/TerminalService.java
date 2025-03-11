@@ -36,6 +36,8 @@ public class TerminalService {
 
     public final String TERMINAL_SYNC_RESPONSE_FAILURE = "failure";
 
+    public final String TERMINAL_ABORT_CANCELLED_BY_OPERATOR = "Cancelled by Operator";
+
     private final AdyenTerminalApiDao adyenTerminalApiDao;
 
     private final MerchantRepository merchantRepository;
@@ -63,7 +65,7 @@ public class TerminalService {
 
     }
 
-    public TerminalPaymentResponseModel getTerminalPaymentStatus(TerminalPaymentStatusModel requestModel) {
+    public TerminalPaymentResponseModel getTerminalPaymentStatus(TerminalPaymentReferenceModel requestModel) {
 
         MerchantModel merchantModel = merchantRepository.findById(requestModel.getMerchantId()).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
@@ -115,6 +117,23 @@ public class TerminalService {
         transactionRepository.save(transactionModel);
 
         return responseModel;
+    }
+
+    public TerminalPaymentResponseModel abortPayment(TerminalPaymentReferenceModel requestModel) {
+
+        MerchantModel merchantModel = merchantRepository.findById(requestModel.getMerchantId()).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
+
+        TerminalAPIRequest terminalAPIRequest = createTerminalApiTransactionAbortRequest(requestModel.getPoiId(),
+                requestModel.getReferenceServiceId());
+
+        TerminalAPIResponse terminalAPIResponse = adyenTerminalApiDao.callCloudTerminalApiSync(terminalAPIRequest, merchantModel.getAdyenApiKey());
+
+        TerminalPaymentResponseModel responseModel = new TerminalPaymentResponseModel();
+        responseModel.setResult(TERMINAL_SYNC_RESPONSE_SUCCESS);
+
+        return responseModel;
+
     }
 
     private TerminalAPIRequest createTerminalApiPaymentRequest(String transactionId, TerminalPaymentModel requestModel) {
@@ -183,6 +202,35 @@ public class TerminalService {
         var saleToPOIRequest = new SaleToPOIRequest();
         saleToPOIRequest.setMessageHeader(messageHeader);
         saleToPOIRequest.setTransactionStatusRequest(transactionStatusRequest);
+
+        var terminalAPIRequest = new TerminalAPIRequest();
+        terminalAPIRequest.setSaleToPOIRequest(saleToPOIRequest);
+
+        return terminalAPIRequest;
+
+    }
+
+    private TerminalAPIRequest createTerminalApiTransactionAbortRequest(String poiId, String referenceServiceId) {
+
+        var messageHeader = new MessageHeader();
+        messageHeader.setMessageCategory(MessageCategoryType.ABORT);
+        messageHeader.setMessageClass(MessageClassType.SERVICE);
+        messageHeader.setMessageType(MessageType.REQUEST);
+        messageHeader.setPOIID(poiId);
+        messageHeader.setSaleID(TERMINAL_SALE_ID);
+        messageHeader.setServiceID(PaymentUtil.generateServiceId());
+
+        var messageReference = new MessageReference();
+        messageReference.setSaleID(TERMINAL_SALE_ID);
+        messageReference.setServiceID(referenceServiceId);
+
+        var abortRequest = new AbortRequest();
+        abortRequest.setMessageReference(messageReference);
+        abortRequest.setAbortReason(TERMINAL_ABORT_CANCELLED_BY_OPERATOR);
+
+        var saleToPOIRequest = new SaleToPOIRequest();
+        saleToPOIRequest.setMessageHeader(messageHeader);
+        saleToPOIRequest.setAbortRequest(abortRequest);
 
         var terminalAPIRequest = new TerminalAPIRequest();
         terminalAPIRequest.setSaleToPOIRequest(saleToPOIRequest);

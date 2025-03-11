@@ -3,7 +3,7 @@ package no.jhommeland.paymentapi.api;
 import com.adyen.model.terminal.ConnectedTerminalsResponse;
 import no.jhommeland.paymentapi.model.TerminalPaymentModel;
 import no.jhommeland.paymentapi.model.TerminalPaymentResponseModel;
-import no.jhommeland.paymentapi.model.TerminalPaymentStatusModel;
+import no.jhommeland.paymentapi.model.TerminalPaymentReferenceModel;
 import no.jhommeland.paymentapi.service.TerminalService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -36,9 +36,16 @@ public class TerminalController {
     }
 
     @PostMapping("/terminal/payments/status")
-    public ResponseEntity<TerminalPaymentResponseModel> getPaymentStatus(@RequestBody TerminalPaymentStatusModel requestModel) {
+    public ResponseEntity<TerminalPaymentResponseModel> getPaymentStatus(@RequestBody TerminalPaymentReferenceModel requestModel) {
         HttpHeaders headers = new HttpHeaders();
         TerminalPaymentResponseModel paymentResponse = terminalService.getTerminalPaymentStatus(requestModel);
+        return new ResponseEntity<>(paymentResponse, headers, HttpStatus.OK);
+    }
+
+    @PostMapping("/terminal/payments/abort")
+    public ResponseEntity<TerminalPaymentResponseModel> abortPayment(@RequestBody TerminalPaymentReferenceModel requestModel) {
+        HttpHeaders headers = new HttpHeaders();
+        TerminalPaymentResponseModel paymentResponse = terminalService.abortPayment(requestModel);
         return new ResponseEntity<>(paymentResponse, headers, HttpStatus.OK);
     }
 

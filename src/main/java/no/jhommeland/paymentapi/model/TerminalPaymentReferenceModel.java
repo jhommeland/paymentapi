@@ -1,6 +1,6 @@
 package no.jhommeland.paymentapi.model;
 
-public class TerminalPaymentStatusModel {
+public class TerminalPaymentReferenceModel {
 
     private String merchantId;
 
