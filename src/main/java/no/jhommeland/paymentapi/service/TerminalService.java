@@ -72,10 +72,9 @@ public class TerminalService {
         MerchantModel merchantModel = merchantRepository.findById(requestModel.getMerchantId()).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
 
-        TerminalAPIRequest terminalAPIRequest = createTerminalApiTransactionStatusRequest(requestModel.getPoiId(),
-                requestModel.getReferenceServiceId());
+        TerminalAPIRequest terminalAPIRequest = createTerminalApiTransactionStatusRequest(requestModel.getReferenceServiceId(), requestModel.getTerminalConfig());
 
-        TerminalAPIResponse terminalAPIResponse = adyenTerminalApiDao.callTerminalApiSync(terminalAPIRequest, merchantModel, requestModel.getApiType());
+        TerminalAPIResponse terminalAPIResponse = adyenTerminalApiDao.callTerminalApiSync(terminalAPIRequest, merchantModel, requestModel.getTerminalConfig());
 
         RepeatedMessageResponse repeatedResponse = terminalAPIResponse.getSaleToPOIResponse().getTransactionStatusResponse().getRepeatedMessageResponse();
         if (repeatedResponse != null) {
@@ -104,20 +103,20 @@ public class TerminalService {
         TerminalAPIRequest paymentRequest = createTerminalApiPaymentRequest(transactionModel.getTransactionId(), requestModel);
 
         TerminalPaymentResponseModel responseModel = new TerminalPaymentResponseModel();
-        if (TERMINAL_SYNC_REQUEST.equals(requestModel.getRequestMode())) {
+        if (TERMINAL_SYNC_REQUEST.equals(requestModel.getTerminalConfig().getConnectionType())) {
 
             //Initiate Payment
-            TerminalAPIResponse paymentResponse = adyenTerminalApiDao.callTerminalApiSync(paymentRequest, merchantModel, requestModel.getApiType());
+            TerminalAPIResponse paymentResponse = adyenTerminalApiDao.callTerminalApiSync(paymentRequest, merchantModel, requestModel.getTerminalConfig());
             responseModel = buildResponseModel(paymentResponse.getSaleToPOIResponse().getPaymentResponse().getResponse());
 
             //Print Receipt (Experimental)
             if (!TERMINAL_PRINT_RECEIPT_NONE.equals(requestModel.getPrintReceipt())) {
-                TerminalAPIRequest printRequest = createTerminalApiPrintRequest(requestModel.getPoiId(), paymentResponse.getSaleToPOIResponse().getPaymentResponse().getPaymentReceipt().get(0).getOutputContent());
-                adyenTerminalApiDao.callTerminalApiSync(printRequest, merchantModel, requestModel.getApiType());
+                TerminalAPIRequest printRequest = createTerminalApiPrintRequest(paymentResponse.getSaleToPOIResponse().getPaymentResponse().getPaymentReceipt().get(0).getOutputContent(), requestModel.getTerminalConfig());
+                adyenTerminalApiDao.callTerminalApiSync(printRequest, merchantModel, requestModel.getTerminalConfig());
             }
 
         } else {
-            String response = adyenTerminalApiDao.callTerminalApiAsync(paymentRequest, merchantModel, requestModel.getApiType());
+            String response = adyenTerminalApiDao.callTerminalApiAsync(paymentRequest, merchantModel, requestModel.getTerminalConfig());
             responseModel.setResult(response);
         }
 
@@ -135,10 +134,8 @@ public class TerminalService {
         MerchantModel merchantModel = merchantRepository.findById(requestModel.getMerchantId()).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
 
-        TerminalAPIRequest terminalAPIRequest = createTerminalApiTransactionAbortRequest(requestModel.getPoiId(),
-                requestModel.getReferenceServiceId());
-
-        TerminalAPIResponse terminalAPIResponse = adyenTerminalApiDao.callTerminalApiSync(terminalAPIRequest, merchantModel, requestModel.getApiType());
+        TerminalAPIRequest terminalAPIRequest = createTerminalApiTransactionAbortRequest(requestModel.getReferenceServiceId(), requestModel.getTerminalConfig());
+        adyenTerminalApiDao.callTerminalApiSync(terminalAPIRequest, merchantModel, requestModel.getTerminalConfig());
 
         TerminalPaymentResponseModel responseModel = new TerminalPaymentResponseModel();
         responseModel.setResult(TERMINAL_SYNC_RESPONSE_SUCCESS);
@@ -153,7 +150,7 @@ public class TerminalService {
         messageHeader.setMessageCategory(MessageCategoryType.PAYMENT);
         messageHeader.setMessageClass(MessageClassType.SERVICE);
         messageHeader.setMessageType(MessageType.REQUEST);
-        messageHeader.setPOIID(requestModel.getPoiId());
+        messageHeader.setPOIID(requestModel.getTerminalConfig().getPoiId());
         messageHeader.setSaleID(TERMINAL_SALE_ID);
         messageHeader.setServiceID(requestModel.getServiceId());
 
@@ -190,13 +187,13 @@ public class TerminalService {
 
     }
 
-    private TerminalAPIRequest createTerminalApiTransactionStatusRequest(String poiId, String referenceServiceId) {
+    private TerminalAPIRequest createTerminalApiTransactionStatusRequest(String referenceServiceId, AdyenTerminalConfig terminalConfig) {
 
         var messageHeader = new MessageHeader();
         messageHeader.setMessageCategory(MessageCategoryType.TRANSACTION_STATUS);
         messageHeader.setMessageClass(MessageClassType.SERVICE);
         messageHeader.setMessageType(MessageType.REQUEST);
-        messageHeader.setPOIID(poiId);
+        messageHeader.setPOIID(terminalConfig.getPoiId());
         messageHeader.setSaleID(TERMINAL_SALE_ID);
         messageHeader.setServiceID(PaymentUtil.generateServiceId());
 
@@ -221,13 +218,13 @@ public class TerminalService {
 
     }
 
-    private TerminalAPIRequest createTerminalApiTransactionAbortRequest(String poiId, String referenceServiceId) {
+    private TerminalAPIRequest createTerminalApiTransactionAbortRequest(String referenceServiceId, AdyenTerminalConfig adyenTerminalConfig) {
 
         var messageHeader = new MessageHeader();
         messageHeader.setMessageCategory(MessageCategoryType.ABORT);
         messageHeader.setMessageClass(MessageClassType.SERVICE);
         messageHeader.setMessageType(MessageType.REQUEST);
-        messageHeader.setPOIID(poiId);
+        messageHeader.setPOIID(adyenTerminalConfig.getPoiId());
         messageHeader.setSaleID(TERMINAL_SALE_ID);
         messageHeader.setServiceID(PaymentUtil.generateServiceId());
 
@@ -250,13 +247,13 @@ public class TerminalService {
 
     }
 
-    private TerminalAPIRequest createTerminalApiPrintRequest(String poiId, OutputContent outputContent) {
+    private TerminalAPIRequest createTerminalApiPrintRequest(OutputContent outputContent, AdyenTerminalConfig adyenTerminalConfig) {
 
         var messageHeader = new MessageHeader();
         messageHeader.setMessageCategory(MessageCategoryType.PRINT);
         messageHeader.setMessageClass(MessageClassType.DEVICE);
         messageHeader.setMessageType(MessageType.REQUEST);
-        messageHeader.setPOIID(poiId);
+        messageHeader.setPOIID(adyenTerminalConfig.getPoiId());
         messageHeader.setSaleID(TERMINAL_SALE_ID);
         messageHeader.setServiceID(PaymentUtil.generateServiceId());
 

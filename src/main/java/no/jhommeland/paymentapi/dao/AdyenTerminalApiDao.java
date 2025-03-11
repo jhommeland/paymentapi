@@ -12,6 +12,7 @@ import com.adyen.service.PosPayment;
 import com.adyen.service.TerminalCloudAPI;
 import com.adyen.service.TerminalLocalAPI;
 import com.adyen.terminal.security.exception.NexoCryptoException;
+import no.jhommeland.paymentapi.model.AdyenTerminalConfig;
 import no.jhommeland.paymentapi.model.MerchantModel;
 import no.jhommeland.paymentapi.util.PaymentUtil;
 import org.slf4j.Logger;
@@ -35,10 +36,10 @@ public class AdyenTerminalApiDao {
         return new PosPayment(new Client(adyenApiKey, Environment.TEST));
     }
 
-    private TerminalLocalAPI initializeLocalApi(MerchantModel merchantModel) {
+    private TerminalLocalAPI initializeLocalApi(MerchantModel merchantModel, AdyenTerminalConfig terminalConfig) {
 
         Config config = new Config();
-        config.setTerminalApiLocalEndpoint("https://localhost");
+        config.setTerminalApiLocalEndpoint(terminalConfig.getLocalEndpoint());
 
         Client terminalLocalClient = new Client(config);
         terminalLocalClient.setEnvironment(Environment.TEST, null);
@@ -62,9 +63,9 @@ public class AdyenTerminalApiDao {
         return PaymentUtil.executeApiCall(() -> posPayment.connectedTerminals(connectedTerminalsRequest), connectedTerminalsRequest);
     }
 
-    public String callTerminalApiAsync(TerminalAPIRequest terminalAPIRequest, MerchantModel merchantModel, String type) {
+    public String callTerminalApiAsync(TerminalAPIRequest terminalAPIRequest, MerchantModel merchantModel, AdyenTerminalConfig terminalConfig) {
 
-        if (API_TYPE_LOCAL.equals(type)) {
+        if (API_TYPE_LOCAL.equals(terminalConfig.getApiType())) {
             logger.warn("TerminalLocalAPI does not support async. Will fallback to TerminalCloudAPI");
         }
 
@@ -72,14 +73,14 @@ public class AdyenTerminalApiDao {
         return PaymentUtil.executeApiCall(() -> terminalCloudAPI.async(terminalAPIRequest), terminalAPIRequest);
     }
 
-    public TerminalAPIResponse callTerminalApiSync(TerminalAPIRequest terminalAPIRequest, MerchantModel merchantModel, String type) {
+    public TerminalAPIResponse callTerminalApiSync(TerminalAPIRequest terminalAPIRequest, MerchantModel merchantModel, AdyenTerminalConfig terminalConfig) {
 
-        if (API_TYPE_CLOUD.equals(type)) {
+        if (API_TYPE_CLOUD.equals(terminalConfig.apiType)) {
             TerminalCloudAPI terminalCloudAPI = initializeCloudApi(merchantModel.getAdyenApiKey());
             return PaymentUtil.executeApiCall(() -> terminalCloudAPI.sync(terminalAPIRequest), terminalAPIRequest);
         }
 
-        TerminalLocalAPI terminalLocalAPI = initializeLocalApi(merchantModel);
+        TerminalLocalAPI terminalLocalAPI = initializeLocalApi(merchantModel, terminalConfig);
         return PaymentUtil.executeApiCall(() -> terminalLocalAPI.request(terminalAPIRequest), terminalAPIRequest);
 
     }

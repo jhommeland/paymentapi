@@ -19,20 +19,21 @@ async function processPayment() {
     const locale = document.getElementById("language").value;
     const poiId = document.getElementById("poiId").value
     const apiType = document.getElementById("apiType").value;
-    const requestMode = document.getElementById("requestMode").value;
-    const requestTimeout = document.getElementById("requestTimeout").value;
+    const localEndpoint = document.getElementById("localEndpoint").value;
+    const connectionType = document.getElementById("connectionType").value;
+    const connectionTimeout = document.getElementById("connectionTimeout").value;
     const merchantId = localStorage.getItem("selectedMerchant");
     const printReceipt = document.getElementById("printReceipt").value;
     const serviceId = PaymentsUtil.generateServiceId();
 
     localStorage.setItem("currentServiceId", serviceId);
 
-    let terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, apiType, requestMode, printReceipt, requestTimeout);
+    let terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, apiType, localEndpoint, connectionType, printReceipt, connectionTimeout);
     if (terminalResponse == null) {
         console.log("Payment call interrupted. Starting polling.")
         for (let i = 1; i < PAYMENT_STATUS_POLL_COUNT+1; i++) {
             console.log("Polling " + i);
-            terminalResponse = await PaymentsUtil.makeTerminalPaymentStatusCall(merchantId, poiId, serviceId, apiType);
+            terminalResponse = await PaymentsUtil.makeTerminalPaymentStatusCall(merchantId, poiId, serviceId, apiType, localEndpoint);
             if (terminalResponse.reason != "InProgress") {
                 break;
             }
@@ -72,7 +73,16 @@ window.onload = function() {
         const poiId = document.getElementById("poiId").value
         const serviceId = localStorage.getItem("currentServiceId");
         const apiType = document.getElementById("apiType").value;
-        PaymentsUtil.makeTerminalPaymentAbortCall(merchantId, poiId, serviceId, apiType);
+        PaymentsUtil.makeTerminalPaymentAbortCall(merchantId, poiId, serviceId, apiType, localEndpoint);
+    });
+    document.getElementById("apiType").addEventListener("change", function(event) {
+        if (document.getElementById("apiType").value === "cloud") {
+            document.getElementById("localEndpointRow").hidden = true;
+            document.getElementById("localEndpoint").required = false;
+        } else {
+            document.getElementById("localEndpointRow").hidden = false;
+            document.getElementById("localEndpoint").required = true;
+        }
     });
 };
 

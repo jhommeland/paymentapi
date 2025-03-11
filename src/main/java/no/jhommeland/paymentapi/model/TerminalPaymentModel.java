@@ -6,13 +6,9 @@ public class TerminalPaymentModel {
 
     private String serviceId;
 
-    private String poiId;
-
     private String operator;
 
     private String amount;
-
-    private String requestMode;
 
     private String currency;
 
@@ -20,7 +16,7 @@ public class TerminalPaymentModel {
 
     private String printReceipt;
 
-    private String apiType;
+    private AdyenTerminalConfig terminalConfig;
 
     public String getMerchantId() {
         return merchantId;
@@ -38,14 +34,6 @@ public class TerminalPaymentModel {
         this.serviceId = serviceId;
     }
 
-    public String getPoiId() {
-        return poiId;
-    }
-
-    public void setPoiId(String poiId) {
-        this.poiId = poiId;
-    }
-
     public String getOperator() {
         return operator;
     }
@@ -60,14 +48,6 @@ public class TerminalPaymentModel {
 
     public void setAmount(String amount) {
         this.amount = amount;
-    }
-
-    public String getRequestMode() {
-        return requestMode;
-    }
-
-    public void setRequestMode(String requestMode) {
-        this.requestMode = requestMode;
     }
 
     public String getCurrency() {
@@ -94,11 +74,11 @@ public class TerminalPaymentModel {
         this.printReceipt = printReceipt;
     }
 
-    public String getApiType() {
-        return apiType;
+    public AdyenTerminalConfig getTerminalConfig() {
+        return terminalConfig;
     }
 
-    public void setApiType(String apiType) {
-        this.apiType = apiType;
+    public void setTerminalConfig(AdyenTerminalConfig terminalConfig) {
+        this.terminalConfig = terminalConfig;
     }
 }

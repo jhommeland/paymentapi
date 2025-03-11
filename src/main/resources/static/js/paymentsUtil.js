@@ -150,19 +150,22 @@ export class PaymentsUtil {
         }
     }
 
-    static async makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, apiType, requestMode, printReceipt, timeout) {
+    static async makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, apiType, localEndpoint, connectionType, printReceipt, timeout) {
         try {
             // Direct use of await to wait for the response
             const response = await axios.post('/terminal/payments', {
                 merchantId: merchantId,
                 serviceId: serviceId,
-                poiId: poiId,
                 amount: amount,
                 currency: currency,
                 locale: locale,
-                apiType: apiType,
-                requestMode: requestMode,
-                printReceipt: printReceipt
+                printReceipt: printReceipt,
+                terminalConfig: {
+                    poiId: poiId,
+                    apiType: apiType,
+                    connectionType: connectionType,
+                    localEndpoint: localEndpoint
+                }
             }, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -180,14 +183,17 @@ export class PaymentsUtil {
         }
     }
 
-    static async makeTerminalPaymentAbortCall(merchantId, poiId, referenceServiceId, apiType) {
+    static async makeTerminalPaymentAbortCall(merchantId, poiId, referenceServiceId, apiType, localEndpoint) {
         try {
             // Direct use of await to wait for the response
             const response = await axios.post('/terminal/payments/abort', {
                  merchantId: merchantId,
-                 poiId: poiId,
                  referenceServiceId: referenceServiceId,
-                 apiType: apiType
+                 terminalConfig: {
+                     poiId: poiId,
+                     apiType: apiType,
+                     localEndpoint: localEndpoint
+                 }
             }, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -204,14 +210,17 @@ export class PaymentsUtil {
         }
     }
 
-    static async makeTerminalPaymentStatusCall(merchantId, poiId, referenceServiceId, apiType) {
+    static async makeTerminalPaymentStatusCall(merchantId, poiId, referenceServiceId, apiType, localEndpoint) {
          try {
              // Direct use of await to wait for the response
              const response = await axios.post('/terminal/payments/status', {
                  merchantId: merchantId,
-                 poiId: poiId,
                  referenceServiceId: referenceServiceId,
-                 apiType: apiType
+                 terminalConfig: {
+                     poiId: poiId,
+                     apiType: apiType,
+                     localEndpoint: localEndpoint
+                 }
              }, {
                  headers: {
                      'Content-Type': 'application/json'
