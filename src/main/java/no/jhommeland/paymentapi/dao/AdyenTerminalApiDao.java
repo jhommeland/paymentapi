@@ -15,6 +15,7 @@ import com.adyen.terminal.security.exception.NexoCryptoException;
 import no.jhommeland.paymentapi.model.AdyenTerminalConfig;
 import no.jhommeland.paymentapi.model.MerchantModel;
 import no.jhommeland.paymentapi.util.PaymentUtil;
+import no.jhommeland.paymentapi.util.CertUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -41,6 +42,7 @@ public class AdyenTerminalApiDao {
         Config config = new Config();
         config.setTerminalApiLocalEndpoint(terminalConfig.getLocalEndpoint());
         config.setEnvironment(Environment.TEST);
+        config.setSSLContext(CertUtil.createTestSSLContext());
         Client terminalLocalClient = new Client(config);
 
         SecurityKey securityKey = new SecurityKey();
