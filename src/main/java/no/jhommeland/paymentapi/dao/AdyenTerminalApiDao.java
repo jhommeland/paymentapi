@@ -40,9 +40,8 @@ public class AdyenTerminalApiDao {
 
         Config config = new Config();
         config.setTerminalApiLocalEndpoint(terminalConfig.getLocalEndpoint());
-
+        config.setEnvironment(Environment.TEST);
         Client terminalLocalClient = new Client(config);
-        terminalLocalClient.setEnvironment(Environment.TEST, null);
 
         SecurityKey securityKey = new SecurityKey();
         securityKey.setAdyenCryptoVersion(1);
