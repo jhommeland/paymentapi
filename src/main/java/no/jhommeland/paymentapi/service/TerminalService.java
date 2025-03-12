@@ -10,7 +10,10 @@ import no.jhommeland.paymentapi.dao.MerchantRepository;
 import no.jhommeland.paymentapi.dao.TransactionRepository;
 import no.jhommeland.paymentapi.model.*;
 import no.jhommeland.paymentapi.util.PaymentUtil;
+import no.jhommeland.paymentapi.util.PrintUtil;
 import no.jhommeland.paymentapi.util.TerminalUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,9 +23,12 @@ import javax.xml.datatype.DatatypeFactory;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 @Service
 public class TerminalService {
+
+    private static final Logger logger = LoggerFactory.getLogger(TerminalService.class);
 
     public final String TERMINAL_SALE_ID = "TEST_POS";
 
@@ -37,8 +43,6 @@ public class TerminalService {
     public final String TERMINAL_SYNC_RESPONSE_FAILURE = "failure";
 
     public final String TERMINAL_ABORT_CANCELLED_BY_OPERATOR = "Cancelled by Operator";
-
-    public final String TERMINAL_PRINT_RECEIPT_NONE = "none";
 
     private final AdyenTerminalApiDao adyenTerminalApiDao;
 
@@ -109,11 +113,16 @@ public class TerminalService {
             TerminalAPIResponse paymentResponse = adyenTerminalApiDao.callTerminalApiSync(paymentRequest, merchantModel, requestModel.getTerminalConfig());
             responseModel = buildResponseModel(paymentResponse.getSaleToPOIResponse().getPaymentResponse().getResponse());
 
-            //Print Receipt (Experimental)
-            if (!TERMINAL_PRINT_RECEIPT_NONE.equals(requestModel.getPrintReceipt())) {
-                TerminalAPIRequest printRequest = createTerminalApiPrintRequest(paymentResponse.getSaleToPOIResponse().getPaymentResponse().getPaymentReceipt().get(0).getOutputContent(), requestModel.getTerminalConfig());
-                adyenTerminalApiDao.callTerminalApiSync(printRequest, merchantModel, requestModel.getTerminalConfig());
-            }
+            List<PaymentReceipt> paymentReceiptList = paymentResponse.getSaleToPOIResponse().getPaymentResponse().getPaymentReceipt();
+            paymentReceiptList.forEach((paymentReceipt -> {
+                if (requestModel.getPrintReceipt().contains(paymentReceipt.getDocumentQualifier().value())) {
+                    PrintUtil.decodeAndFormat(paymentReceipt.getOutputContent());
+                    TerminalAPIRequest printRequest = createTerminalApiPrintRequest(paymentReceipt.getOutputContent(), requestModel.getTerminalConfig());
+                    adyenTerminalApiDao.callTerminalApiSync(printRequest, merchantModel, requestModel.getTerminalConfig());
+                } else {
+                    logger.info("Skipping printing of {}", paymentReceipt.getDocumentQualifier().value());
+                }
+            }));
 
         } else {
             String response = adyenTerminalApiDao.callTerminalApiAsync(paymentRequest, merchantModel, requestModel.getTerminalConfig());
