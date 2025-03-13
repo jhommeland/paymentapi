@@ -17,8 +17,8 @@ public class UrlUtil {
 
     private static final String URL_PARAM_VALUE_ASSIGN = "=";
 
-    public static String toBase64(String resultJson) {
-        return Base64.getEncoder().encodeToString(resultJson.getBytes());
+    public static String toBase64(String input) {
+        return Base64.getEncoder().encodeToString(input.getBytes());
     }
 
     public static String addUrlParameter(String baseUrl, String name, String value) {

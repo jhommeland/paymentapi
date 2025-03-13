@@ -116,6 +116,12 @@ public class TerminalService {
             List<PaymentReceipt> paymentReceiptList = paymentResponse.getSaleToPOIResponse().getPaymentResponse().getPaymentReceipt();
             paymentReceiptList.forEach((paymentReceipt -> {
                 if (requestModel.getPrintReceipt().contains(paymentReceipt.getDocumentQualifier().value())) {
+
+                    //Print Logo
+                    TerminalAPIRequest logoPrintRequest = createTerminalApiPrintRequest(PrintUtil.createLogoPrintOutput(), requestModel.getTerminalConfig());
+                    adyenTerminalApiDao.callTerminalApiSync(logoPrintRequest, merchantModel, requestModel.getTerminalConfig());
+
+                    //Print Contents
                     PrintUtil.decodeAndFormat(paymentReceipt.getOutputContent());
                     TerminalAPIRequest printRequest = createTerminalApiPrintRequest(paymentReceipt.getOutputContent(), requestModel.getTerminalConfig());
                     adyenTerminalApiDao.callTerminalApiSync(printRequest, merchantModel, requestModel.getTerminalConfig());
