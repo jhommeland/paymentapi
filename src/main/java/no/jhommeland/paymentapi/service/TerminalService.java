@@ -104,7 +104,7 @@ public class TerminalService {
         transactionModel.setCreatedAt(OffsetDateTime.now());
         transactionRepository.save(transactionModel);
 
-        TerminalAPIRequest paymentRequest = createTerminalApiPaymentRequest(transactionModel.getTransactionId(), requestModel);
+        TerminalAPIRequest paymentRequest = createTerminalApiPaymentRequest(transactionModel.getMerchantReference(), requestModel);
 
         TerminalPaymentResponseModel responseModel = new TerminalPaymentResponseModel();
         if (TERMINAL_SYNC_REQUEST.equals(requestModel.getTerminalConfig().getConnectionType())) {

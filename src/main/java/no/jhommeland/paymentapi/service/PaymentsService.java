@@ -92,9 +92,9 @@ public class PaymentsService {
                 .channel(CreateCheckoutSessionRequest.ChannelEnum.WEB)
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())
-                .reference(transactionModel.getTransactionId())
+                .reference(transactionModel.getMerchantReference())
                 .authenticationData(authenticationData)
-                .returnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getMerchantId()));
+                .returnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getId()));
 
         //Call API
         CreateCheckoutSessionResponse createCheckoutSessionResponse = adyenPaymentsApiDao.callCreateSessionApi(checkoutSessionRequest, merchantModel.getAdyenApiKey());
@@ -137,9 +137,9 @@ public class PaymentsService {
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())
                 .paymentMethod(requestModel.getPaymentMethod())
-                .reference(transactionModel.getTransactionId())
+                .reference(transactionModel.getMerchantReference())
                 .authenticationData(authenticationData)
-                .returnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getMerchantId()));
+                .returnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getId()));
 
         //Call API
         PaymentResponse paymentResponse = adyenPaymentsApiDao.callPaymentApi(paymentRequest, merchantModel.getAdyenApiKey());
@@ -169,7 +169,7 @@ public class PaymentsService {
 
         //Create Reverse Object
         PaymentCaptureRequest captureRequest = new PaymentCaptureRequest();
-        captureRequest.setReference(transactionModel.getTransactionId());
+        captureRequest.setReference(transactionModel.getMerchantReference());
         captureRequest.setMerchantAccount(transactionModel.getMerchantAccountName());
         captureRequest.setAmount(amountObject);
 
@@ -195,7 +195,7 @@ public class PaymentsService {
 
         //Create Reverse Object
         PaymentReversalRequest reversalRequest = new PaymentReversalRequest();
-        reversalRequest.setReference(transactionModel.getTransactionId());
+        reversalRequest.setReference(transactionModel.getMerchantReference());
         reversalRequest.setMerchantAccount(transactionModel.getMerchantAccountName());
 
         //Call API
@@ -225,7 +225,7 @@ public class PaymentsService {
         PaymentDetailsResponse paymentDetailsResponse = adyenPaymentsApiDao.callPaymentDetailsApi(paymentDetailsRequest, merchantModel.getAdyenApiKey());
 
         //Update Database
-        TransactionModel transactionModel = transactionRepository.findById(paymentDetailsResponse.getMerchantReference()).
+        TransactionModel transactionModel = transactionRepository.findByMerchantReference(paymentDetailsResponse.getMerchantReference()).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Transaction Not Found"));
         transactionModel.setApiResultCode(paymentDetailsResponse.getResultCode().getValue());
         transactionModel.setOriginalPspReference(paymentDetailsResponse.getPspReference());
@@ -250,7 +250,7 @@ public class PaymentsService {
         PaymentDetailsResponse paymentDetailsResponse = adyenPaymentsApiDao.callPaymentDetailsApi(paymentDetailsRequest, merchantModel.getAdyenApiKey());
 
         //Update Database
-        TransactionModel transactionModel = transactionRepository.findById(paymentDetailsResponse.getMerchantReference()).orElseThrow(() -> new EntityNotFoundException("Transaction not found"));
+        TransactionModel transactionModel = transactionRepository.findByMerchantReference(paymentDetailsResponse.getMerchantReference()).orElseThrow(() -> new EntityNotFoundException("Transaction not found"));
         transactionModel.setApiResultCode(paymentDetailsResponse.getResultCode().getValue());
         transactionModel.setOriginalPspReference(paymentDetailsResponse.getPspReference());
         transactionModel.setLastModifiedAt(OffsetDateTime.now());

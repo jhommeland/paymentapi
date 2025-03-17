@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import no.jhommeland.paymentapi.util.ReferenceUtil;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -16,7 +17,9 @@ public class TransactionModel {
     @Id
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid", strategy = "uuid2")
-    private String transactionId;
+    private String id;
+
+    private String merchantReference = ReferenceUtil.generateReference();
 
     private String merchantAccountName;
 
@@ -42,12 +45,20 @@ public class TransactionModel {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private OffsetDateTime lastModifiedAt;
 
-    public String getTransactionId() {
-        return transactionId;
+    public String getId() {
+        return id;
     }
 
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getMerchantReference() {
+        return merchantReference;
+    }
+
+    public void setMerchantReference(String merchantReference) {
+        this.merchantReference = merchantReference;
     }
 
     public String getMerchantAccountName() {

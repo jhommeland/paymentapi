@@ -20,7 +20,7 @@ async function initializeDropdown() {
     merchants = await getMerchants();
     merchants.forEach(merchant => {
         const option = document.createElement("option");
-        option.value = merchant.merchantId;
+        option.value = merchant.id;
         option.textContent = merchant.adyenMerchantAccount;
         merchantDropdown.appendChild(option);
     });
@@ -37,7 +37,7 @@ merchantDropdown.addEventListener("change", function(event) {
     const selectedValue = event.target.value;
     localStorage.setItem("selectedMerchant", selectedValue);
     merchants.forEach(merchant => {
-        if (merchant.merchantId === selectedValue) {
+        if (merchant.id === selectedValue) {
             localStorage.setItem("selectedMerchantSettings", merchant.merchantSettings);
         }
     });

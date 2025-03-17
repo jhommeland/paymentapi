@@ -14,7 +14,7 @@ public class MerchantModel {
     @Id
     @GeneratedValue(generator="system-uuid")
     @GenericGenerator(name="system-uuid", strategy = "uuid2")
-    private String merchantId;
+    private String id;
 
     private String merchantSettings;
 
@@ -41,12 +41,12 @@ public class MerchantModel {
     @JsonIgnore
     private String securityKeyVersion;
 
-    public String getMerchantId() {
-        return merchantId;
+    public String getId() {
+        return id;
     }
 
-    public void setMerchantId(String merchantId) {
-        this.merchantId = merchantId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getMerchantSettings() {

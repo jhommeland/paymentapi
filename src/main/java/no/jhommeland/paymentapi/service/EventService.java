@@ -2,8 +2,6 @@ package no.jhommeland.paymentapi.service;
 
 import com.adyen.model.notification.NotificationRequestItem;
 import com.adyen.util.HMACValidator;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import com.google.gson.Gson;
 import jakarta.persistence.EntityNotFoundException;
 import no.jhommeland.paymentapi.dao.MerchantRepository;
 import no.jhommeland.paymentapi.dao.TransactionRepository;
@@ -54,7 +52,7 @@ public class EventService {
                 if (!hmacValidator.validateHMAC(item, merchantModel.getHmacKey())) {
                     throw new EntityNotFoundException("Invalid HMAC Data");
                 }
-                TransactionModel transactionModel = transactionRepository.findById(eventModel.getMerchantReference()).orElseThrow(() -> new EntityNotFoundException("Transaction not found"));
+                TransactionModel transactionModel = transactionRepository.findByMerchantReference(eventModel.getMerchantReference()).orElseThrow(() -> new EntityNotFoundException("Transaction not found"));
                 transactionModel.setStatus(eventModel.getEventCode());
                 transactionModel.setPaymentMethod(eventModel.getPaymentMethod());
                 if (!eventModel.getSuccess().equals(EVENT_IS_SUCCESS)) {

@@ -23,7 +23,7 @@ function populateTable(transactions) {
     const enableRevert = (transaction.status === 'AUTHORISATION' || transaction.status === 'CAPTURE') && transaction.errorReason === null;
 
     row.innerHTML = `
-      <td>${transaction.transactionId}</td>
+      <td>${transaction.merchantReference}</td>
       <td>${transaction.merchantAccountName}</td>
       <td>${transaction.paymentMethod}</td>
       <td>${transaction.status}</td>
@@ -35,8 +35,8 @@ function populateTable(transactions) {
       <td>${new Date(transaction.createdAt).toLocaleString()}</td>
       <td>${new Date(transaction.lastModifiedAt).toLocaleString()}</td>
       <td>
-        <button ${enableCapture ? "" : "disabled"} onclick="capturePayment('${transaction.transactionId}')">Capture</button>
-        <button ${enableRevert ? "" : "disabled"} onclick="revertPayment('${transaction.transactionId}')">Revert</button>
+        <button ${enableCapture ? "" : "disabled"} onclick="capturePayment('${transaction.id}')">Capture</button>
+        <button ${enableRevert ? "" : "disabled"} onclick="revertPayment('${transaction.id}')">Revert</button>
       </td>
     `;
 
