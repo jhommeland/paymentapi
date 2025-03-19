@@ -1,5 +1,6 @@
 package no.jhommeland.paymentapi.model;
 
+import com.adyen.model.checkout.BrowserInfo;
 import com.adyen.model.checkout.CheckoutPaymentMethod;
 
 public class PaymentModel {
@@ -17,6 +18,10 @@ public class PaymentModel {
     private String tdsMode;
 
     private CheckoutPaymentMethod paymentMethod;
+
+    private BrowserInfo browserInfo;
+
+    private String origin;
 
     public String getMerchantId() {
         return merchantId;
@@ -72,5 +77,21 @@ public class PaymentModel {
 
     public void setPaymentMethod(CheckoutPaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public BrowserInfo getBrowserInfo() {
+        return browserInfo;
+    }
+
+    public void setBrowserInfo(BrowserInfo browserInfo) {
+        this.browserInfo = browserInfo;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 }

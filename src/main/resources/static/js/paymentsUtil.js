@@ -62,7 +62,7 @@ export class PaymentsUtil {
         }
     }
 
-    static async makePaymentsCall(data, merchantId, amount, currency, countryCode, locale, tdsMode) {
+    static async makePaymentsCall(data, merchantId, amount, currency, countryCode, locale, tdsMode, origin) {
         console.log('Will call /payments with data:', PaymentsUtil.printObject(data));
         try {
             // Use await to wait for the axios.post response
@@ -73,7 +73,9 @@ export class PaymentsUtil {
                 countryCode: countryCode,
                 locale: locale,
                 tdsMode: tdsMode,
-                paymentMethod: data.paymentMethod
+                paymentMethod: data.paymentMethod,
+                browserInfo: data.browserInfo,
+                origin: origin
             });
 
             // Log and return the resolved response data
@@ -258,10 +260,10 @@ export class PaymentsUtil {
         }
     }
 
-    static async onSubmitPayment(state, component, actions, merchantId, amount, currency, countryCode, locale, tdsMode) {
+    static async onSubmitPayment(state, component, actions, merchantId, amount, currency, countryCode, locale, tdsMode, origin) {
         try {
             // Make a POST /payments request from your server.
-            const result = await PaymentsUtil.makePaymentsCall(state.data, merchantId, amount, currency, countryCode, locale, tdsMode);
+            const result = await PaymentsUtil.makePaymentsCall(state.data, merchantId, amount, currency, countryCode, locale, tdsMode, origin);
 
             // If the /payments request from your server fails, or if an unexpected error occurs.
             if (!result.resultCode) {

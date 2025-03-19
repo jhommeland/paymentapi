@@ -139,6 +139,8 @@ public class PaymentsService {
                 .paymentMethod(requestModel.getPaymentMethod())
                 .reference(transactionModel.getMerchantReference())
                 .authenticationData(authenticationData)
+                .browserInfo(requestModel.getBrowserInfo())
+                .origin(requestModel.getOrigin())
                 .returnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getId()));
 
         //Call API
