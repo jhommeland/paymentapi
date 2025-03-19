@@ -217,12 +217,8 @@ public class PaymentsService {
         MerchantModel merchantModel = merchantRepository.findById(requestModel.getMerchantId()).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
 
-        // Create the request object(s) TODO: Might be able to combine with below redirect method?
-        PaymentCompletionDetails paymentCompletionDetails = new PaymentCompletionDetails()
-                .threeDSResult(requestModel.getPaymentDetails().getDetails().getThreeDSResult());
-
         PaymentDetailsRequest paymentDetailsRequest = new PaymentDetailsRequest()
-                .details(paymentCompletionDetails);
+                .details(requestModel.getPaymentDetails().getDetails());
 
         PaymentDetailsResponse paymentDetailsResponse = adyenPaymentsApiDao.callPaymentDetailsApi(paymentDetailsRequest, merchantModel.getAdyenApiKey());
 
