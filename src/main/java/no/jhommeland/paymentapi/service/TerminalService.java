@@ -1,17 +1,15 @@
 package no.jhommeland.paymentapi.service;
 
 import com.adyen.model.nexo.*;
-import com.adyen.model.terminal.ConnectedTerminalsRequest;
-import com.adyen.model.terminal.ConnectedTerminalsResponse;
-import com.adyen.model.terminal.TerminalAPIRequest;
-import com.adyen.model.terminal.TerminalAPIResponse;
+import com.adyen.model.terminal.*;
 import no.jhommeland.paymentapi.dao.AdyenTerminalApiDao;
 import no.jhommeland.paymentapi.dao.MerchantRepository;
+import no.jhommeland.paymentapi.dao.ShopperRepository;
 import no.jhommeland.paymentapi.dao.TransactionRepository;
 import no.jhommeland.paymentapi.model.*;
 import no.jhommeland.paymentapi.util.PaymentUtil;
 import no.jhommeland.paymentapi.util.PrintUtil;
-import no.jhommeland.paymentapi.util.TerminalUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -48,13 +46,16 @@ public class TerminalService {
 
     private final MerchantRepository merchantRepository;
 
+    private final ShopperRepository shopperRepository;
+
     private final TransactionRepository transactionRepository;
 
     private final DatatypeFactory datatypeFactory;
 
-    public TerminalService(AdyenTerminalApiDao adyenTerminalApiDao, MerchantRepository merchantRepository, TransactionRepository transactionRepository) throws DatatypeConfigurationException {
+    public TerminalService(AdyenTerminalApiDao adyenTerminalApiDao, MerchantRepository merchantRepository, ShopperRepository shopperRepository, TransactionRepository transactionRepository) throws DatatypeConfigurationException {
         this.adyenTerminalApiDao = adyenTerminalApiDao;
         this.merchantRepository = merchantRepository;
+        this.shopperRepository = shopperRepository;
         this.transactionRepository = transactionRepository;
         this.datatypeFactory = DatatypeFactory.newInstance();
     }
@@ -94,6 +95,9 @@ public class TerminalService {
         MerchantModel merchantModel = merchantRepository.findById(requestModel.getMerchantId()).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
 
+        ShopperModel shopperModel = StringUtils.isEmpty(requestModel.getShopperId()) ? null : shopperRepository.findById(requestModel.getShopperId()).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Shopper not found"));
+
         //Save to Database
         TransactionModel transactionModel = new TransactionModel();
         transactionModel.setMerchantAccountName(merchantModel.getAdyenMerchantAccount());
@@ -104,7 +108,7 @@ public class TerminalService {
         transactionModel.setCreatedAt(OffsetDateTime.now());
         transactionRepository.save(transactionModel);
 
-        TerminalAPIRequest paymentRequest = createTerminalApiPaymentRequest(transactionModel.getMerchantReference(), requestModel);
+        TerminalAPIRequest paymentRequest = createTerminalApiPaymentRequest(transactionModel.getMerchantReference(), requestModel, shopperModel);
 
         TerminalPaymentResponseModel responseModel = new TerminalPaymentResponseModel();
         if (TERMINAL_SYNC_REQUEST.equals(requestModel.getTerminalConfig().getConnectionType())) {
@@ -159,7 +163,7 @@ public class TerminalService {
 
     }
 
-    private TerminalAPIRequest createTerminalApiPaymentRequest(String transactionId, TerminalPaymentModel requestModel) {
+    private TerminalAPIRequest createTerminalApiPaymentRequest(String transactionId, TerminalPaymentModel requestModel, ShopperModel shopperModel) {
 
         var messageHeader = new MessageHeader();
         messageHeader.setMessageCategory(MessageCategoryType.PAYMENT);
@@ -175,6 +179,13 @@ public class TerminalService {
 
         var saleData = new SaleData();
         saleData.setSaleTransactionID(saleTransactionIdentification);
+
+        if (shopperModel != null) {
+            var saleToAcquirerData = new SaleToAcquirerData();
+            saleToAcquirerData.setShopperReference(shopperModel.getShopperReference());
+            saleToAcquirerData.setRecurringContract("ONECLICK");
+            saleData.setSaleToAcquirerData(saleToAcquirerData);
+        }
 
         var amountsReq = new AmountsReq();
         amountsReq.setCurrency(requestModel.getCurrency());

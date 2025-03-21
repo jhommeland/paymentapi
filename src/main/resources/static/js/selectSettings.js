@@ -73,7 +73,7 @@ merchantDropdown.addEventListener("change", function(event) {
 shopperDropdown.addEventListener("change", function(event) {
     const selectedValue = event.target.value;
     localStorage.setItem("selectedShopper", selectedValue);
-    shopper.forEach(shopper => {
+    shoppers.forEach(shopper => {
         if (shopper.id === selectedValue) {
             localStorage.setItem("selectedShopperSettings", shopper.shopperSettings);
         }

@@ -21,13 +21,15 @@ async function processPayment() {
     const localEndpoint = document.getElementById("localEndpoint").value;
     const connectionType = document.getElementById("connectionType").value;
     const connectionTimeout = document.getElementById("connectionTimeout").value;
+    const savePaymentMethod = document.getElementById("savePaymentMethod").value;
     const merchantId = localStorage.getItem("selectedMerchant");
+    const shopperId = localStorage.getItem("selectedShopper");
     const printReceipt = document.getElementById("printReceipt").value;
     const serviceId = PaymentsUtil.generateServiceId();
 
     localStorage.setItem("currentServiceId", serviceId);
 
-    let terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, apiType, localEndpoint, connectionType, printReceipt, connectionTimeout);
+    let terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, shopperId, poiId, amount, currency, apiType, localEndpoint, connectionType, printReceipt, connectionTimeout, savePaymentMethod);
     if (terminalResponse == null) {
         console.log("Payment call interrupted. Starting polling.")
         for (let i = 1; i < PAYMENT_STATUS_POLL_COUNT+1; i++) {

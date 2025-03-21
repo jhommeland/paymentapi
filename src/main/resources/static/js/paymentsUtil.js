@@ -157,15 +157,17 @@ export class PaymentsUtil {
         }
     }
 
-    static async makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, apiType, localEndpoint, connectionType, printReceipt, timeout) {
+    static async makeTerminalPaymentCall(merchantId, serviceId, shopperId, poiId, amount, currency, apiType, localEndpoint, connectionType, printReceipt, timeout, savePaymentMethod) {
         try {
             // Direct use of await to wait for the response
             const response = await axios.post('/terminal/payments', {
                 merchantId: merchantId,
                 serviceId: serviceId,
+                shopperId: shopperId,
                 amount: amount,
                 currency: currency,
                 printReceipt: printReceipt,
+                savePaymentMethod: savePaymentMethod,
                 terminalConfig: {
                     poiId: poiId,
                     apiType: apiType,

@@ -6,6 +6,8 @@ public class TerminalPaymentModel {
 
     private String serviceId;
 
+    private String shopperId;
+
     private String operator;
 
     private String amount;
@@ -13,6 +15,8 @@ public class TerminalPaymentModel {
     private String currency;
 
     private String printReceipt;
+
+    private String savePaymentMethod;
 
     private AdyenTerminalConfig terminalConfig;
 
@@ -30,6 +34,14 @@ public class TerminalPaymentModel {
 
     public void setServiceId(String serviceId) {
         this.serviceId = serviceId;
+    }
+
+    public String getShopperId() {
+        return shopperId;
+    }
+
+    public void setShopperId(String shopperId) {
+        this.shopperId = shopperId;
     }
 
     public String getOperator() {
@@ -70,5 +82,13 @@ public class TerminalPaymentModel {
 
     public void setTerminalConfig(AdyenTerminalConfig terminalConfig) {
         this.terminalConfig = terminalConfig;
+    }
+
+    public String getSavePaymentMethod() {
+        return savePaymentMethod;
+    }
+
+    public void setSavePaymentMethod(String savePaymentMethod) {
+        this.savePaymentMethod = savePaymentMethod;
     }
 }
