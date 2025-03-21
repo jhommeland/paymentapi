@@ -3,6 +3,7 @@ package no.jhommeland.paymentapi.dao;
 import com.adyen.Client;
 import com.adyen.Config;
 import com.adyen.enums.Environment;
+import com.adyen.httpclient.TerminalLocalAPIHostnameVerifier;
 import com.adyen.model.terminal.ConnectedTerminalsRequest;
 import com.adyen.model.terminal.ConnectedTerminalsResponse;
 import com.adyen.model.terminal.TerminalAPIRequest;
@@ -43,6 +44,7 @@ public class AdyenTerminalApiDao {
         config.setTerminalApiLocalEndpoint(terminalConfig.getLocalEndpoint());
         config.setEnvironment(Environment.TEST);
         config.setSSLContext(CertUtil.createTestSSLContext());
+        config.setHostnameVerifier(new TerminalLocalAPIHostnameVerifier(Environment.TEST));
         Client terminalLocalClient = new Client(config);
 
         SecurityKey securityKey = new SecurityKey();
