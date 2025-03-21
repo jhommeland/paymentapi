@@ -4,6 +4,8 @@ public class PaymentMethodsModel {
 
     private String merchantId;
 
+    private String shopperId;
+
     private String amount;
 
     private String currency;
@@ -18,6 +20,14 @@ public class PaymentMethodsModel {
 
     public void setMerchantId(String merchantId) {
         this.merchantId = merchantId;
+    }
+
+    public String getShopperId() {
+        return shopperId;
+    }
+
+    public void setShopperId(String shopperId) {
+        this.shopperId = shopperId;
     }
 
     public String getAmount() {

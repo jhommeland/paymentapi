@@ -18,7 +18,7 @@
             integrity="sha384-GDA6txYXS6ka6zCgDtLmgI80TQMlYST32KjDtdiyFi/k/zp9rXP64qbziIXVOI5h"
             crossorigin="anonymous"></script>
 
-    <script type="module" src="/js/selectMerchant.js"></script>
+    <script type="module" src="/js/selectSettings.js"></script>
 
     <link rel="stylesheet"
           href="https://checkoutshopper-test.cdn.adyen.com/checkoutshopper/sdk/6.0.0/adyen.css"
@@ -28,8 +28,14 @@
     <link rel="stylesheet" href="/css/application.css" />
 </head>
 <body class="page-style">
-<div class="merchant-dropdown-container">
-    <select id="merchant-select" class="merchant-dropdown">
+<div class="settings-dropdown-container">
+    <p style="margin: 10px;">Shopper:</p>
+    <select id="shopper-select" class="settings-dropdown">
+        <option value='' selected>Guest User</option>
+        <!-- Options will be dynamically added here -->
+    </select>
+    <p style="margin: 10px;">Merchant: </p>
+    <select id="merchant-select" class="settings-dropdown">
         <option value='' selected disabled>Select a Merchant</option>
         <!-- Options will be dynamically added here -->
     </select>

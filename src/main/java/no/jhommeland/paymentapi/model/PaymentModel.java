@@ -7,6 +7,8 @@ public class PaymentModel {
 
     private String merchantId;
 
+    private String shopperId;
+
     private String amount;
 
     private String currency;
@@ -23,12 +25,22 @@ public class PaymentModel {
 
     private String origin;
 
+    private String savePaymentMethod;
+
     public String getMerchantId() {
         return merchantId;
     }
 
     public void setMerchantId(String merchantId) {
         this.merchantId = merchantId;
+    }
+
+    public String getShopperId() {
+        return shopperId;
+    }
+
+    public void setShopperId(String shopperId) {
+        this.shopperId = shopperId;
     }
 
     public String getAmount() {
@@ -93,5 +105,13 @@ public class PaymentModel {
 
     public void setOrigin(String origin) {
         this.origin = origin;
+    }
+
+    public String getSavePaymentMethod() {
+        return savePaymentMethod;
+    }
+
+    public void setSavePaymentMethod(String savePaymentMethod) {
+        this.savePaymentMethod = savePaymentMethod;
     }
 }

@@ -15,14 +15,14 @@
             <!-- Amount Row -->
             <tr>
                 <td><label for="amount">Amount:</label></td>
-                <td><input type="number" id="amount" name="amount" placeholder="Enter amount" value="1000" required></td>
+                <td><input class="input-field" type="number" id="amount" name="amount" placeholder="Enter amount" value="1000" required></td>
             </tr>
 
             <!-- Currency Row -->
             <tr>
                 <td><label for="currency">Currency:</label></td>
                 <td>
-                    <select id="currency" name="currency" required>
+                    <select class="input-field" id="currency" name="currency" required>
                         <!-- Options will be dynamically added here -->
                     </select>
                 </td>
@@ -32,7 +32,7 @@
             <tr>
                 <td><label for="language">Language:</label></td>
                 <td>
-                    <select id="language" name="language" required>
+                    <select class="input-field" id="language" name="language" required>
                         <!-- Options will be dynamically added here -->
                     </select>
                 </td>
@@ -42,7 +42,7 @@
             <tr>
                 <td><label for="country">Country:</label></td>
                 <td>
-                    <select id="country" name="country" required>
+                    <select class="input-field" id="country" name="country" required>
                         <!-- Options will be dynamically added here -->
                     </select>
                 </td>
@@ -52,10 +52,20 @@
             <tr>
                 <td><label for="tdsMode">3DS Mode:</label></td>
                 <td>
-                    <select id="tdsMode" name="tdsMode" required>
+                    <select class="input-field" id="tdsMode" name="tdsMode" required>
                         <option value="redirect" selected>Redirect</option>
                         <option value="native">Native</option>
                         <option value="off">Off</option>
+                    </select>
+                </td>
+            </tr>
+            <!-- savePaymentMethod -->
+            <tr>
+                <td><label for="savePaymentMethod">Save Payment Method:</label></td>
+                <td>
+                    <select class="input-field" id="savePaymentMethod" name="savePaymentMethod" required>
+                        <option value="false" selected>No</option>
+                        <option value="true">Yes</option>
                     </select>
                 </td>
             </tr>

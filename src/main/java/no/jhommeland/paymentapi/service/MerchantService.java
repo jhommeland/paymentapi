@@ -9,7 +9,7 @@ import java.util.List;
 @Service
 public class MerchantService {
 
-    public final MerchantRepository merchantRepository;
+    private final MerchantRepository merchantRepository;
 
     MerchantService(MerchantRepository merchantRepository) {
         this.merchantRepository = merchantRepository;

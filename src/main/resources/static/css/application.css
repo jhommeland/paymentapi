@@ -104,8 +104,8 @@ table td:last-child {
 }
 
 /* ---------- Form Elements ---------- */
-input,
-select {
+
+.input-field {
     width: 100%;
     padding: 10px;
     margin: 5px 0;
@@ -114,8 +114,8 @@ select {
     font-size: 16px;
 }
 
-input:focus,
-select:focus {
+.input-field :focus,
+.input-field :focus {
     outline: none;
     border-color: #007BFF;
 }
@@ -224,8 +224,10 @@ ul {
     display: inline-block;
 }
 
-.merchant-dropdown-container {
-    position: absolute;
+.settings-dropdown-container {
+    display: flex;
+    flex-direction: row;
+    position: absolute; /* Absolute position from top right */
     top: 10px;
     right: 10px;
     background-color: gray;
@@ -233,18 +235,14 @@ ul {
     border-radius: 5px;
 }
 
-.merchant-dropdown {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-
+.settings-dropdown {
     background-color: transparent;
     border: 1px solid gray;
     border-radius: 5px;
-    padding: 8px;
-    color: white;
+    color: #0abf53;
     font-size: 14px;
     cursor: pointer;
+    text-align-last: center;
 }
 
 /* Credit to: https://github.com/adyen-examples/adyen-java-spring-online-payments */

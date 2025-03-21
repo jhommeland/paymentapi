@@ -29,11 +29,11 @@ public class EventService {
 
     private final HMACValidator hmacValidator = new HMACValidator();
 
-    EventRepository eventRepository;
+    private final EventRepository eventRepository;
 
-    MerchantRepository merchantRepository;
+    private final MerchantRepository merchantRepository;
 
-    TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
 
 
     public EventService(MerchantRepository merchantRepository, TransactionRepository transactionRepository, EventRepository eventRepository) {

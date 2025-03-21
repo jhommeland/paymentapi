@@ -4,10 +4,12 @@ import com.adyen.model.checkout.*;
 import jakarta.persistence.EntityNotFoundException;
 import no.jhommeland.paymentapi.dao.AdyenPaymentsApiDao;
 import no.jhommeland.paymentapi.dao.MerchantRepository;
+import no.jhommeland.paymentapi.dao.ShopperRepository;
 import no.jhommeland.paymentapi.dao.TransactionRepository;
 import no.jhommeland.paymentapi.model.*;
 import no.jhommeland.paymentapi.util.PaymentUtil;
 import no.jhommeland.paymentapi.util.UrlUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -25,17 +27,22 @@ import java.util.List;
 @Service
 public class PaymentsService {
 
+    private final String STRING_TRUE_VALUE = "true";
+
     private final Logger logger = LoggerFactory.getLogger(PaymentsService.class);
 
-    AdyenPaymentsApiDao adyenPaymentsApiDao;
+    private final AdyenPaymentsApiDao adyenPaymentsApiDao;
 
-    MerchantRepository merchantRepository;
+    private final MerchantRepository merchantRepository;
 
-    TransactionRepository transactionRepository;
+    private final ShopperRepository shopperRepository;
 
-    public PaymentsService(AdyenPaymentsApiDao adyenPaymentsApiDao, MerchantRepository merchantRepository, TransactionRepository transactionRepository) {
+    private final TransactionRepository transactionRepository;
+
+    public PaymentsService(AdyenPaymentsApiDao adyenPaymentsApiDao, MerchantRepository merchantRepository, ShopperRepository shopperRepository, TransactionRepository transactionRepository) {
         this.adyenPaymentsApiDao = adyenPaymentsApiDao;
         this.merchantRepository = merchantRepository;
+        this.shopperRepository = shopperRepository;
         this.transactionRepository = transactionRepository;
     }
 
@@ -48,6 +55,9 @@ public class PaymentsService {
         MerchantModel merchantModel = merchantRepository.findById(requestModel.getMerchantId()).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
 
+        ShopperModel shopperModel = StringUtils.isEmpty(requestModel.getShopperId()) ? new ShopperModel() : shopperRepository.findById(requestModel.getShopperId()).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Shopper not found"));
+
         //Create Amount Object
         Amount amountObject = new Amount()
                 .currency(requestModel.getCurrency())
@@ -57,6 +67,7 @@ public class PaymentsService {
         PaymentMethodsRequest paymentMethodsRequest = new PaymentMethodsRequest()
                 .amount(amountObject)
                 .merchantAccount(merchantModel.getAdyenMerchantAccount())
+                .shopperReference(shopperModel.getShopperReference())
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())
                 .channel(PaymentMethodsRequest.ChannelEnum.WEB);
@@ -68,6 +79,9 @@ public class PaymentsService {
 
         MerchantModel merchantModel = merchantRepository.findById(requestModel.getMerchantId()).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
+
+        ShopperModel shopperModel = StringUtils.isEmpty(requestModel.getShopperId()) ? new ShopperModel() : shopperRepository.findById(requestModel.getShopperId()).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Shopper not found"));
 
         //Save to Database
         TransactionModel transactionModel = new TransactionModel();
@@ -89,6 +103,9 @@ public class PaymentsService {
         CreateCheckoutSessionRequest checkoutSessionRequest = new CreateCheckoutSessionRequest()
                 .amount(amountObject)
                 .merchantAccount(transactionModel.getMerchantAccountName())
+                .shopperReference(shopperModel.getShopperReference())
+                .storePaymentMethod(STRING_TRUE_VALUE.equals(requestModel.getSavePaymentMethod()))
+                .recurringProcessingModel(CreateCheckoutSessionRequest.RecurringProcessingModelEnum.CARDONFILE)
                 .channel(CreateCheckoutSessionRequest.ChannelEnum.WEB)
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())
@@ -112,6 +129,9 @@ public class PaymentsService {
         MerchantModel merchantModel = merchantRepository.findById(requestModel.getMerchantId()).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
 
+        ShopperModel shopperModel = StringUtils.isEmpty(requestModel.getShopperId()) ? new ShopperModel() : shopperRepository.findById(requestModel.getShopperId()).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Shopper not found"));
+
         //Save to Database
         TransactionModel transactionModel = new TransactionModel();
         transactionModel.setMerchantAccountName(merchantModel.getAdyenMerchantAccount());
@@ -133,6 +153,9 @@ public class PaymentsService {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .amount(amountObject)
                 .merchantAccount(transactionModel.getMerchantAccountName())
+                .shopperReference(shopperModel.getShopperReference())
+                .storePaymentMethod(STRING_TRUE_VALUE.equals(requestModel.getSavePaymentMethod()))
+                .recurringProcessingModel(PaymentRequest.RecurringProcessingModelEnum.CARDONFILE)
                 .channel(PaymentRequest.ChannelEnum.WEB)
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())

@@ -14,14 +14,14 @@
                 <!-- Amount Row -->
                 <tr>
                     <td><label for="amount">Amount:</label></td>
-                    <td><input type="number" id="amount" name="amount" placeholder="Enter amount" value="1000" required></td>
+                    <td><input class="input-field" type="number" id="amount" name="amount" placeholder="Enter amount" value="1000" required></td>
                 </tr>
 
                 <!-- Currency Row -->
                 <tr>
                     <td><label for="currency">Currency:</label></td>
                     <td>
-                        <select id="currency" name="currency" required>
+                        <select class="input-field" id="currency" name="currency" required>
                             <!-- Options will be dynamically added here -->
                         </select>
                     </td>
@@ -31,7 +31,7 @@
                 <tr>
                     <td><label for="poiId">POI ID:</label></td>
                     <td>
-                        <select id="poiId" name="poiId" required>
+                        <select class="input-field" id="poiId" name="poiId" required>
                             <!-- Options will be dynamically added here -->
                         </select>
                     </td>
@@ -41,7 +41,7 @@
                 <tr>
                     <td><label for="apiType">API Type:</label></td>
                     <td>
-                        <select id="apiType" name="apiType" required>
+                        <select class="input-field" id="apiType" name="apiType" required>
                             <option value="cloud" selected>Cloud</option>
                             <option value="local">Local</option>
                         </select>
@@ -51,14 +51,14 @@
                 <!-- localEndpoint -->
                 <tr id="localEndpointRow" hidden>
                     <td><label for="localEndpoint">Local Endpoint:</label></td>
-                    <td><input type="text" id="localEndpoint" name="localEndpoint" placeholder="Enter Endpoint (eg. https://127.0.0.1)"></td>
+                    <td><input class="input-field" type="text" id="localEndpoint" name="localEndpoint" placeholder="Enter Endpoint (eg. https://127.0.0.1)"></td>
                 </tr>
 
                 <!-- connectionType -->
                 <tr>
                     <td><label for="connectionType">Connection:</label></td>
                     <td>
-                        <select id="connectionType" name="connectionType" required>
+                        <select class="input-field" id="connectionType" name="connectionType" required>
                             <option value="sync" selected>Synchronous</option>
                             <option value="async">Asynchronous</option>
                         </select>
@@ -68,14 +68,14 @@
                 <!-- connectionTimeout -->
                 <tr>
                     <td><label for="connectionTimeout">Connection Timeout:</label></td>
-                    <td><input type="number" id="connectionTimeout" name="connectionTimeout" placeholder="Enter request timeout" value="30000" required></td>
+                    <td><input class="input-field" type="number" id="connectionTimeout" name="connectionTimeout" placeholder="Enter request timeout" value="30000" required></td>
                 </tr>
 
                 <!-- printReceipt -->
                 <tr>
                     <td><label for="printReceipt">Print Receipt:</label></td>
                     <td>
-                        <select id="printReceipt" name="printReceipt" required>
+                        <select class="input-field" id="printReceipt" name="printReceipt" required>
                             <option value="none" selected>None</option>
                             <option value="CustomerReceipt">Customer Receipt</option>
                             <option value="CustomerReceipt&CashierReceipt">Customer & Cashier Receipt</option>
