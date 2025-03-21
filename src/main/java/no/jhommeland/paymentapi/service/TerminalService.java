@@ -180,12 +180,8 @@ public class TerminalService {
         amountsReq.setCurrency(requestModel.getCurrency());
         amountsReq.setRequestedAmount(new BigDecimal(requestModel.getAmount()));
 
-        var transactionConditions = new TransactionConditions();
-        transactionConditions.setCustomerLanguage(TerminalUtil.localeToIsoLanguage(requestModel.getLocale()));
-
         var paymentTransaction = new PaymentTransaction();
         paymentTransaction.setAmountsReq(amountsReq);
-        paymentTransaction.setTransactionConditions(transactionConditions);
 
         var paymentRequest = new PaymentRequest();
         paymentRequest.setSaleData(saleData);

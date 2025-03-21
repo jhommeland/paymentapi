@@ -12,8 +12,6 @@ public class TerminalPaymentModel {
 
     private String currency;
 
-    private String locale;
-
     private String printReceipt;
 
     private AdyenTerminalConfig terminalConfig;
@@ -56,14 +54,6 @@ public class TerminalPaymentModel {
 
     public void setCurrency(String currency) {
         this.currency = currency;
-    }
-
-    public String getLocale() {
-        return locale;
-    }
-
-    public void setLocale(String locale) {
-        this.locale = locale;
     }
 
     public String getPrintReceipt() {

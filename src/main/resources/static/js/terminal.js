@@ -16,7 +16,6 @@ async function processPayment() {
 
     const amount = document.getElementById("amount").value
     const currency = document.getElementById("currency").value;
-    const locale = document.getElementById("language").value;
     const poiId = document.getElementById("poiId").value
     const apiType = document.getElementById("apiType").value;
     const localEndpoint = document.getElementById("localEndpoint").value;
@@ -28,7 +27,7 @@ async function processPayment() {
 
     localStorage.setItem("currentServiceId", serviceId);
 
-    let terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, apiType, localEndpoint, connectionType, printReceipt, connectionTimeout);
+    let terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, apiType, localEndpoint, connectionType, printReceipt, connectionTimeout);
     if (terminalResponse == null) {
         console.log("Payment call interrupted. Starting polling.")
         for (let i = 1; i < PAYMENT_STATUS_POLL_COUNT+1; i++) {
@@ -73,6 +72,7 @@ window.onload = function() {
         const poiId = document.getElementById("poiId").value
         const serviceId = localStorage.getItem("currentServiceId");
         const apiType = document.getElementById("apiType").value;
+        const localEndpoint = document.getElementById("localEndpoint").value;
         PaymentsUtil.makeTerminalPaymentAbortCall(merchantId, poiId, serviceId, apiType, localEndpoint);
     });
     document.getElementById("apiType").addEventListener("change", function(event) {

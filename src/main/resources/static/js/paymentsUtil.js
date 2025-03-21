@@ -152,7 +152,7 @@ export class PaymentsUtil {
         }
     }
 
-    static async makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, locale, apiType, localEndpoint, connectionType, printReceipt, timeout) {
+    static async makeTerminalPaymentCall(merchantId, serviceId, poiId, amount, currency, apiType, localEndpoint, connectionType, printReceipt, timeout) {
         try {
             // Direct use of await to wait for the response
             const response = await axios.post('/terminal/payments', {
@@ -160,7 +160,6 @@ export class PaymentsUtil {
                 serviceId: serviceId,
                 amount: amount,
                 currency: currency,
-                locale: locale,
                 printReceipt: printReceipt,
                 terminalConfig: {
                     poiId: poiId,
@@ -389,14 +388,6 @@ export class PaymentsUtil {
             option.value = key;
             option.textContent = value;
             currencyDropdown.appendChild(option);
-        });
-
-        const languageDropdown = document.getElementById("language");
-        Object.entries(merchantSettings.language).forEach(([key, value]) => {
-            const option = document.createElement("option");
-            option.value = key;
-            option.textContent = value;
-            languageDropdown.appendChild(option);
         });
 
         const selectedMerchant = localStorage.getItem("selectedMerchant");
