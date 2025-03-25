@@ -28,7 +28,6 @@ dependencies {
 	implementation 'org.apache.commons:commons-lang3:3.0'
 	implementation 'commons-io:commons-io:2.18.0'
 
-	//TODO: Refine dependencies
 	runtimeOnly 'org.postgresql:postgresql'
 	runtimeOnly 'com.mysql:mysql-connector-j:9.1.0'
 

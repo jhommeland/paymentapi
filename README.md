@@ -12,12 +12,17 @@ Such a database can be set up with docker using:
 docker run --name postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres
 ```
 
-
 ### How to run
 
 Before running, please set the credentials by running the following sql with your merchant credentials:
 ```sql
-INSERT INTO merchants (merchant_id, adyen_api_key, adyen_client_key, adyen_merchant_account, merchant_settings) VALUES ('test_merchant_id', 'AdyenApiKey', 'test_AdyenClientKey', 'AdyenMerchantAccount', null);
+INSERT INTO merchants (id, adyen_api_key, adyen_client_key, adyen_merchant_account, merchant_settings, return_url, security_key_identifier, security_key_passphrase, security_key_version) VALUES ('test_merchant_id', 'AdyenApiKey', 'test_AdyenClientKey', 'AdyenMerchantAccount', '{"currency":{"EUR":"Euro"},"language":{"en-UK":"English(UK)"},"country":{"NL":"Netherlands"}}', 'http://localhost:8080/payments/complete', 'test', 'test_key', '1');
+```
+
+To add a shopper, you can optionally add one with the following sql:
+
+```sql
+INSERT INTO shoppers (id, first_name, last_name, shopper_reference, shopper_settings) VALUES ('test_shopper', 'Test', 'Shopper', 'testshopper', null);
 ```
 
 The application can be run using the following command:
