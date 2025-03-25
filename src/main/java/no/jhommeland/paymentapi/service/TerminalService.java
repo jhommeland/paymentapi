@@ -9,6 +9,7 @@ import no.jhommeland.paymentapi.dao.TransactionRepository;
 import no.jhommeland.paymentapi.model.*;
 import no.jhommeland.paymentapi.util.PaymentUtil;
 import no.jhommeland.paymentapi.util.PrintUtil;
+import no.jhommeland.paymentapi.util.TerminalUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,8 @@ public class TerminalService {
     public final String TERMINAL_SYNC_RESPONSE_FAILURE = "failure";
 
     public final String TERMINAL_ABORT_CANCELLED_BY_OPERATOR = "Cancelled by Operator";
+
+    public final String TERMINAL_RECURRING_CONTRACT_ONECLICK = "ONECLICK";
 
     private final AdyenTerminalApiDao adyenTerminalApiDao;
 
@@ -100,6 +103,7 @@ public class TerminalService {
 
         //Save to Database
         TransactionModel transactionModel = new TransactionModel();
+        transactionModel.setMerchantReference(TerminalUtil.buildTransactionId(requestModel.getTerminalConfig().getPoiId(), requestModel.getServiceId()));
         transactionModel.setMerchantAccountName(merchantModel.getAdyenMerchantAccount());
         transactionModel.setPaymentMethod(TERMINAL_PAYMENT_METHOD);
         transactionModel.setStatus(TransactionStatus.REGISTERED.getStatus());
@@ -183,7 +187,7 @@ public class TerminalService {
         if (shopperModel != null) {
             var saleToAcquirerData = new SaleToAcquirerData();
             saleToAcquirerData.setShopperReference(shopperModel.getShopperReference());
-            saleToAcquirerData.setRecurringContract("ONECLICK");
+            saleToAcquirerData.setRecurringContract(TERMINAL_RECURRING_CONTRACT_ONECLICK);
             saleData.setSaleToAcquirerData(saleToAcquirerData);
         }
 

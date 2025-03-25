@@ -11,8 +11,8 @@ public class ReferenceUtil {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         String date = dateFormat.format(new Date());
 
-        // Generate a random alphanumeric string of length 6
-        String randomString = generateRandomAlphanumeric(6);
+        // Generate a random alphanumeric string of length 10
+        String randomString = generateRandomAlphanumeric(10);
 
         // Combine date and random string
         return date + "-" + randomString;
