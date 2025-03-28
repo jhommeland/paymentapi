@@ -1,0 +1,88 @@
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Components Payment Flow</title>
+</head>
+<div layout:fragment="content" class="centered-container">
+
+<div class="payment-form-container" id="inputForm">
+    <a href="/" class="back-button">← Back</a>
+    <h2>1. Enter Payment Details</h2>
+    <form id="paymentForm" method="post">
+        <table>
+            <!-- Amount Row -->
+            <tr>
+                <td><label for="amount">Amount:</label></td>
+                <td><input class="input-field" type="number" id="amount" name="amount" placeholder="Enter amount" value="1000" required></td>
+            </tr>
+
+            <!-- Currency Row -->
+            <tr>
+                <td><label for="currency">Currency:</label></td>
+                <td>
+                    <select class="input-field" id="currency" name="currency" required>
+                        <!-- Options will be dynamically added here -->
+                    </select>
+                </td>
+            </tr>
+
+            <!-- Language/Locale Row -->
+            <tr>
+                <td><label for="language">Language:</label></td>
+                <td>
+                    <select class="input-field" id="language" name="language" required>
+                        <!-- Options will be dynamically added here -->
+                    </select>
+                </td>
+            </tr>
+
+            <!-- Country Row -->
+            <tr>
+                <td><label for="country">Country:</label></td>
+                <td>
+                    <select class="input-field" id="country" name="country" required>
+                        <!-- Options will be dynamically added here -->
+                    </select>
+                </td>
+            </tr>
+
+            <!-- TdsMode -->
+            <tr>
+                <td><label for="tdsMode">3DS Mode:</label></td>
+                <td>
+                    <select class="input-field" id="tdsMode" name="tdsMode" required>
+                        <option value="redirect" selected>Redirect</option>
+                        <option value="native">Native</option>
+                        <option value="off">Off</option>
+                    </select>
+                </td>
+            </tr>
+            <!-- savePaymentMethod -->
+            <tr>
+                <td><label for="savePaymentMethod">Save Payment Method:</label></td>
+                <td>
+                    <select class="input-field" id="savePaymentMethod" name="savePaymentMethod" required>
+                        <option value="false" selected>No</option>
+                        <option value="true">Yes</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Submit Button -->
+        <button type="submit">Start Payment</button>
+    </form>
+    <p class="note">
+        <a href="/management">Manage Transactions</a>.
+    </p>
+</div>
+<div class="payment-form-container" id="checkoutForm" style="display: none;">
+    <h2>2. Checkout</h2>
+    <div id="component-container"></div>
+</div>
+
+<script type="module" src="/js/components.js"></script>
+
+</div>

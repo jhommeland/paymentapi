@@ -21,6 +21,11 @@ public class WebPaymentsController {
         return "payments";
     }
 
+    @GetMapping("/components")
+    public String components() {
+        return "components";
+    }
+
     @GetMapping("/terminal")
     public String terminal() {
         return "terminal";
