@@ -341,10 +341,17 @@ export class PaymentsUtil {
         window.location.href = resultUrl + btoa(JSON.stringify(result));
     }
 
-    static getDropinConfiguration() {
+    static getDropinConfiguration(amount, currency, countryCode) {
         const dropinConfiguration = {
             // Other Drop-in configuration...
             paymentMethodsConfiguration: {
+                applepay: {
+                    amount: {
+                        value: amount,
+                        currency: currency
+                    },
+                    countryCode: countryCode
+                },
                 card: {
                     // Optional configuration.
                     hasHolderName: true, // Show the cardholder name field.

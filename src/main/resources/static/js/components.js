@@ -3,6 +3,7 @@ import { PaymentsUtil } from './paymentsUtil.js';
 
 async function initializeCheckout() {
 
+    const paymentMethod = document.getElementById("paymentMethod").value
     const amount = document.getElementById("amount").value
     const currency = document.getElementById("currency").value;
     const locale = document.getElementById("language").value;
@@ -38,20 +39,24 @@ async function initializeCheckout() {
         }
     };
 
-    const { AdyenCheckout, Dropin, Card, ApplePay } = window.AdyenWeb;
+    const { AdyenCheckout, Card, ApplePay } = window.AdyenWeb;
     const checkout = await AdyenCheckout(configuration);
-    //const dropin = new Dropin(checkout, PaymentsUtil.getDropinConfiguration()).mount('#dropin-container')
 
-    //const card = new Card(checkout, PaymentsUtil.getDropinConfiguration()).mount('#component-container');
-    const applePayComponent = new ApplePay(checkout);
-    applePayComponent
-       .isAvailable()
-       .then(() => {
-           applePayComponent.mount("#component-container");
-       })
-       .catch(e => {
-           console.log('Apple pay is unavailable')
-       });
+    switch (paymentMethod) {
+        case "applepay":
+            const applePayComponent = new ApplePay(checkout, PaymentsUtil.getDropinConfiguration(amount,
+                currency, countryCode).paymentMethodsConfiguration.applepay).mount("#component-container");
+            break;
+        case "card":
+            const card = new Card(checkout, PaymentsUtil.getDropinConfiguration()).mount('#component-container');
+            break;
+        default:
+            console.log("Uncrecognized payment method");
+            break;
+    }
+
+
+
 
     const inputForm = document.getElementById("inputForm");
     const checkoutForm = document.getElementById("checkoutForm");

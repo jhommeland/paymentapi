@@ -12,6 +12,17 @@
     <h2>1. Enter Payment Details</h2>
     <form id="paymentForm" method="post">
         <table>
+            <!-- Payment Method -->
+            <tr>
+                <td><label for="paymentMethod">Payment Method:</label></td>
+                <td>
+                    <select class="input-field" id="paymentMethod" name="paymentMethod" required>
+                        <option value="applepay" selected>Apple Pay</option>
+                        <option value="card">Credit Card</option>
+                    </select>
+                </td>
+            </tr>
+
             <!-- Amount Row -->
             <tr>
                 <td><label for="amount">Amount:</label></td>

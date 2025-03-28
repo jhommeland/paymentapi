@@ -40,7 +40,7 @@ async function initializeCheckout() {
 
     const { AdyenCheckout, Dropin, Card } = window.AdyenWeb;
     const checkout = await AdyenCheckout(configuration);
-    const dropin = new Dropin(checkout, PaymentsUtil.getDropinConfiguration()).mount('#dropin-container')
+    const dropin = new Dropin(checkout, PaymentsUtil.getDropinConfiguration(amount, currency, countryCode)).mount('#dropin-container')
 
     const inputForm = document.getElementById("inputForm");
     const checkoutForm = document.getElementById("checkoutForm");
