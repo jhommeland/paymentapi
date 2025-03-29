@@ -55,9 +55,6 @@ async function initializeCheckout() {
             break;
     }
 
-
-
-
     const inputForm = document.getElementById("inputForm");
     const checkoutForm = document.getElementById("checkoutForm");
     inputForm.style.display = "none";
