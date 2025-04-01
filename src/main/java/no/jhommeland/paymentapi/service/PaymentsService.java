@@ -154,6 +154,7 @@ public class PaymentsService {
                 .amount(amountObject)
                 .merchantAccount(transactionModel.getMerchantAccountName())
                 .shopperReference(shopperModel.getShopperReference())
+                .shopperInteraction(PaymentRequest.ShopperInteractionEnum.fromValue(requestModel.getShopperInteraction()))
                 .storePaymentMethod(STRING_TRUE_VALUE.equals(requestModel.getSavePaymentMethod()))
                 .recurringProcessingModel(PaymentRequest.RecurringProcessingModelEnum.CARDONFILE)
                 .channel(PaymentRequest.ChannelEnum.WEB)

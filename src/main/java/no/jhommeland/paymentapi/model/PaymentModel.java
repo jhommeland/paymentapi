@@ -2,6 +2,7 @@ package no.jhommeland.paymentapi.model;
 
 import com.adyen.model.checkout.BrowserInfo;
 import com.adyen.model.checkout.CheckoutPaymentMethod;
+import com.adyen.model.checkout.PaymentRequest;
 
 public class PaymentModel {
 
@@ -26,6 +27,8 @@ public class PaymentModel {
     private String origin;
 
     private String savePaymentMethod;
+
+    private String shopperInteraction = PaymentRequest.ShopperInteractionEnum.ECOMMERCE.toString();
 
     public String getMerchantId() {
         return merchantId;
@@ -113,5 +116,13 @@ public class PaymentModel {
 
     public void setSavePaymentMethod(String savePaymentMethod) {
         this.savePaymentMethod = savePaymentMethod;
+    }
+
+    public String getShopperInteraction() {
+        return shopperInteraction;
+    }
+
+    public void setShopperInteraction(String shopperInteraction) {
+        this.shopperInteraction = shopperInteraction;
     }
 }
