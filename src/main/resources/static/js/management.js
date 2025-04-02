@@ -29,7 +29,7 @@ function populateTable(transactions) {
       <td>${transaction.merchantReference}</td>
       <td>${transaction.paymentMethod}</td>
       <td>${transaction.status}</td>
-      <td style="white-space: nowrap;">${transaction.amount} ${transaction.currency}</td>
+      <td style="white-space: nowrap;">${transaction.currency} ${transaction.amount}</td>
       <td>${transaction.originalPspReference ? PaymentsUtil.toAdyenLink(transaction.originalPspReference) : ""}</td>
       <td>${transaction.pspReference ? PaymentsUtil.toAdyenLink(transaction.pspReference) : ""}</td>
       <td>${transaction.errorReason || ""}</td>
