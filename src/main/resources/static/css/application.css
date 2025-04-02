@@ -121,10 +121,22 @@ table td:last-child {
 }
 
 /* ---------- Filters and Labels ---------- */
-.filters {
-    display: inline-flex;
+.filter-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
     margin-bottom: 10px;
-    margin-right: 50px;
+}
+
+.filter-group {
+    display: inline-flex;
+}
+
+.transaction-count {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 label {

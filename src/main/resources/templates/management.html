@@ -10,16 +10,30 @@
     <a href="/" class="back-button">← Back</a>
 
     <h1>Transaction Management</h1>
-    <div class="filters">
-      <label for="merchantFilter">Merchant:</label>
-      <select id="merchantFilter">
-        <!-- Options will be dynamically added here -->
-      </select>
-      <label for="statusFilter">Status:</label>
-      <select id="statusFilter">
-        <option value="all">All</option>
-        <!-- Options will be dynamically added here -->
-      </select>
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label for="merchantFilter">Merchant:</label>
+        <select id="merchantFilter">
+          <!-- Options will be dynamically added here -->
+        </select>
+
+        <label for="statusFilter">Status:</label>
+        <select id="statusFilter">
+          <option value="all">All</option>
+          <!-- Options will be dynamically added here -->
+        </select>
+
+        <label for="paymentMethodFilter">Payment Method:</label>
+        <select id="paymentMethodFilter">
+          <option value="all">All</option>
+          <!-- Options will be dynamically added here -->
+        </select>
+      </div>
+
+      <div class="transaction-count">
+        <span>Transaction Count:</span>
+        <span id="transactionCount">55</span>
+      </div>
     </div>
     <table id="transactionTable">
       <thead>
