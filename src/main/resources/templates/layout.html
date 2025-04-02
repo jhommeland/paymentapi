@@ -27,17 +27,21 @@
 
 </head>
 <body class="page-style">
-<div class="settings-dropdown-container">
-    <p style="margin: 10px;">Shopper:</p>
-    <select id="shopper-select" class="settings-dropdown">
-        <option value='' selected>Guest User</option>
-        <!-- Options will be dynamically added here -->
-    </select>
-    <p style="margin: 10px;">Merchant: </p>
-    <select id="merchant-select" class="settings-dropdown">
-        <option value='' selected disabled>Select a Merchant</option>
-        <!-- Options will be dynamically added here -->
-    </select>
+<div class="settings-bar">
+    <div class="settings-group">
+        <label for="shopper-select">Shopper: </label>
+        <select id="shopper-select" class="settings-dropdown">
+            <option value='' selected>Guest User</option>
+            <!-- Options will be dynamically added here -->
+        </select>
+    </div>
+    <div class="settings-group">
+        <label for="merchant-select">Merchant: </label>
+        <select id="merchant-select" class="settings-dropdown">
+            <option value='' selected disabled>Select a Merchant</option>
+            <!-- Options will be dynamically added here -->
+        </select>
+    </div>
 </div>
 <div class="container">
     <th:block layout:fragment="content" />
