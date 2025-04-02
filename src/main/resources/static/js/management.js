@@ -8,8 +8,6 @@ const merchantFilter = document.getElementById("merchantFilter");
 const paymentMethodFilter = document.getElementById("paymentMethodFilter");
 const transactionCount = document.getElementById("transactionCount");
 
-
-
 // Register utility methods
 window.capturePayment = PaymentsUtil.capturePayment;
 window.revertPayment = PaymentsUtil.revertPayment;
@@ -33,8 +31,8 @@ function populateTable(transactions) {
       <td>${transaction.status}</td>
       <td>${transaction.amount}</td>
       <td>${transaction.currency}</td>
-      <td>${transaction.originalPspReference || ""}</td>
-      <td>${transaction.pspReference || ""}</td>
+      <td>${transaction.originalPspReference ? PaymentsUtil.toAdyenLink(transaction.originalPspReference) : ""}</td>
+      <td>${transaction.pspReference ? PaymentsUtil.toAdyenLink(transaction.pspReference) : ""}</td>
       <td>${transaction.errorReason || ""}</td>
       <td>${new Date(transaction.createdAt).toLocaleString()}</td>
       <td>${new Date(transaction.lastModifiedAt).toLocaleString()}</td>

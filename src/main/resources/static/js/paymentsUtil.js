@@ -436,6 +436,12 @@ export class PaymentsUtil {
         );
     }
 
+    static toAdyenLink(pspReference) {
+        let adyenLink = "https://ca-test.adyen.com/ca/ca/accounts/showTx.shtml?pspReference=REPLACE_ME&txType=Payment";
+        adyenLink = adyenLink.replace("REPLACE_ME", pspReference);
+        return `<a href="${adyenLink}" target="_blank" rel="noopener noreferrer">${pspReference}</a>`
+    }
+
     static printObject(obj) {
         return JSON.stringify(obj).replace(/\\n|\\t/g, '');
     }
