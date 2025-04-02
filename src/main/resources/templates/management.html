@@ -11,7 +11,11 @@
 
     <h1>Transaction Management</h1>
     <div class="filters">
-      <label for="statusFilter">Filter by Status:</label>
+      <label for="merchantFilter">Merchant:</label>
+      <select id="merchantFilter">
+        <!-- Options will be dynamically added here -->
+      </select>
+      <label for="statusFilter">Status:</label>
       <select id="statusFilter">
         <option value="all">All</option>
         <!-- Options will be dynamically added here -->
@@ -21,7 +25,6 @@
       <thead>
         <tr>
           <th>Merchant Reference</th>
-          <th>Merchant Account</th>
           <th>Payment Method</th>
           <th>Status</th>
           <th>Amount</th>

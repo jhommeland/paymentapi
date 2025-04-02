@@ -4,6 +4,8 @@ import { PaymentsUtil } from './paymentsUtil.js';
 // DOM references
 const transactionTable = document.querySelector("#transactionTable tbody");
 const statusFilter = document.getElementById("statusFilter");
+const merchantFilter = document.getElementById("merchantFilter");
+
 
 // Register utility methods
 window.capturePayment = PaymentsUtil.capturePayment;
@@ -24,7 +26,6 @@ function populateTable(transactions) {
 
     row.innerHTML = `
       <td>${transaction.merchantReference}</td>
-      <td>${transaction.merchantAccountName}</td>
       <td>${transaction.paymentMethod}</td>
       <td>${transaction.status}</td>
       <td>${transaction.amount}</td>
@@ -45,32 +46,26 @@ function populateTable(transactions) {
 }
 
 function populateDropdown(transactions) {
-  const uniqueStatuses = new Set(transactions.map((transaction) => transaction.status));
-  Array.from(uniqueStatuses).map((status) => {
-    const option = document.createElement('option');
-    option.value = status;
-    option.textContent = status;
-    statusFilter.appendChild(option);
-  });
+  PaymentsUtil.populateTransactionFilterDropdown("merchantAccountName", merchantFilter, transactions)
+  PaymentsUtil.populateTransactionFilterDropdown("status", statusFilter, transactions)
 }
 
 function filterTransactions(transactions) {
-  const filterValue = statusFilter.value;
+  const merchantFilterValue = merchantFilter.value
+  const statusFilterValue = statusFilter.value;
 
-  if (filterValue === "all") {
-    populateTable(transactions);
-  } else {
-    const filteredTransactions = transactions.filter(
-        (transaction) => transaction.status === filterValue
-    );
-    populateTable(filteredTransactions);
-  }
+  let filteredTransactions = transactions;
+  filteredTransactions = PaymentsUtil.filterTransactions("merchantAccountName", merchantFilterValue, filteredTransactions);
+  filteredTransactions = PaymentsUtil.filterTransactions("status", statusFilterValue, filteredTransactions);
+  populateTable(filteredTransactions)
 }
 
 async function initializeTable() {
   let transactions = await PaymentsUtil.getTransactions();
   populateTable(transactions);
   populateDropdown(transactions);
+  filterTransactions(transactions);
+  merchantFilter.addEventListener("change", (event) => filterTransactions(transactions));
   statusFilter.addEventListener("change", (event) => filterTransactions(transactions));
 }
 

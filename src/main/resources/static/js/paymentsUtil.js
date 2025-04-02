@@ -416,6 +416,26 @@ export class PaymentsUtil {
         });
     }
 
+    static populateTransactionFilterDropdown(fieldName, filterObject, transactions) {
+        const uniqueValues = new Set(transactions.map((transaction) => transaction[fieldName]));
+        Array.from(uniqueValues).map((value) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            filterObject.appendChild(option);
+        });
+    }
+
+    static filterTransactions(fieldName, filterValue, transactions) {
+        if (filterValue === "all") {
+            return transactions
+        }
+
+        return transactions.filter(
+            (transaction) => transaction[fieldName] === filterValue
+        );
+    }
+
     static printObject(obj) {
         return JSON.stringify(obj).replace(/\\n|\\t/g, '');
     }
