@@ -86,6 +86,7 @@ public class PaymentsService {
         //Save to Database
         TransactionModel transactionModel = new TransactionModel();
         transactionModel.setMerchantAccountName(merchantModel.getAdyenMerchantAccount());
+        transactionModel.setShopperInteraction(requestModel.getShopperInteraction());
         transactionModel.setPaymentMethod("session");
         transactionModel.setStatus(TransactionStatus.REGISTERED.getStatus());
         transactionModel.setAmount(requestModel.getAmount());
@@ -135,6 +136,7 @@ public class PaymentsService {
         //Save to Database
         TransactionModel transactionModel = new TransactionModel();
         transactionModel.setMerchantAccountName(merchantModel.getAdyenMerchantAccount());
+        transactionModel.setShopperInteraction(requestModel.getShopperInteraction());
         transactionModel.setPaymentMethod(PaymentUtil.getPaymentType(requestModel.getPaymentMethod()));
         transactionModel.setStatus(TransactionStatus.REGISTERED.getStatus());
         transactionModel.setAmount(requestModel.getAmount());
@@ -154,7 +156,7 @@ public class PaymentsService {
                 .amount(amountObject)
                 .merchantAccount(transactionModel.getMerchantAccountName())
                 .shopperReference(shopperModel.getShopperReference())
-                .shopperInteraction(PaymentRequest.ShopperInteractionEnum.fromValue(requestModel.getShopperInteraction()))
+                .shopperInteraction(PaymentRequest.ShopperInteractionEnum.fromValue(transactionModel.getShopperInteraction()))
                 .storePaymentMethod(STRING_TRUE_VALUE.equals(requestModel.getSavePaymentMethod()))
                 .recurringProcessingModel(PaymentRequest.RecurringProcessingModelEnum.CARDONFILE)
                 .channel(PaymentRequest.ChannelEnum.WEB)

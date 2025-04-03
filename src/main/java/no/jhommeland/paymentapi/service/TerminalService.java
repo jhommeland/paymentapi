@@ -31,6 +31,8 @@ public class TerminalService {
 
     public final String TERMINAL_SALE_ID = "TEST_POS";
 
+    public final String POS_SHOPPER_INTERACTION = "pos";
+
     public final String TERMINAL_PAYMENT_METHOD = "terminal";
 
     public final String TERMINAL_SYNC_REQUEST = "sync";
@@ -105,6 +107,7 @@ public class TerminalService {
         TransactionModel transactionModel = new TransactionModel();
         transactionModel.setMerchantReference(TerminalUtil.buildTransactionId(requestModel.getTerminalConfig().getPoiId(), requestModel.getServiceId()));
         transactionModel.setMerchantAccountName(merchantModel.getAdyenMerchantAccount());
+        transactionModel.setShopperInteraction(POS_SHOPPER_INTERACTION);
         transactionModel.setPaymentMethod(TERMINAL_PAYMENT_METHOD);
         transactionModel.setStatus(TransactionStatus.REGISTERED.getStatus());
         transactionModel.setAmount(requestModel.getAmount());

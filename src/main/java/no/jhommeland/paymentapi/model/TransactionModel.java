@@ -23,6 +23,8 @@ public class TransactionModel {
 
     private String merchantAccountName;
 
+    private String shopperInteraction;
+
     private String originalPspReference;
 
     private String pspReference;
@@ -67,6 +69,14 @@ public class TransactionModel {
 
     public void setMerchantAccountName(String merchantAccountName) {
         this.merchantAccountName = merchantAccountName;
+    }
+
+    public String getShopperInteraction() {
+        return shopperInteraction;
+    }
+
+    public void setShopperInteraction(String shopperInteraction) {
+        this.shopperInteraction = shopperInteraction;
     }
 
     public String getOriginalPspReference() {
