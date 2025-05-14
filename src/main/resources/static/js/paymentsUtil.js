@@ -356,6 +356,16 @@ export class PaymentsUtil {
                     // Optional configuration.
                     hasHolderName: true, // Show the cardholder name field.
                     holderNameRequired: true, // Mark the cardholder name field as required.
+                    installmentOptions: {
+                        card: {
+                            values: [1, 2, 3, 4, 5]
+                        },
+                        showInstallmentAmounts: false
+                    },
+                    showInstallmentAmounts: false,
+                    onBinLookup: (binData) => {
+                        console.log(binData)
+                    }
                 }
             }
         }

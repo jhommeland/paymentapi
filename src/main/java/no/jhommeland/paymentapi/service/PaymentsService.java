@@ -133,6 +133,19 @@ public class PaymentsService {
         ShopperModel shopperModel = StringUtils.isEmpty(requestModel.getShopperId()) ? new ShopperModel() : shopperRepository.findById(requestModel.getShopperId()).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Shopper not found"));
 
+        //This is not required, just a POC of using encryptedCardNumber to look up card details before the payment.
+        if (PaymentUtil.PAYMENT_TYPE_SCHEME.equals(PaymentUtil.getPaymentType(requestModel.getPaymentMethod()))) {
+            CardDetails cardDetails = requestModel.getPaymentMethod().getCardDetails();
+            CardDetailsRequest cardDetailsRequest = new CardDetailsRequest()
+                    .merchantAccount(merchantModel.getAdyenMerchantAccount())
+                    .encryptedCardNumber(cardDetails.getEncryptedCardNumber());
+            try {
+                adyenPaymentsApiDao.callCardDetailsApi(cardDetailsRequest, merchantModel.getAdyenApiKey());
+            } catch (ResponseStatusException e) {
+                logger.warn("Could not retrieve card details.");
+            }
+        }
+
         //Save to Database
         TransactionModel transactionModel = new TransactionModel();
         transactionModel.setMerchantAccountName(merchantModel.getAdyenMerchantAccount());
