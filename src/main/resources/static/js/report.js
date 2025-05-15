@@ -22,7 +22,6 @@ function populateTable(reports) {
     const row = document.createElement("tr");
 
     row.innerHTML = `
-      <td>${report.reportType}</td>
       <td>${new Date(report.creationDate).toLocaleString()}</td>
       <td><a href="${report.reportLink}" target="_blank" download>${report.filename}</a></td>
       <td>

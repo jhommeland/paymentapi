@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class EventService {
@@ -26,8 +24,6 @@ public class EventService {
 
     private final String EVENT_IS_NOT_SUCCESS = "false";
 
-    private final String REPORT_AVAILABLE_EVENT = "REPORT_AVAILABLE";
-
     private final HMACValidator hmacValidator = new HMACValidator();
 
     private final EventRepository eventRepository;
@@ -36,28 +32,10 @@ public class EventService {
 
     private final TransactionRepository transactionRepository;
 
-
     public EventService(MerchantRepository merchantRepository, TransactionRepository transactionRepository, EventRepository eventRepository) {
         this.merchantRepository = merchantRepository;
         this.transactionRepository = transactionRepository;
         this.eventRepository = eventRepository;
-    }
-
-    public List<ReportModel> getReports() {
-
-        List<EventModel> reportAvailableEvents = eventRepository.findAllByEventCodeOrderByEventDateDesc(REPORT_AVAILABLE_EVENT);
-        List<ReportModel> reportModels = new ArrayList<>();
-        reportAvailableEvents.forEach((eventModel) -> {
-            ReportModel reportModel = new ReportModel();
-            reportModel.setMerchantAccountName(eventModel.getMerchantAccountCode());
-            reportModel.setReportType(eventModel.getPspReference().split("_\\d+")[0]);
-            reportModel.setCreationDate(eventModel.getEventDate());
-            reportModel.setFilename(eventModel.getPspReference());
-            reportModel.setReportLink(eventModel.getReason());
-            reportModels.add(reportModel);
-        });
-
-        return reportModels;
     }
 
     public void processPaymentNotification(AdyenWebhookModel requestModel) {
