@@ -125,6 +125,22 @@ export class PaymentsUtil {
         }
     }
 
+    static async getReports() {
+        try {
+            // Direct use of await to wait for the response
+            const response = await axios.get('/reports');
+
+            // Log and return the server response data
+            console.log('Reports Retrieved:', response.data);
+            return response.data;
+        } catch (error) {
+            // Handle error and return null in case of failure
+            console.error('Reports Retrieval Error:', error);
+            return null;
+        }
+    }
+
+
     static async capturePayment(transactionId) {
         try {
             // Direct use of await to wait for the response
@@ -426,8 +442,8 @@ export class PaymentsUtil {
         });
     }
 
-    static populateTransactionFilterDropdown(fieldName, filterObject, transactions) {
-        const uniqueValues = new Set(transactions.map((transaction) => transaction[fieldName]));
+    static populateFilterDropdown(fieldName, filterObject, elements) {
+        const uniqueValues = new Set(elements.map((element) => element[fieldName]));
         Array.from(uniqueValues).map((value) => {
             const option = document.createElement('option');
             option.value = value;
@@ -436,13 +452,13 @@ export class PaymentsUtil {
         });
     }
 
-    static filterTransactions(fieldName, filterValue, transactions) {
+    static filterElements(fieldName, filterValue, elements) {
         if (filterValue === "all") {
-            return transactions
+            return elements
         }
 
-        return transactions.filter(
-            (transaction) => transaction[fieldName] === filterValue
+        return elements.filter(
+            (element) => element[fieldName] === filterValue
         );
     }
 

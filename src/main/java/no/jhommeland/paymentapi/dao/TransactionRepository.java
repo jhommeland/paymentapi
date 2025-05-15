@@ -12,6 +12,4 @@ public interface TransactionRepository extends JpaRepository<TransactionModel, S
 
     Optional<TransactionModel> findByMerchantReference(String merchantReference);
 
-
-
 }

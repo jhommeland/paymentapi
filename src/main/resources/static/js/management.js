@@ -2,7 +2,7 @@
 import { PaymentsUtil } from './paymentsUtil.js';
 
 // DOM references
-const transactionTable = document.querySelector("#transactionTable tbody");
+const transactionTable = document.querySelector("#elementTable tbody");
 const statusFilter = document.getElementById("statusFilter");
 const merchantFilter = document.getElementById("merchantFilter");
 const paymentMethodFilter = document.getElementById("paymentMethodFilter");
@@ -45,23 +45,23 @@ function populateTable(transactions) {
   });
 }
 
-function populateDropdown(transactions) {
-  PaymentsUtil.populateTransactionFilterDropdown("merchantAccountName", merchantFilter, transactions)
-  PaymentsUtil.populateTransactionFilterDropdown("status", statusFilter, transactions)
-  PaymentsUtil.populateTransactionFilterDropdown("paymentMethod", paymentMethodFilter, transactions)
-}
-
 function filterTransactions(transactions) {
   const merchantFilterValue = merchantFilter.value
   const statusFilterValue = statusFilter.value;
   const paymentMethodFilterValue = paymentMethodFilter.value;
 
   let filteredTransactions = transactions;
-  filteredTransactions = PaymentsUtil.filterTransactions("merchantAccountName", merchantFilterValue, filteredTransactions);
-  filteredTransactions = PaymentsUtil.filterTransactions("status", statusFilterValue, filteredTransactions);
-  filteredTransactions = PaymentsUtil.filterTransactions("paymentMethod", paymentMethodFilterValue, filteredTransactions);
+  filteredTransactions = PaymentsUtil.filterElements("merchantAccountName", merchantFilterValue, filteredTransactions);
+  filteredTransactions = PaymentsUtil.filterElements("status", statusFilterValue, filteredTransactions);
+  filteredTransactions = PaymentsUtil.filterElements("paymentMethod", paymentMethodFilterValue, filteredTransactions);
   populateTable(filteredTransactions)
   transactionCount.textContent = filteredTransactions.length;
+}
+
+function populateDropdown(elements) {
+  PaymentsUtil.populateFilterDropdown("merchantAccountName", merchantFilter, elements)
+  PaymentsUtil.populateFilterDropdown("status", statusFilter, elements)
+  PaymentsUtil.populateFilterDropdown("paymentMethod", paymentMethodFilter, elements)
 }
 
 async function initializeTable() {

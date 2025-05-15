@@ -36,5 +36,10 @@ public class WebPaymentsController {
         return "management";
     }
 
+    @GetMapping("/report")
+    public String reportManagement() {
+        return "report";
+    }
+
 }
 

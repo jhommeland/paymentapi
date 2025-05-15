@@ -78,29 +78,29 @@ table td:last-child {
     width: 60%;
 }
 
-#transactionTable {
+#elementTable {
     width: 100%;
     border-collapse: collapse;
 }
 
-#transactionTable th,
-#transactionTable td {
+#elementTable th,
+#elementTable td {
     border: 1px solid #ddd;
     padding: 10px;
     text-align: left;
 }
 
-#transactionTable th {
+#elementTable th {
     background-color: #f2f2f2;
     font-weight: bold;
     font-size: 14px;
 }
 
-#transactionTable tr:nth-child(even) {
+#elementTable tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
-#transactionTable tr:hover {
+#elementTable tr:hover {
     background-color: #f1f1f1;
 }
 

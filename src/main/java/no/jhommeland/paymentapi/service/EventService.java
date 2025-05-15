@@ -6,10 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import no.jhommeland.paymentapi.dao.MerchantRepository;
 import no.jhommeland.paymentapi.dao.TransactionRepository;
 import no.jhommeland.paymentapi.dao.EventRepository;
-import no.jhommeland.paymentapi.model.AdyenWebhookModel;
-import no.jhommeland.paymentapi.model.MerchantModel;
-import no.jhommeland.paymentapi.model.TransactionModel;
-import no.jhommeland.paymentapi.model.EventModel;
+import no.jhommeland.paymentapi.model.*;
 import no.jhommeland.paymentapi.util.PaymentUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class EventService {
@@ -26,6 +25,8 @@ public class EventService {
     private final String EVENT_IS_SUCCESS = "true";
 
     private final String EVENT_IS_NOT_SUCCESS = "false";
+
+    private final String REPORT_AVAILABLE_EVENT = "REPORT_AVAILABLE";
 
     private final HMACValidator hmacValidator = new HMACValidator();
 
@@ -40,6 +41,23 @@ public class EventService {
         this.merchantRepository = merchantRepository;
         this.transactionRepository = transactionRepository;
         this.eventRepository = eventRepository;
+    }
+
+    public List<ReportModel> getReports() {
+
+        List<EventModel> reportAvailableEvents = eventRepository.findAllByEventCodeOrderByEventDateDesc(REPORT_AVAILABLE_EVENT);
+        List<ReportModel> reportModels = new ArrayList<>();
+        reportAvailableEvents.forEach((eventModel) -> {
+            ReportModel reportModel = new ReportModel();
+            reportModel.setMerchantAccountName(eventModel.getMerchantAccountCode());
+            reportModel.setReportType(eventModel.getPspReference().split("_\\d+")[0]);
+            reportModel.setCreationDate(eventModel.getEventDate());
+            reportModel.setFilename(eventModel.getPspReference());
+            reportModel.setReportLink(eventModel.getReason());
+            reportModels.add(reportModel);
+        });
+
+        return reportModels;
     }
 
     public void processPaymentNotification(AdyenWebhookModel requestModel) {
