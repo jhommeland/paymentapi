@@ -49,23 +49,31 @@ public class EventService {
                     throw new EntityNotFoundException("Invalid HMAC Data");
                 }
                 TransactionModel transactionModel = transactionRepository.findByMerchantReference(eventModel.getMerchantReference()).orElseThrow(() -> new EntityNotFoundException("Transaction not found"));
-                transactionModel.setStatus(eventModel.getEventCode());
+                if (transactionModel.getStatus().equals(eventModel.getEventCode())) {
+                    logger.info("Skipping duplicated event. eventCode={}, id={}", eventModel.getEventCode(), eventModel.getId());
+                }
                 transactionModel.setPaymentMethod(eventModel.getPaymentMethod());
                 if (!eventModel.getSuccess().equals(EVENT_IS_SUCCESS)) {
-                    transactionModel.setErrorReason(eventModel.getReason());
+                    transactionModel.setPspReference(null);
+                    transactionModel.setErrorReason(eventModel.getEventCode() + ": " + eventModel.getReason());
+                } else {
+                    transactionModel.setStatus(eventModel.getEventCode());
+                    setPspReference(transactionModel, eventModel);
                 }
-                if (transactionModel.getOriginalPspReference() == null) {
-                    transactionModel.setOriginalPspReference(eventModel.getPspReference());
-                } else if (!transactionModel.getOriginalPspReference().equals(eventModel.getPspReference())) {
-                    transactionModel.setPspReference(eventModel.getPspReference());
-                }
-
                 transactionModel.setLastModifiedAt(OffsetDateTime.now());
                 transactionRepository.save(transactionModel);
             } catch (Exception e) {
                 logger.error("Error processing event: id={}, errorMessage={}", eventModel.getId(), e.getMessage());
             }
         });
+    }
+
+    private void setPspReference(TransactionModel transactionModel, EventModel eventModel) {
+        if (transactionModel.getOriginalPspReference() == null) {
+            transactionModel.setOriginalPspReference(eventModel.getPspReference());
+        } else if (!transactionModel.getOriginalPspReference().equals(eventModel.getPspReference())) {
+            transactionModel.setPspReference(eventModel.getPspReference());
+        }
     }
 
     private EventModel convertToEventModel(NotificationRequestItem item) {

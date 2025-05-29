@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -27,9 +28,10 @@ public class ReportController {
         return new ResponseEntity<>(reports, headers, HttpStatus.OK);
     }
 
-    @PostMapping("reconcile")
-    public ResponseEntity<String> reconcile() {
+    @PostMapping("/reconcile")
+    public ResponseEntity<String> reconcile(@RequestBody ReportModel requestModel) {
         HttpHeaders headers = new HttpHeaders();
-        return new ResponseEntity<>("OK", headers, HttpStatus.OK);
+        String result = reportService.reconcile(requestModel);
+        return new ResponseEntity<>(result, headers, HttpStatus.OK);
     }
 }

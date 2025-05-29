@@ -6,6 +6,8 @@ import java.time.OffsetDateTime;
 
 public class ReportModel {
 
+    private String eventId;
+
     private String merchantAccountName;
 
     private String reportType;
@@ -16,6 +18,14 @@ public class ReportModel {
     private String filename;
 
     private String reportLink;
+
+    public String getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
+    }
 
     public String getMerchantAccountName() {
         return merchantAccountName;

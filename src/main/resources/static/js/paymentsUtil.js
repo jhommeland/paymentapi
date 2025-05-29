@@ -173,6 +173,21 @@ export class PaymentsUtil {
         }
     }
 
+    static async reconcile(eventId) {
+        try {
+            // Direct use of await to wait for the response
+            const response = await axios.post('/reconcile', {
+                eventId: eventId
+            });
+
+            // Log the response and reload page
+            console.log('Reconciliation Success:', PaymentsUtil.printObject(response.data));
+        } catch (error) {
+            // Handle error and return null in case of failure
+            console.error('Reconciliation Error:', error);
+        }
+    }
+
     static async makeTerminalPaymentCall(merchantId, serviceId, shopperId, poiId, amount, currency, apiType, localEndpoint, connectionType, printReceipt, timeout, savePaymentMethod) {
         try {
             // Direct use of await to wait for the response

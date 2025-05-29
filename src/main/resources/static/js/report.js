@@ -8,8 +8,7 @@ const merchantFilter = document.getElementById("merchantFilter");
 const reportCount = document.getElementById("reportCount");
 
 // Register utility methods
-window.capturePayment = PaymentsUtil.capturePayment;
-window.revertPayment = PaymentsUtil.revertPayment;
+window.reconcile = PaymentsUtil.reconcile;
 
 // Populate the table with transaction data
 function populateTable(reports) {
@@ -25,7 +24,7 @@ function populateTable(reports) {
       <td>${new Date(report.creationDate).toLocaleString()}</td>
       <td><a href="${report.reportLink}" target="_blank" download>${report.filename}</a></td>
       <td>
-        <button onclick="">Reconcile</button>
+        <button onclick="reconcile('${report.eventId}')">Reconcile</button>
       </td>
     `;
 
