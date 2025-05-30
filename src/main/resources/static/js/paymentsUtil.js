@@ -183,7 +183,8 @@ export class PaymentsUtil {
             // Log the response and reload page
             console.log('Reconciliation Success:', PaymentsUtil.printObject(response.data));
             const reconciliationLog = document.getElementById("reconciliationLog");
-            reconciliationLog.value = response.data + reconciliationLog.value;
+            reconciliationLog.value += response.data;
+            reconciliationLog.scrollTop = reconciliationLog.scrollHeight;
         } catch (error) {
             // Handle error and return null in case of failure
             console.error('Reconciliation Error:', error);

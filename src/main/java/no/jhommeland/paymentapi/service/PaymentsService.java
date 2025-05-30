@@ -189,7 +189,7 @@ public class PaymentsService {
 
         //Save to Database
         transactionModel.setStatus(TransactionStatus.AWAITING_AUTHORISATION.getStatus());
-        transactionModel.setApiResultCode(paymentResponse.getResultCode().getValue());
+        transactionModel.setAdyenStatus(paymentResponse.getResultCode().getValue());
         transactionModel.setOriginalPspReference(paymentResponse.getPspReference());
         transactionModel.setLastModifiedAt(OffsetDateTime.now());
         transactionRepository.save(transactionModel);
@@ -266,7 +266,7 @@ public class PaymentsService {
         //Update Database
         TransactionModel transactionModel = transactionRepository.findByMerchantReference(paymentDetailsResponse.getMerchantReference()).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Transaction Not Found"));
-        transactionModel.setApiResultCode(paymentDetailsResponse.getResultCode().getValue());
+        transactionModel.setAdyenStatus(paymentDetailsResponse.getResultCode().getValue());
         transactionModel.setOriginalPspReference(paymentDetailsResponse.getPspReference());
         transactionModel.setLastModifiedAt(OffsetDateTime.now());
         transactionRepository.save(transactionModel);
@@ -290,7 +290,7 @@ public class PaymentsService {
 
         //Update Database
         TransactionModel transactionModel = transactionRepository.findByMerchantReference(paymentDetailsResponse.getMerchantReference()).orElseThrow(() -> new EntityNotFoundException("Transaction not found"));
-        transactionModel.setApiResultCode(paymentDetailsResponse.getResultCode().getValue());
+        transactionModel.setAdyenStatus(paymentDetailsResponse.getResultCode().getValue());
         transactionModel.setOriginalPspReference(paymentDetailsResponse.getPspReference());
         transactionModel.setLastModifiedAt(OffsetDateTime.now());
         transactionRepository.save(transactionModel);

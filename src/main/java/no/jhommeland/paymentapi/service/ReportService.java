@@ -2,9 +2,9 @@ package no.jhommeland.paymentapi.service;
 
 import no.jhommeland.paymentapi.dao.EventRepository;
 import no.jhommeland.paymentapi.dao.MerchantRepository;
-import no.jhommeland.paymentapi.model.EventModel;
-import no.jhommeland.paymentapi.model.MerchantModel;
-import no.jhommeland.paymentapi.model.ReportModel;
+import no.jhommeland.paymentapi.dao.TransactionRepository;
+import no.jhommeland.paymentapi.model.*;
+import no.jhommeland.paymentapi.util.LogUtil;
 import no.jhommeland.paymentapi.util.ReconciliationUtil;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,19 +22,18 @@ public class ReportService {
 
     private static final Logger logger = LoggerFactory.getLogger(ReportService.class);
 
-    private final String SETTLEMENT_DETAIL_REPORT_TYPE = "settlement_detail_report";
-
-    private final String PAYMENTS_ACCOUNT_REPORT_TYPE = "payments_accounting_report";
-
     private final String REPORT_AVAILABLE_EVENT = "REPORT_AVAILABLE";
 
     private final EventRepository eventRepository;
 
     private final MerchantRepository merchantRepository;
 
-    public ReportService(EventRepository eventRepository, MerchantRepository merchantRepository) {
+    private final TransactionRepository transactionRepository;
+
+    public ReportService(EventRepository eventRepository, MerchantRepository merchantRepository, TransactionRepository transactionRepository) {
         this.eventRepository = eventRepository;
         this.merchantRepository = merchantRepository;
+        this.transactionRepository = transactionRepository;
     }
 
     public List<ReportModel> getReports() {
@@ -62,34 +62,79 @@ public class ReportService {
         MerchantModel merchantModel = merchantRepository.findByAdyenMerchantAccount(eventModel.getMerchantAccountCode()).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
 
-        List<CSVRecord> records = ReconciliationUtil.downloadAndParseCsv(eventModel.getReason(), merchantModel.getAdyenReportApiKey());
-        if (eventModel.getReason().contains(SETTLEMENT_DETAIL_REPORT_TYPE)) {
-            return reconcileSdr(records);
-        } else if (eventModel.getReason().contains(PAYMENTS_ACCOUNT_REPORT_TYPE)) {
-            return reconcilePar(records);
-        }
+        StringBuilder reconcileLog = new StringBuilder();
+        LogUtil.appendLogLine(reconcileLog, String.format("Processing %s", eventModel.getPspReference()));
 
-        return ReconciliationUtil.createLogLine("Unsupported report type: " + requestModel.getReportType());
-    }
-
-    private String reconcileSdr(List<CSVRecord> records) {
-
-        StringBuilder reconcileLog = new StringBuilder(ReconciliationUtil.createLogLine(String.format("=== Processing %d records ===", records.size())));
-        for (CSVRecord record : records) {
-            reconcileLog.append(ReconciliationUtil.createLogLine(String.format("Creation Date=%s Type=%s, PspReference=%s", record.get("Creation Date"), record.get("Type"), record.get("Psp Reference"))));
+        ReportType reportType = ReportType.getReportTypeFromFilename(eventModel.getPspReference());
+        if (reportType != null) {
+            List<CSVRecord> records = ReconciliationUtil.downloadAndParseCsv(eventModel.getReason(), merchantModel.getAdyenReportApiKey());
+            reconcileTransactionStatus(records, reportType, reconcileLog);
+        } else {
+            LogUtil.appendLogLine(reconcileLog, "Unsupported report type: " + requestModel.getReportType());
         }
 
         return reconcileLog.toString();
     }
 
-    private String reconcilePar(List<CSVRecord> records) {
-
-        StringBuilder reconcileLog = new StringBuilder(ReconciliationUtil.createLogLine(String.format("=== Processing %d records ===", records.size())));
+    private void reconcileTransactionStatus(List<CSVRecord> records, ReportType reportType, StringBuilder reconcileLog) {
+        LogUtil.appendLogLine(reconcileLog, String.format("%d records found", records.size()));
         for (CSVRecord record : records) {
-            reconcileLog.append(ReconciliationUtil.createLogLine(String.format("Booking Date=%s Record Type=%s, PspReference=%s", record.get("Booking Date"), record.get("Record Type"), record.get("Psp Reference"))));
+            ReconciliationModel reconciliationModel = convertToReconciliationModel(record);
+            transactionRepository.findByMerchantReference(reconciliationModel.getMerchantReference()).ifPresentOrElse(
+                    transaction -> {
+                        LogUtil.appendLogLine(reconcileLog, String.format("(%s) Reconciling adyen status (%s -> %s)", reconciliationModel.getMerchantReference(), transaction.getAdyenStatus(), reconciliationModel.getRecordType()));
+                        transaction.setAdyenStatus(reconciliationModel.getRecordType());
+                        transaction.setPaymentMethod(reconciliationModel.getPaymentMethod());
+                        if (ReportType.SETTLEMENT_DETAIL_REPORT == reportType) {
+                            transaction.setOriginalPspReference(reconciliationModel.getPspReference());
+                            transaction.setPspReference(reconciliationModel.getModificationReference());
+                        } else if (ReportType.PAYMENTS_ACCOUNTING_REPORT == reportType) {
+                            setPspReference(transaction, reconciliationModel);
+                        }
+                        transaction.setLastModifiedAt(OffsetDateTime.now());
+                        TransactionStatus transactionStatus = TransactionStatus.getStatusFromAdyenStatus(reconciliationModel.getRecordType());
+                        if (transactionStatus != null) {
+                            LogUtil.appendLogLine(reconcileLog, String.format("(%s) Updating transaction status (%s -> %s)", reconciliationModel.getMerchantReference(), transaction.getStatus(), transactionStatus.getStatus()));
+                            transaction.setAdyenStatus(reconciliationModel.getRecordType());
+                            transaction.setStatus(transactionStatus.getStatus());
+                        }
+                        transactionRepository.save(transaction);
+                    },
+                    () -> {
+                        LogUtil.appendLogLine(reconcileLog, "Could not find transaction " + reconciliationModel.getMerchantReference());
+                    }
+            );
         }
+    }
 
-        return reconcileLog.toString();
+    private void setPspReference(TransactionModel transactionModel, ReconciliationModel reconciliationModel) {
+        if (transactionModel.getOriginalPspReference() == null) {
+            transactionModel.setOriginalPspReference(reconciliationModel.getPspReference());
+        } else if (!transactionModel.getOriginalPspReference().equals(reconciliationModel.getPspReference())) {
+            transactionModel.setPspReference(reconciliationModel.getPspReference());
+        }
+    }
+
+    private ReconciliationModel convertToReconciliationModel(CSVRecord record) {
+        ReconciliationModel reconciliationModel = new ReconciliationModel();
+        reconciliationModel.setMerchantReference(getRecord(record,"Merchant Reference"));
+        reconciliationModel.setRecordType(getRecord(record, "Type"));
+        if (reconciliationModel.getRecordType() == null) {
+            reconciliationModel.setRecordType(getRecord(record, "Record Type"));
+        }
+        reconciliationModel.setPaymentMethod(getRecord(record, "Payment Method"));
+        reconciliationModel.setPspReference(getRecord(record, "Psp Reference"));
+        reconciliationModel.setModificationReference(getRecord(record, "Modification Reference"));
+        return reconciliationModel;
+    }
+
+    private String getRecord(CSVRecord record, String key) {
+        String value = null;
+        try {
+            value = record.get(key);
+        } catch (IllegalArgumentException ignored) {
+        }
+        return value;
     }
 
 }
