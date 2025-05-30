@@ -23,7 +23,7 @@ public class ReportService {
 
     private final String SETTLEMENT_DETAIL_REPORT_TYPE = "settlement_detail_report";
 
-    private final String PAYMENTS_ACCOUNT_REPORT_TYPE = "payments_account_report";
+    private final String PAYMENTS_ACCOUNT_REPORT_TYPE = "payments_accounting_report";
 
     private final String REPORT_AVAILABLE_EVENT = "REPORT_AVAILABLE";
 
@@ -69,14 +69,14 @@ public class ReportService {
             return reconcilePar(records);
         }
 
-        return "Unsupported report type: " + requestModel.getReportType();
+        return ReconciliationUtil.createLogLine("Unsupported report type: " + requestModel.getReportType());
     }
 
     private String reconcileSdr(List<CSVRecord> records) {
 
-        StringBuilder reconcileLog = new StringBuilder(String.format("=== Processing %d records ===\n", records.size()));
+        StringBuilder reconcileLog = new StringBuilder(ReconciliationUtil.createLogLine(String.format("=== Processing %d records ===", records.size())));
         for (CSVRecord record : records) {
-            reconcileLog.append(String.format("Creation Date=%s Type=%s, PspReference=%s\n", record.get("Creation Date"), record.get("Type"), record.get("Psp Reference")));
+            reconcileLog.append(ReconciliationUtil.createLogLine(String.format("Creation Date=%s Type=%s, PspReference=%s", record.get("Creation Date"), record.get("Type"), record.get("Psp Reference"))));
         }
 
         return reconcileLog.toString();
@@ -84,9 +84,9 @@ public class ReportService {
 
     private String reconcilePar(List<CSVRecord> records) {
 
-        StringBuilder reconcileLog = new StringBuilder(String.format("=== Processing %d records ===\n", records.size()));
+        StringBuilder reconcileLog = new StringBuilder(ReconciliationUtil.createLogLine(String.format("=== Processing %d records ===", records.size())));
         for (CSVRecord record : records) {
-            reconcileLog.append(String.format("Booking Date=%s Record Type=%s, PspReference=%s\n", record.get("Booking Date"), record.get("Record Type"), record.get("Psp Reference")));
+            reconcileLog.append(ReconciliationUtil.createLogLine(String.format("Booking Date=%s Record Type=%s, PspReference=%s", record.get("Booking Date"), record.get("Record Type"), record.get("Psp Reference"))));
         }
 
         return reconcileLog.toString();

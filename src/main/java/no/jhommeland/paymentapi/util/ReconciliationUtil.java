@@ -12,12 +12,21 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ReconciliationUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(ReconciliationUtil.class);
+
+    private static final DateTimeFormatter logLineDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
+
+    public static String createLogLine(String line) {
+        return String.format("%s - %s\n", LocalDateTime.now().format(logLineDateFormatter), line);
+    }
 
     public static List<CSVRecord> downloadAndParseCsv(String url, String apiKey) {
 

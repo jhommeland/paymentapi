@@ -231,6 +231,12 @@ button:disabled {
 
 /* ---------- Miscellaneous ---------- */
 
+textarea {
+    width: 100%;
+    min-height: 400px;
+    max-height: 400px;
+}
+
 .hidden {
     display: none;
 }
