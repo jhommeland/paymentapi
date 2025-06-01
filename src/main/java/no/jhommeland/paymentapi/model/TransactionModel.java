@@ -37,7 +37,7 @@ public class TransactionModel {
 
     private String currency;
 
-    private String apiResultCode;
+    private String adyenStatus;
 
     private String errorReason;
 
@@ -127,12 +127,12 @@ public class TransactionModel {
         this.currency = currency;
     }
 
-    public String getApiResultCode() {
-        return apiResultCode;
+    public String getAdyenStatus() {
+        return adyenStatus;
     }
 
-    public void setApiResultCode(String apiResultCode) {
-        this.apiResultCode = apiResultCode;
+    public void setAdyenStatus(String adyenStatus) {
+        this.adyenStatus = adyenStatus;
     }
 
     public OffsetDateTime getCreatedAt() {

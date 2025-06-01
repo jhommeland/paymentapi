@@ -15,6 +15,8 @@ import java.util.UUID;
 
 public class PaymentUtil {
 
+    public static final String PAYMENT_TYPE_SCHEME = "scheme";
+
     private static final Logger logger = LoggerFactory.getLogger(PaymentUtil.class);
 
     private static final ObjectMapper objectMapper = new ObjectMapper();

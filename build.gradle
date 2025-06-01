@@ -26,6 +26,7 @@ dependencies {
 	implementation 'com.adyen:adyen-java-api-library:35.0.0'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	implementation 'org.apache.commons:commons-lang3:3.0'
+	implementation 'org.apache.commons:commons-csv:1.14.0'
 	implementation 'commons-io:commons-io:2.18.0'
 
 	runtimeOnly 'org.postgresql:postgresql'

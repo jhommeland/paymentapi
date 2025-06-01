@@ -125,6 +125,22 @@ export class PaymentsUtil {
         }
     }
 
+    static async getReports() {
+        try {
+            // Direct use of await to wait for the response
+            const response = await axios.get('/reports');
+
+            // Log and return the server response data
+            console.log('Reports Retrieved:', response.data);
+            return response.data;
+        } catch (error) {
+            // Handle error and return null in case of failure
+            console.error('Reports Retrieval Error:', error);
+            return null;
+        }
+    }
+
+
     static async capturePayment(transactionId) {
         try {
             // Direct use of await to wait for the response
@@ -154,6 +170,24 @@ export class PaymentsUtil {
         } catch (error) {
             // Handle error and return null in case of failure
             console.error('Revert Error:', error);
+        }
+    }
+
+    static async reconcile(eventId) {
+        try {
+            // Direct use of await to wait for the response
+            const response = await axios.post('/reconcile', {
+                eventId: eventId
+            });
+
+            // Log the response and reload page
+            console.log('Reconciliation Success:', PaymentsUtil.printObject(response.data));
+            const reconciliationLog = document.getElementById("reconciliationLog");
+            reconciliationLog.value += response.data;
+            reconciliationLog.scrollTop = reconciliationLog.scrollHeight;
+        } catch (error) {
+            // Handle error and return null in case of failure
+            console.error('Reconciliation Error:', error);
         }
     }
 
@@ -358,10 +392,14 @@ export class PaymentsUtil {
                     holderNameRequired: true, // Mark the cardholder name field as required.
                     installmentOptions: {
                         card: {
-                            values: [1,2,4,6]
-                        }
+                            values: [1, 2, 3, 4, 5]
+                        },
+                        showInstallmentAmounts: false
                     },
-                    showInstallmentAmounts: true
+                    showInstallmentAmounts: false,
+                    onBinLookup: (binData) => {
+                        console.log(binData)
+                    }
                 }
             }
         }
@@ -422,8 +460,8 @@ export class PaymentsUtil {
         });
     }
 
-    static populateTransactionFilterDropdown(fieldName, filterObject, transactions) {
-        const uniqueValues = new Set(transactions.map((transaction) => transaction[fieldName]));
+    static populateFilterDropdown(fieldName, filterObject, elements) {
+        const uniqueValues = new Set(elements.map((element) => element[fieldName]));
         Array.from(uniqueValues).map((value) => {
             const option = document.createElement('option');
             option.value = value;
@@ -432,13 +470,13 @@ export class PaymentsUtil {
         });
     }
 
-    static filterTransactions(fieldName, filterValue, transactions) {
+    static filterElements(fieldName, filterValue, elements) {
         if (filterValue === "all") {
-            return transactions
+            return elements
         }
 
-        return transactions.filter(
-            (transaction) => transaction[fieldName] === filterValue
+        return elements.filter(
+            (element) => element[fieldName] === filterValue
         );
     }
 

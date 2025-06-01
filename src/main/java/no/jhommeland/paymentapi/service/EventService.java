@@ -6,10 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import no.jhommeland.paymentapi.dao.MerchantRepository;
 import no.jhommeland.paymentapi.dao.TransactionRepository;
 import no.jhommeland.paymentapi.dao.EventRepository;
-import no.jhommeland.paymentapi.model.AdyenWebhookModel;
-import no.jhommeland.paymentapi.model.MerchantModel;
-import no.jhommeland.paymentapi.model.TransactionModel;
-import no.jhommeland.paymentapi.model.EventModel;
+import no.jhommeland.paymentapi.model.*;
 import no.jhommeland.paymentapi.util.PaymentUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +32,6 @@ public class EventService {
 
     private final TransactionRepository transactionRepository;
 
-
     public EventService(MerchantRepository merchantRepository, TransactionRepository transactionRepository, EventRepository eventRepository) {
         this.merchantRepository = merchantRepository;
         this.transactionRepository = transactionRepository;
@@ -53,23 +49,31 @@ public class EventService {
                     throw new EntityNotFoundException("Invalid HMAC Data");
                 }
                 TransactionModel transactionModel = transactionRepository.findByMerchantReference(eventModel.getMerchantReference()).orElseThrow(() -> new EntityNotFoundException("Transaction not found"));
-                transactionModel.setStatus(eventModel.getEventCode());
+                if (transactionModel.getStatus().equals(eventModel.getEventCode())) {
+                    logger.info("Skipping duplicated event. eventCode={}, id={}", eventModel.getEventCode(), eventModel.getId());
+                }
                 transactionModel.setPaymentMethod(eventModel.getPaymentMethod());
                 if (!eventModel.getSuccess().equals(EVENT_IS_SUCCESS)) {
-                    transactionModel.setErrorReason(eventModel.getReason());
+                    transactionModel.setPspReference(null);
+                    transactionModel.setErrorReason(eventModel.getEventCode() + ": " + eventModel.getReason());
+                } else {
+                    transactionModel.setStatus(eventModel.getEventCode());
+                    setPspReference(transactionModel, eventModel);
                 }
-                if (transactionModel.getOriginalPspReference() == null) {
-                    transactionModel.setOriginalPspReference(eventModel.getPspReference());
-                } else if (!transactionModel.getOriginalPspReference().equals(eventModel.getPspReference())) {
-                    transactionModel.setPspReference(eventModel.getPspReference());
-                }
-
                 transactionModel.setLastModifiedAt(OffsetDateTime.now());
                 transactionRepository.save(transactionModel);
             } catch (Exception e) {
                 logger.error("Error processing event: id={}, errorMessage={}", eventModel.getId(), e.getMessage());
             }
         });
+    }
+
+    private void setPspReference(TransactionModel transactionModel, EventModel eventModel) {
+        if (transactionModel.getOriginalPspReference() == null) {
+            transactionModel.setOriginalPspReference(eventModel.getPspReference());
+        } else if (!transactionModel.getOriginalPspReference().equals(eventModel.getPspReference())) {
+            transactionModel.setPspReference(eventModel.getPspReference());
+        }
     }
 
     private EventModel convertToEventModel(NotificationRequestItem item) {

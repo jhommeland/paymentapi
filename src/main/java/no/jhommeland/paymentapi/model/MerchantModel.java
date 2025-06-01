@@ -27,6 +27,9 @@ public class MerchantModel {
     private String adyenApiKey;
 
     @JsonIgnore
+    private String adyenReportApiKey;
+
+    @JsonIgnore
     private String adyenClientKey;
 
     @JsonIgnore
@@ -79,6 +82,14 @@ public class MerchantModel {
 
     public void setAdyenApiKey(String adyenApiKey) {
         this.adyenApiKey = adyenApiKey;
+    }
+
+    public String getAdyenReportApiKey() {
+        return adyenReportApiKey;
+    }
+
+    public void setAdyenReportApiKey(String adyenReportApiKey) {
+        this.adyenReportApiKey = adyenReportApiKey;
     }
 
     public String getAdyenClientKey() {

@@ -1,0 +1,48 @@
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Manage Reports</title>
+</head>
+<div layout:fragment="content" class="top-container">
+    <div class="manage-form-container">
+        <a href="/" class="back-button">← Back</a>
+
+        <h1>Report Management</h1>
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label for="merchantFilter">Merchant:</label>
+                <select id="merchantFilter">
+                    <!-- Options will be dynamically added here -->
+                </select>
+
+                <label for="reportTypeFilter">Report Type:</label>
+                <select id="reportTypeFilter">
+                    <option value="all">All</option>
+                    <!-- Options will be dynamically added here -->
+                </select>
+            </div>
+
+            <div class="report-count">
+                <span>Report Count:</span>
+                <span id="reportCount"></span>
+            </div>
+        </div>
+        <table id="elementTable" style="white-space: nowrap">
+            <thead>
+            <tr>
+                <th>Creation Date</th>
+                <th>Filename</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Table rows will be populated dynamically using JavaScript -->
+            </tbody>
+        </table>
+        <h1>Log</h1>
+        <textarea id="reconciliationLog" readonly></textarea>
+    </div>
+    <script type="module" src="/js/report.js"></script>
+</div>

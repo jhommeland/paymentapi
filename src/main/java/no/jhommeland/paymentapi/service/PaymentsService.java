@@ -133,11 +133,26 @@ public class PaymentsService {
         ShopperModel shopperModel = StringUtils.isEmpty(requestModel.getShopperId()) ? new ShopperModel() : shopperRepository.findById(requestModel.getShopperId()).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Shopper not found"));
 
+        String paymentType = PaymentUtil.getPaymentType(requestModel.getPaymentMethod());
+
+        //This is not required, just a POC of using encryptedCardNumber to look up card details before the payment.
+        if (PaymentUtil.PAYMENT_TYPE_SCHEME.equals(paymentType)) {
+            CardDetails cardDetails = requestModel.getPaymentMethod().getCardDetails();
+            CardDetailsRequest cardDetailsRequest = new CardDetailsRequest()
+                    .merchantAccount(merchantModel.getAdyenMerchantAccount())
+                    .encryptedCardNumber(cardDetails.getEncryptedCardNumber());
+            try {
+                adyenPaymentsApiDao.callCardDetailsApi(cardDetailsRequest, merchantModel.getAdyenApiKey());
+            } catch (ResponseStatusException e) {
+                logger.warn("Could not retrieve card details.");
+            }
+        }
+
         //Save to Database
         TransactionModel transactionModel = new TransactionModel();
         transactionModel.setMerchantAccountName(merchantModel.getAdyenMerchantAccount());
         transactionModel.setShopperInteraction(requestModel.getShopperInteraction());
-        transactionModel.setPaymentMethod(PaymentUtil.getPaymentType(requestModel.getPaymentMethod()));
+        transactionModel.setPaymentMethod(paymentType);
         transactionModel.setStatus(TransactionStatus.REGISTERED.getStatus());
         transactionModel.setAmount(requestModel.getAmount());
         transactionModel.setCurrency(requestModel.getCurrency());
@@ -158,7 +173,7 @@ public class PaymentsService {
                 .shopperReference(shopperModel.getShopperReference())
                 .shopperInteraction(PaymentRequest.ShopperInteractionEnum.fromValue(transactionModel.getShopperInteraction()))
                 .storePaymentMethod(STRING_TRUE_VALUE.equals(requestModel.getSavePaymentMethod()))
-                .recurringProcessingModel(PaymentRequest.RecurringProcessingModelEnum.CARDONFILE)
+                .recurringProcessingModel(PaymentUtil.PAYMENT_TYPE_SCHEME.equals(paymentType) ? PaymentRequest.RecurringProcessingModelEnum.CARDONFILE : null)
                 .channel(PaymentRequest.ChannelEnum.WEB)
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())
@@ -174,7 +189,7 @@ public class PaymentsService {
 
         //Save to Database
         transactionModel.setStatus(TransactionStatus.AWAITING_AUTHORISATION.getStatus());
-        transactionModel.setApiResultCode(paymentResponse.getResultCode().getValue());
+        transactionModel.setAdyenStatus(paymentResponse.getResultCode().getValue());
         transactionModel.setOriginalPspReference(paymentResponse.getPspReference());
         transactionModel.setLastModifiedAt(OffsetDateTime.now());
         transactionRepository.save(transactionModel);
@@ -251,7 +266,7 @@ public class PaymentsService {
         //Update Database
         TransactionModel transactionModel = transactionRepository.findByMerchantReference(paymentDetailsResponse.getMerchantReference()).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Transaction Not Found"));
-        transactionModel.setApiResultCode(paymentDetailsResponse.getResultCode().getValue());
+        transactionModel.setAdyenStatus(paymentDetailsResponse.getResultCode().getValue());
         transactionModel.setOriginalPspReference(paymentDetailsResponse.getPspReference());
         transactionModel.setLastModifiedAt(OffsetDateTime.now());
         transactionRepository.save(transactionModel);
@@ -275,7 +290,7 @@ public class PaymentsService {
 
         //Update Database
         TransactionModel transactionModel = transactionRepository.findByMerchantReference(paymentDetailsResponse.getMerchantReference()).orElseThrow(() -> new EntityNotFoundException("Transaction not found"));
-        transactionModel.setApiResultCode(paymentDetailsResponse.getResultCode().getValue());
+        transactionModel.setAdyenStatus(paymentDetailsResponse.getResultCode().getValue());
         transactionModel.setOriginalPspReference(paymentDetailsResponse.getPspReference());
         transactionModel.setLastModifiedAt(OffsetDateTime.now());
         transactionRepository.save(transactionModel);

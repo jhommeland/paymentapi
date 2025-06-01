@@ -38,6 +38,13 @@ public class AdyenPaymentsApiDao {
                 , createCheckoutSessionRequest);
     }
 
+    public CardDetailsResponse callCardDetailsApi(CardDetailsRequest cardDetailsRequest, String adyenApiKey) {
+        PaymentsApi paymentsApi = initializePaymentsApi(adyenApiKey);
+        return PaymentUtil.executeApiCall(() ->
+                        paymentsApi.cardDetails(cardDetailsRequest, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()))
+                , cardDetailsRequest);
+    }
+
     public PaymentResponse callPaymentApi(PaymentRequest paymentRequest, String adyenApiKey) {
         PaymentsApi paymentsApi = initializePaymentsApi(adyenApiKey);
         return PaymentUtil.executeApiCall(() ->
