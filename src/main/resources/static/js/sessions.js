@@ -1,5 +1,6 @@
 //Utility Class Import
 import { PaymentsUtil } from './paymentsUtil.js';
+import { CheckoutUtil } from './checkoutUtil.js';
 
 async function initializeCheckout() {
 
@@ -10,6 +11,7 @@ async function initializeCheckout() {
     const countryCode = document.getElementById("country").value;
     const savePaymentMethod = document.getElementById("savePaymentMethod").value;
 
+    const checkoutVersion = localStorage.getItem("selectedCheckoutVersion");
     const merchantId = localStorage.getItem("selectedMerchant");
     const shopperId = localStorage.getItem("selectedShopper");
 
@@ -37,9 +39,8 @@ async function initializeCheckout() {
         }
     };
 
-    const { AdyenCheckout, Dropin, Card } = window.AdyenWeb;
-    const checkout = await AdyenCheckout(configuration);
-    const dropin = new Dropin(checkout, PaymentsUtil.getDropinConfiguration(amount, currency, countryCode)).mount('#dropin-container')
+    const dropinConfiguration = PaymentsUtil.getDropinConfiguration(amount, currency, countryCode);
+    await CheckoutUtil.mountCheckout('dropin', configuration, dropinConfiguration, checkoutVersion);
 
     const inputForm = document.getElementById("inputForm");
     const checkoutForm = document.getElementById("checkoutForm");

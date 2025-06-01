@@ -33,6 +33,8 @@ async function getShoppers() {
 }
 
 async function initializeDropdown() {
+
+    //Select Merchant Dropdown
     merchants = await getMerchants();
     merchants.forEach(merchant => {
         const option = document.createElement("option");
@@ -40,7 +42,12 @@ async function initializeDropdown() {
         option.textContent = merchant.adyenMerchantAccount;
         merchantDropdown.appendChild(option);
     });
+    const selectedMerchant = localStorage.getItem("selectedMerchant");
+    if (selectedMerchant) {
+        merchantDropdown.value = selectedMerchant;
+    }
 
+    //Select Shopper Dropdown
     shoppers = await getShoppers();
     shoppers.forEach(shopper => {
         const option = document.createElement("option");
@@ -48,16 +55,15 @@ async function initializeDropdown() {
         option.textContent = shopper.firstName + " " + shopper.lastName;
         shopperDropdown.appendChild(option);
     });
-
-    const selectedMerchant = localStorage.getItem("selectedMerchant");
-    if (selectedMerchant) {
-        merchantDropdown.value = selectedMerchant;
-    }
     shopperDropdown.value = localStorage.getItem("selectedShopper");
+
+    //Select Checkout version dropdown
+    checkoutVersionDropdown.value = localStorage.getItem("selectedCheckoutVersion");
 }
 
 const merchantDropdown = document.getElementById("merchant-select");
 const shopperDropdown = document.getElementById("shopper-select");
+const checkoutVersionDropdown = document.getElementById("checkout-version-select");
 
 merchantDropdown.addEventListener("change", function(event) {
     const selectedValue = event.target.value;
@@ -79,6 +85,11 @@ shopperDropdown.addEventListener("change", function(event) {
         }
     });
 
+    window.location.reload();
+});
+checkoutVersionDropdown.addEventListener("change", function(event) {
+    const selectedValue = event.target.value;
+    localStorage.setItem("selectedCheckoutVersion", selectedValue);
     window.location.reload();
 });
 
