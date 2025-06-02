@@ -26,20 +26,20 @@ async function initializeCheckout() {
         countryCode: countryCode,
         locale: locale,
         onAdditionalDetails: async (state, component, actions) => {
-            await PaymentsUtil.onAdditionalDetails(merchantId, state, component, actions);
+            await CheckoutUtil.onAdditionalDetails(merchantId, state, component, actions);
         },
         onPaymentCompleted: (result, component) => {
-            PaymentsUtil.onPaymentEvent(result, component);
+            CheckoutUtil.onPaymentEvent(result, component);
         },
         onPaymentFailed: (result, component) => {
-            PaymentsUtil.onPaymentEvent(result, component);
+            CheckoutUtil.onPaymentEvent(result, component);
         },
         onError: (error, component) => {
-            PaymentsUtil.onPaymentEvent(error, component);
+            CheckoutUtil.onPaymentEvent(error, component);
         }
     };
 
-    const dropinConfiguration = PaymentsUtil.getDropinConfiguration(amount, currency, countryCode);
+    const dropinConfiguration = CheckoutUtil.getDropinConfiguration(amount, currency, countryCode);
     await CheckoutUtil.mountCheckout('dropin', configuration, dropinConfiguration, checkoutVersion);
 
     const inputForm = document.getElementById("inputForm");

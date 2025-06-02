@@ -1,6 +1,107 @@
+import { PaymentsUtil } from './paymentsUtil.js';
+
 export class CheckoutUtil {
 
     static MOUNT_CONTAINER = "#dropin-container";
+
+    static getDropinConfiguration(amount, currency, countryCode) {
+        const dropinConfiguration = {
+            paymentMethodsConfiguration: {
+                applepay: {
+                    amount: {
+                        value: amount,
+                        currency: currency
+                    },
+                    countryCode: countryCode
+                },
+                card: {
+                    hasHolderName: true,
+                    holderNameRequired: true,
+                    installmentOptions: {
+                        card: {
+                            values: [1, 2, 3, 4, 5]
+                        },
+                        showInstallmentAmounts: false
+                    },
+                    showInstallmentAmounts: false,
+                    onBinLookup: (binData) => {
+                        console.log("BIN data retrieved:", binData)
+                    }
+                }
+            }
+        }
+        return dropinConfiguration;
+    }
+
+    static async onSubmitPayment(state, component, actions, merchantId, shopperId, amount, currency, countryCode, locale, tdsMode, origin, savePaymentMethod) {
+        try {
+            // Make a POST /payments request from your server.
+            const result = await PaymentsUtil.makePaymentsCall(state.data, merchantId, shopperId, amount, currency, countryCode, locale, tdsMode, origin, savePaymentMethod);
+
+            // If the /payments request from your server fails, or if an unexpected error occurs.
+            if (!result.resultCode) {
+                actions.reject();
+                return;
+            }
+
+            const {
+                resultCode,
+                action,
+                order,
+                donationToken
+            } = result;
+
+            // If the /payments request form your server is successful, you must call this to resolve whichever of the listed objects are available.
+            // You must call this, even if the result of the payment is unsuccessful.
+            actions.resolve({
+                resultCode,
+                action,
+                order,
+                donationToken,
+            });
+        } catch (error) {
+            console.error("onSubmit", error);
+            actions.reject();
+        }
+    }
+
+    static async onAdditionalDetails(merchantId, state, component, actions) {
+        try {
+
+            // Make a POST /payments/details request from your server.
+            const result = await PaymentsUtil.makeDetailsCall(merchantId, state.data);
+
+            // If the /payments/details request from your server fails, or if an unexpected error occurs.
+            if (!result.resultCode) {
+                actions.reject();
+                return;
+            }
+
+            const {
+                resultCode,
+                action,
+                order,
+                donationToken
+            } = result;
+
+            // If the /payments/details request from your server is successful, you must call this to resolve whichever of the listed objects are available.
+            // You must call this, even if the result of the payment is unsuccessful.
+            actions.resolve({
+                resultCode,
+                action,
+                order,
+                donationToken,
+            });
+        } catch (error) {
+            console.error("onSubmit", error);
+            actions.reject();
+        }
+    }
+
+    static onPaymentEvent(result, component) {
+        const resultUrl = "/html/result.html?result=";
+        window.location.href = resultUrl + btoa(JSON.stringify(result));
+    }
 
     static async mountCheckout(component, checkoutConfiguration, dropinConfiguration, version) {
 
