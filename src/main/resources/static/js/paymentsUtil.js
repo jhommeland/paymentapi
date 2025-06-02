@@ -377,7 +377,6 @@ export class PaymentsUtil {
 
     static getDropinConfiguration(amount, currency, countryCode) {
         const dropinConfiguration = {
-            // Other Drop-in configuration...
             paymentMethodsConfiguration: {
                 applepay: {
                     amount: {
@@ -387,9 +386,8 @@ export class PaymentsUtil {
                     countryCode: countryCode
                 },
                 card: {
-                    // Optional configuration.
-                    hasHolderName: true, // Show the cardholder name field.
-                    holderNameRequired: true, // Mark the cardholder name field as required.
+                    hasHolderName: true,
+                    holderNameRequired: true,
                     installmentOptions: {
                         card: {
                             values: [1, 2, 3, 4, 5]
@@ -398,7 +396,7 @@ export class PaymentsUtil {
                     },
                     showInstallmentAmounts: false,
                     onBinLookup: (binData) => {
-                        console.log(binData)
+                        console.log("BIN data retrieved:", binData)
                     }
                 }
             }

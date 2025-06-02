@@ -24,9 +24,9 @@ export class CheckoutUtil {
     static initiateCheckoutV6FromComponent(component, checkout, dropinConfiguration) {
         switch (component) {
             case "applepay":
-                return new window.AdyenWeb.ApplePay(checkout, dropinConfiguration);
+                return new window.AdyenWeb.ApplePay(checkout, dropinConfiguration.paymentMethodsConfiguration.applepay);
             case "card":
-                return new window.AdyenWeb.Card(checkout, dropinConfiguration);
+                return new window.AdyenWeb.Card(checkout, dropinConfiguration.paymentMethodsConfiguration.card);
             default:
                 return new window.AdyenWeb.Dropin(checkout, dropinConfiguration);
         }
