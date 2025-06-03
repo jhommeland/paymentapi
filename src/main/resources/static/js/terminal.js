@@ -19,27 +19,38 @@ async function processPayment() {
     const poiId = document.getElementById("poiId").value
     const apiType = document.getElementById("apiType").value;
     const localEndpoint = document.getElementById("localEndpoint").value;
-    const connectionType = document.getElementById("connectionType").value;
+    const connectionTypeElement = document.getElementById("connectionType");
+    const connectionTypeValue = connectionTypeElement.value;
+    const connectionTypeText = connectionTypeElement.options[connectionTypeElement.selectedIndex].text;
     const connectionTimeout = document.getElementById("connectionTimeout").value;
     const savePaymentMethod = document.getElementById("savePaymentMethod").value;
     const merchantId = localStorage.getItem("selectedMerchant");
     const shopperId = localStorage.getItem("selectedShopper");
     const printReceipt = document.getElementById("printReceipt").value;
-    const serviceId = PaymentsUtil.generateServiceId();
 
-    localStorage.setItem("currentServiceId", serviceId);
+    let shouldLoop = true;
+    let terminalResponse = null;
+    while(shouldLoop) {
+        const serviceId = PaymentsUtil.generateServiceId();
+        localStorage.setItem("currentServiceId", serviceId);
 
-    let terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, shopperId, poiId, amount, currency, apiType, localEndpoint, connectionType, printReceipt, connectionTimeout, savePaymentMethod);
-    if (terminalResponse == null) {
-        console.log("Payment call interrupted. Starting polling.")
-        for (let i = 1; i < PAYMENT_STATUS_POLL_COUNT+1; i++) {
-            console.log("Polling " + i);
-            terminalResponse = await PaymentsUtil.makeTerminalPaymentStatusCall(merchantId, poiId, serviceId, apiType, localEndpoint);
-            if (terminalResponse.reason != "InProgress") {
-                break;
+        terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, shopperId, poiId, amount, currency, apiType, localEndpoint, connectionTypeValue, printReceipt, connectionTimeout, savePaymentMethod);
+        if (terminalResponse == null) {
+            console.log("Payment call interrupted. Starting polling.")
+            for (let i = 1; i < PAYMENT_STATUS_POLL_COUNT+1; i++) {
+                console.log("Polling " + i);
+                terminalResponse = await PaymentsUtil.makeTerminalPaymentStatusCall(merchantId, poiId, serviceId, apiType, localEndpoint);
+                if (terminalResponse.reason != "InProgress") {
+                    break;
+                }
             }
         }
+
+        const shouldCancel = document.getElementById("cancel-button").disabled;
+        shouldLoop = (connectionTypeText === "SynchronousLoop") && !shouldCancel;
     }
+
+
 
     const tableBody = document.getElementById("result-table");
     Object.entries(terminalResponse).forEach(([key, value]) => {

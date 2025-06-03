@@ -192,6 +192,7 @@ export class PaymentsUtil {
     }
 
     static async makeTerminalPaymentCall(merchantId, serviceId, shopperId, poiId, amount, currency, apiType, localEndpoint, connectionType, printReceipt, timeout, savePaymentMethod) {
+        console.log('Will do terminals payments call with serviceId:', serviceId);
         try {
             // Direct use of await to wait for the response
             const response = await axios.post('/terminal/payments', {
