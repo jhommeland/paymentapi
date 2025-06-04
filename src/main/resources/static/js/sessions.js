@@ -4,18 +4,27 @@ import { CheckoutUtil } from './checkoutUtil.js';
 
 async function initializeCheckout() {
 
+    PaymentsUtil.disableWithMessage("startPaymentButton", "Loading...");
+
     const amount = document.getElementById("amount").value
     const currency = document.getElementById("currency").value;
     const locale = document.getElementById("language").value;
     const tdsMode = document.getElementById("tdsMode").value;
     const countryCode = document.getElementById("country").value;
     const savePaymentMethod = document.getElementById("savePaymentMethod").value;
+    const sessionsMode = document.getElementById("sessionsMode").value;
 
     const checkoutVersion = localStorage.getItem("selectedCheckoutVersion");
     const merchantId = localStorage.getItem("selectedMerchant");
     const shopperId = localStorage.getItem("selectedShopper");
 
-    const sessionsResponse = await PaymentsUtil.makeSessionsCall(merchantId, shopperId, amount, currency, countryCode, locale, tdsMode, savePaymentMethod);
+    const sessionsResponse = await PaymentsUtil.makeSessionsCall(merchantId, shopperId, amount, currency, countryCode, locale, tdsMode, savePaymentMethod, sessionsMode);
+    if (sessionsMode === "hosted") {
+        PaymentsUtil.disableWithMessage("startPaymentButton", "Redirecting...");
+        window.location.href = sessionsResponse.url;
+        return;
+    }
+
     const configuration = {
         session: {
             id: sessionsResponse.id,

@@ -4,6 +4,8 @@ import { CheckoutUtil } from './checkoutUtil.js';
 
 async function initializeCheckout() {
 
+    PaymentsUtil.disableWithMessage("startPaymentButton", "Loading...");
+
     const paymentMethod = document.getElementById("paymentMethod").value
     const amount = document.getElementById("amount").value
     const currency = document.getElementById("currency").value;

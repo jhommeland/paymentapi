@@ -23,7 +23,9 @@ public class PaymentUtil {
 
     public static <T, R> T executeApiCall(AdyenApiCall<T> function, R request) {
         try {
-            logger.info("Adyen Request: {}", PaymentUtil.convertToJsonString(request, false));
+            if (request != null) {
+                logger.info("Adyen Request: {}", PaymentUtil.convertToJsonString(request, false));
+            }
             T result = function.apply();
             logger.info("Adyen Response: {}", PaymentUtil.convertToJsonString(result, false));
             return result;

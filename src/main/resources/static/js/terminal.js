@@ -14,6 +14,8 @@ async function initializeTerminalPayment() {
 
 async function processPayment() {
 
+    PaymentsUtil.disableWithMessage("startPaymentButton", "Loading...");
+
     const amount = document.getElementById("amount").value
     const currency = document.getElementById("currency").value;
     const poiId = document.getElementById("poiId").value

@@ -19,11 +19,9 @@ public class PaymentsController {
 
     private final PaymentsService paymentsService;
 
-    private final UrlUtil urlUtil;
 
-    public PaymentsController(PaymentsService paymentsService, UrlUtil urlUtil) {
+    public PaymentsController(PaymentsService paymentsService) {
         this.paymentsService = paymentsService;
-        this.urlUtil = urlUtil;
     }
 
     @GetMapping("/transactions")
@@ -78,7 +76,14 @@ public class PaymentsController {
     @GetMapping("/payments/complete")
     public String completePayment(@RequestParam String merchantId, @RequestParam String redirectResult, Model model) throws JsonProcessingException {
         PaymentDetailsResponse paymentDetailsResponse = paymentsService.submitPaymentDetailsRedirect(merchantId, redirectResult);
-        model.addAttribute("base64Result", urlUtil.toBase64(paymentDetailsResponse.toJson()));
+        model.addAttribute("base64Result", UrlUtil.toBase64(paymentDetailsResponse.toJson()));
+        return "result";
+    }
+
+    @GetMapping("/payments/complete/sessions")
+    public String completeSessionsPayment(@RequestParam String merchantId, @RequestParam String sessionId, String sessionResult, Model model) throws JsonProcessingException {
+        SessionResultResponse paymentDetailsResponse = paymentsService.getSessionResult(merchantId, sessionId, sessionResult);
+        model.addAttribute("base64Result", UrlUtil.toBase64(paymentDetailsResponse.toJson()));
         return "result";
     }
 

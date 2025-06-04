@@ -30,6 +30,8 @@ public class PaymentModel {
 
     private String shopperInteraction = PaymentRequest.ShopperInteractionEnum.ECOMMERCE.toString();
 
+    private String sessionsMode;
+
     public String getMerchantId() {
         return merchantId;
     }
@@ -124,5 +126,13 @@ public class PaymentModel {
 
     public void setShopperInteraction(String shopperInteraction) {
         this.shopperInteraction = shopperInteraction;
+    }
+
+    public String getSessionsMode() {
+        return sessionsMode;
+    }
+
+    public void setSessionsMode(String sessionsMode) {
+        this.sessionsMode = sessionsMode;
     }
 }

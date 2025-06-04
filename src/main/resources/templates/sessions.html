@@ -69,10 +69,20 @@
                     </select>
                 </td>
             </tr>
+            <!-- sessionsMode -->
+            <tr>
+                <td><label for="sessionsMode">Sessions Mode:</label></td>
+                <td>
+                    <select class="input-field" id="sessionsMode" name="sessionsMode" required>
+                        <option value="embedded" selected>Embedded</option>
+                        <option value="hosted">Hosted</option>
+                    </select>
+                </td>
+            </tr>
         </table>
 
         <!-- Submit Button -->
-        <button type="submit">Start Payment</button>
+        <button type="submit" id="startPaymentButton">Start Payment</button>
     </form>
     <p class="note">
         <a href="/management">Manage Transactions</a>.

@@ -75,6 +75,12 @@ public class PaymentsService {
         return adyenPaymentsApiDao.callPaymentMethodsApi(paymentMethodsRequest, merchantModel.getAdyenApiKey());
     }
 
+    public SessionResultResponse getSessionResult(String merchantId, String sessionId, String sessionResult) {
+        MerchantModel merchantModel = merchantRepository.findById(merchantId).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
+        return adyenPaymentsApiDao.callSessionResultApi(sessionId, sessionResult, merchantModel.getAdyenApiKey());
+    }
+
     public CreateCheckoutSessionResponse createCheckoutSession(PaymentModel requestModel) {
 
         MerchantModel merchantModel = merchantRepository.findById(requestModel.getMerchantId()).
@@ -87,7 +93,7 @@ public class PaymentsService {
         TransactionModel transactionModel = new TransactionModel();
         transactionModel.setMerchantAccountName(merchantModel.getAdyenMerchantAccount());
         transactionModel.setShopperInteraction(requestModel.getShopperInteraction());
-        transactionModel.setPaymentMethod("session");
+        transactionModel.setPaymentMethod("sessions");
         transactionModel.setStatus(TransactionStatus.REGISTERED.getStatus());
         transactionModel.setAmount(requestModel.getAmount());
         transactionModel.setCurrency(requestModel.getCurrency());
@@ -101,18 +107,27 @@ public class PaymentsService {
 
         AuthenticationData authenticationData = TdsMode.fromValue(requestModel.getTdsMode()).getAuthenticationData();
 
+        CreateCheckoutSessionRequest.ModeEnum modeEnum = CreateCheckoutSessionRequest.ModeEnum.fromValue(requestModel.getSessionsMode());
+
         CreateCheckoutSessionRequest checkoutSessionRequest = new CreateCheckoutSessionRequest()
                 .amount(amountObject)
                 .merchantAccount(transactionModel.getMerchantAccountName())
                 .shopperReference(shopperModel.getShopperReference())
                 .storePaymentMethod(STRING_TRUE_VALUE.equals(requestModel.getSavePaymentMethod()))
                 .recurringProcessingModel(CreateCheckoutSessionRequest.RecurringProcessingModelEnum.CARDONFILE)
-                .channel(CreateCheckoutSessionRequest.ChannelEnum.WEB)
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())
                 .reference(transactionModel.getMerchantReference())
-                .authenticationData(authenticationData)
+                .mode(modeEnum)
                 .returnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getId()));
+
+        if (modeEnum == CreateCheckoutSessionRequest.ModeEnum.HOSTED) {
+            checkoutSessionRequest.setReturnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl() + "/sessions", "merchantId", merchantModel.getId()));
+        } else {
+            checkoutSessionRequest.setChannel(CreateCheckoutSessionRequest.ChannelEnum.WEB);
+            checkoutSessionRequest.setAuthenticationData(authenticationData);
+            checkoutSessionRequest.setReturnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getId()));
+        }
 
         //Call API
         CreateCheckoutSessionResponse createCheckoutSessionResponse = adyenPaymentsApiDao.callCreateSessionApi(checkoutSessionRequest, merchantModel.getAdyenApiKey());

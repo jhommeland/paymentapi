@@ -31,6 +31,11 @@ public class AdyenPaymentsApiDao {
         , paymentMethodsRequest);
     }
 
+    public SessionResultResponse callSessionResultApi(String sessionId, String sessionResult, String adyenApiKey) {
+        PaymentsApi paymentsApi = initializePaymentsApi(adyenApiKey);
+        return PaymentUtil.executeApiCall(() -> paymentsApi.getResultOfPaymentSession(sessionId, sessionResult), null);
+    }
+
     public CreateCheckoutSessionResponse callCreateSessionApi(CreateCheckoutSessionRequest createCheckoutSessionRequest, String adyenApiKey) {
         PaymentsApi paymentsApi = initializePaymentsApi(adyenApiKey);
         return PaymentUtil.executeApiCall(() ->

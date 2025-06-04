@@ -15,7 +15,7 @@ export class PaymentsUtil {
         }
     }
 
-    static async makeSessionsCall(merchantId, shopperId, amount, currency, countryCode, locale, tdsMode, savePaymentMethod) {
+    static async makeSessionsCall(merchantId, shopperId, amount, currency, countryCode, locale, tdsMode, savePaymentMethod, sessionsMode) {
         try {
             // Direct use of await to wait for the response
             const response = await axios.post('/sessions', {
@@ -26,7 +26,8 @@ export class PaymentsUtil {
                 countryCode: countryCode,
                 locale: locale,
                 tdsMode: tdsMode,
-                savePaymentMethod: savePaymentMethod
+                savePaymentMethod: savePaymentMethod,
+                sessionsMode: sessionsMode
             }, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -392,6 +393,11 @@ export class PaymentsUtil {
 
     static generateServiceId() {
         return crypto.randomUUID().replaceAll("-", "").substring(0,10);
+    }
+
+    static disableWithMessage(elementId, message) {
+        document.getElementById(elementId).disabled = true;
+        document.getElementById(elementId).innerText = message;
     }
 
 }
