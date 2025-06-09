@@ -104,6 +104,33 @@ table td:last-child {
     background-color: #f1f1f1;
 }
 
+@keyframes update-highlight {
+  0%   { background-color: #cce5ff; }
+  100% { background-color: transparent; }
+}
+
+.update-highlight {
+  animation: update-highlight 1.5s ease-out;
+}
+
+@keyframes add-highlight {
+  0%   { background-color: #d4edda; }
+  100% { background-color: transparent; }
+}
+
+.add-highlight {
+  animation: add-highlight 1.5s ease-out;
+}
+
+@keyframes error-highlight {
+  0%   { background-color: #f8d7da; }
+  100% { background-color: transparent; }
+}
+
+.error-highlight {
+  animation: error-highlight 1.5s ease-out;
+}
+
 /* ---------- Form Elements ---------- */
 
 .input-field {
@@ -392,4 +419,5 @@ ul {
     transform: rotate(360deg);
   }
 }
+
 /* Loading CSS End */

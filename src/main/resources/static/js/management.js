@@ -6,21 +6,27 @@ const transactionTable = document.querySelector("#elementTable tbody");
 const statusFilter = document.getElementById("statusFilter");
 const merchantFilter = document.getElementById("merchantFilter");
 const paymentMethodFilter = document.getElementById("paymentMethodFilter");
+const autoRefresh = document.getElementById("autoRefresh");
 const transactionCount = document.getElementById("transactionCount");
 
 // Register utility methods
 window.capturePayment = PaymentsUtil.capturePayment;
 window.revertPayment = PaymentsUtil.revertPayment;
 
+// Global variables
+let transactions = [];
+let intervalId = 0;
+
 // Populate the table with transaction data
-function populateTable(transactions) {
+function populateTable(transactionData) {
 
   // Clear table rows
   transactionTable.innerHTML = "";
 
   // Add rows
-  transactions.forEach((transaction) => {
+  transactionData.forEach((transaction) => {
     const row = document.createElement("tr");
+    row.id = transaction.id;
 
     const enableCapture = transaction.status === 'AUTHORISATION' && transaction.errorReason === null;
     const enableRevert = (transaction.status === 'AUTHORISATION' || transaction.status === 'CAPTURE') && transaction.errorReason === null;
@@ -41,11 +47,34 @@ function populateTable(transactions) {
       </td>
     `;
 
+    row.classList.remove("update-highlight"); // Reset in case it's still applied
+    void row.offsetWidth; // Trigger reflow to restart the animation
+    row.classList.add("update-highlight");
+
     transactionTable.appendChild(row);
   });
 }
 
-function filterTransactions(transactions) {
+function setAutoRefresh() {
+  clearInterval(intervalId);
+  intervalId = 0;
+  const autoRefreshValue = autoRefresh.value;
+    if (autoRefreshValue != "off") {
+      intervalId = setInterval(autoRefreshTransactions, autoRefreshValue * 1000)
+    }
+}
+
+function autoRefreshTransactions() {
+  setTableData();
+}
+
+async function setTableData() {
+  transactions = await PaymentsUtil.getTransactions();
+  populateDropdown(transactions);
+  filterTransactions(transactions);
+}
+
+function filterTransactions() {
   const merchantFilterValue = merchantFilter.value
   const statusFilterValue = statusFilter.value;
   const paymentMethodFilterValue = paymentMethodFilter.value;
@@ -58,20 +87,18 @@ function filterTransactions(transactions) {
   transactionCount.textContent = filteredTransactions.length;
 }
 
+async function initializeTable() {
+  setTableData();
+  merchantFilter.addEventListener("change", (event) => filterTransactions());
+  statusFilter.addEventListener("change", (event) => filterTransactions());
+  autoRefresh.addEventListener("change", (event) => setAutoRefresh());
+  paymentMethodFilter.addEventListener("change", (event) => filterTransactions());
+}
+
 function populateDropdown(elements) {
   PaymentsUtil.populateFilterDropdown("merchantAccountName", merchantFilter, elements)
   PaymentsUtil.populateFilterDropdown("status", statusFilter, elements)
   PaymentsUtil.populateFilterDropdown("paymentMethod", paymentMethodFilter, elements)
-}
-
-async function initializeTable() {
-  let transactions = await PaymentsUtil.getTransactions();
-  populateTable(transactions);
-  populateDropdown(transactions);
-  filterTransactions(transactions);
-  merchantFilter.addEventListener("change", (event) => filterTransactions(transactions));
-  statusFilter.addEventListener("change", (event) => filterTransactions(transactions));
-  paymentMethodFilter.addEventListener("change", (event) => filterTransactions(transactions));
 }
 
 initializeTable();
