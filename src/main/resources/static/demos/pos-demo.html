@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ADYEN POS DEMO</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background: #f6f6f8;
+          margin: 0;
+          padding: 2rem;
+        }
+
+        .store-header {
+          font-size: 2rem;
+          font-weight: bold;
+          text-align: center;
+          margin-bottom: 2rem;
+        }
+
+        .main-layout {
+          display: flex;
+          justify-content: space-between;
+          gap: 2rem;
+        }
+
+        .products-section {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+          flex-grow: 1;
+        }
+
+        .product-btn {
+          background: white;
+          border: none;
+          border-radius: 12px;
+          padding: 1.5rem;
+          text-align: center;
+          cursor: pointer;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+          transition: transform 0.2s;
+          height: 150px; /* fixed height for consistency */
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        .product-btn:hover {
+          transform: scale(1.03);
+        }
+
+        .product-btn h3 {
+          font-size: 1.3rem;
+          margin-bottom: 0.6rem;
+        }
+
+        .product-btn .price {
+          color: grey;
+          font-size: 1rem;
+        }
+
+        .cart {
+          background: white;
+          padding: 1rem;
+          width: 300px;
+          height: fit-content;
+          border-radius: 10px;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .checkout-btn {
+          background: #000c1f;
+          color: white;
+          width: 100%;
+          padding: 0.7rem;
+          font-size: 1rem;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          margin-top: 1rem;
+        }
+
+        .checkout-btn:disabled {
+          background: #e0e0e0;
+          color: #a0a0a0;
+          width: 100%;
+          padding: 0.7rem;
+          font-size: 1rem;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          margin-top: 1rem;
+          cursor: not-allowed;
+        }
+
+        .cart-item {
+          border-bottom: 1px solid #ddd;
+          padding: 0.5rem 0;
+          font-size: 0.95rem;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+<div class="store-header">ADYEN POS DEMO</div>
+
+<div class="main-layout">
+    <div class="products-section" id="productGrid"></div>
+
+    <div class="cart" id="cart">
+        <h4>Your cart</h4>
+        <div id="cartItems">No items in the cart</div>
+        <p><strong>Total:</strong> ¥<span id="cartTotal">0</span></p>
+        <button id="checkoutButton" class="checkout-btn">Checkout</button>
+    </div>
+</div>
+
+<script type="module" src="/demos/pos-demo.js"></script>
+
+</body>
+</html>

@@ -90,6 +90,23 @@ window.onload = function() {
         const localEndpoint = document.getElementById("localEndpoint").value;
         PaymentsUtil.makeTerminalPaymentAbortCall(merchantId, poiId, serviceId, apiType, localEndpoint);
     });
+    document.getElementById("posDemoButton").addEventListener("click", function(event) {
+        let settings = {};
+        settings.currency = document.getElementById("currency").value;
+        settings.poiId = document.getElementById("poiId").value;
+        settings.apiType = document.getElementById("apiType").value;
+        settings.localEndpoint = document.getElementById("localEndpoint").value;
+        settings.connectionType = document.getElementById("connectionType").value;
+        settings.connectionTimeout = document.getElementById("connectionTimeout").value;
+        settings.savePaymentMethod = document.getElementById("savePaymentMethod").value;
+        settings.merchantId = localStorage.getItem("selectedMerchant");
+        settings.shopperId = localStorage.getItem("selectedShopper");
+        settings.printReceipt = document.getElementById("printReceipt").value;
+
+        let settingsBase64 = btoa(JSON.stringify(settings));
+        location.href = `/demos/pos-demo.html?settings=${settingsBase64}`;
+
+    });
     document.getElementById("apiType").addEventListener("change", function(event) {
         if (document.getElementById("apiType").value === "cloud") {
             document.getElementById("localEndpointRow").hidden = true;
