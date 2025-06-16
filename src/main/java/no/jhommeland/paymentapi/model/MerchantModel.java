@@ -44,6 +44,8 @@ public class MerchantModel {
     @JsonIgnore
     private String securityKeyVersion;
 
+    private String livePrefix;
+
     public String getId() {
         return id;
     }
@@ -130,5 +132,13 @@ public class MerchantModel {
 
     public void setSecurityKeyVersion(String securityKeyVersion) {
         this.securityKeyVersion = securityKeyVersion;
+    }
+
+    public String getLivePrefix() {
+        return livePrefix;
+    }
+
+    public void setLivePrefix(String livePrefix) {
+        this.livePrefix = livePrefix;
     }
 }

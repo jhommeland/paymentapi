@@ -37,15 +37,17 @@ async function initializeDropdown() {
     //Select Merchant Dropdown
     merchants = await getMerchants();
     merchants.forEach(merchant => {
+        const textPrefix = merchant.livePrefix ? "[LIVE]" : "[TEST]";
         const option = document.createElement("option");
         option.value = merchant.id;
-        option.textContent = merchant.adyenMerchantAccount;
+        option.textContent = textPrefix + " " + merchant.adyenMerchantAccount;
         merchantDropdown.appendChild(option);
     });
     const selectedMerchant = localStorage.getItem("selectedMerchant");
     if (selectedMerchant) {
         merchantDropdown.value = selectedMerchant;
     }
+    refreshMerchantLocalStorage(merchants, selectedMerchant);
 
     //Select Shopper Dropdown
     shoppers = await getShoppers();
@@ -59,20 +61,24 @@ async function initializeDropdown() {
 
     //Select Checkout version dropdown
     checkoutVersionDropdown.value = localStorage.getItem("selectedCheckoutVersion");
+
+    //Set red background color if live
+    if (merchantDropdown.options[merchantDropdown.selectedIndex].text.startsWith("[LIVE]")) {
+        document.body.style.backgroundColor = "lightcoral";
+    } else {
+        document.body.style.backgroundColor = "";
+    }
 }
 
 const merchantDropdown = document.getElementById("merchant-select");
 const shopperDropdown = document.getElementById("shopper-select");
 const checkoutVersionDropdown = document.getElementById("checkout-version-select");
 
-merchantDropdown.addEventListener("change", function(event) {
+merchantDropdown.addEventListener("change", async function(event) {
     const selectedValue = event.target.value;
     localStorage.setItem("selectedMerchant", selectedValue);
-    merchants.forEach(merchant => {
-        if (merchant.id === selectedValue) {
-            localStorage.setItem("selectedMerchantSettings", merchant.merchantSettings);
-        }
-    });
+    merchants = await getMerchants();
+    refreshMerchantLocalStorage(merchants, selectedValue);
 
     window.location.reload();
 });
@@ -92,5 +98,14 @@ checkoutVersionDropdown.addEventListener("change", function(event) {
     localStorage.setItem("selectedCheckoutVersion", selectedValue);
     window.location.reload();
 });
+
+function refreshMerchantLocalStorage(merchants, selectedValue) {
+    merchants.forEach(merchant => {
+        if (merchant.id === selectedValue) {
+            localStorage.setItem("selectedMerchantSettings", merchant.merchantSettings);
+            localStorage.setItem("selectedMerchantEnvironment", merchant.livePrefix ? "live" : "test");
+        }
+    });
+}
 
 initializeDropdown();

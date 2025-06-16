@@ -1,5 +1,6 @@
 package no.jhommeland.paymentapi.service;
 
+import com.adyen.util.MaskUtil;
 import no.jhommeland.paymentapi.dao.MerchantRepository;
 import no.jhommeland.paymentapi.model.MerchantModel;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,11 @@ public class MerchantService {
     }
 
     public List<MerchantModel> getMerchants() {
-        return merchantRepository.findAllByOrderByAdyenMerchantAccount();
+        List<MerchantModel> merchants = merchantRepository.findAllByOrderByAdyenMerchantAccount();
+        merchants.forEach(merchantModel -> {
+            merchantModel.setLivePrefix(MaskUtil.mask(merchantModel.getLivePrefix()));
+        });
+        return merchants;
     }
 
     public String getClientKey(String merchantId) {

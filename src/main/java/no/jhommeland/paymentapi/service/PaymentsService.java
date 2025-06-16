@@ -72,13 +72,13 @@ public class PaymentsService {
                 .shopperLocale(requestModel.getLocale())
                 .channel(PaymentMethodsRequest.ChannelEnum.WEB);
 
-        return adyenPaymentsApiDao.callPaymentMethodsApi(paymentMethodsRequest, merchantModel.getAdyenApiKey());
+        return adyenPaymentsApiDao.callPaymentMethodsApi(paymentMethodsRequest, merchantModel);
     }
 
     public SessionResultResponse getSessionResult(String merchantId, String sessionId, String sessionResult) {
         MerchantModel merchantModel = merchantRepository.findById(merchantId).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
-        return adyenPaymentsApiDao.callSessionResultApi(sessionId, sessionResult, merchantModel.getAdyenApiKey());
+        return adyenPaymentsApiDao.callSessionResultApi(sessionId, sessionResult, merchantModel);
     }
 
     public CreateCheckoutSessionResponse createCheckoutSession(PaymentModel requestModel) {
@@ -130,7 +130,7 @@ public class PaymentsService {
         }
 
         //Call API
-        CreateCheckoutSessionResponse createCheckoutSessionResponse = adyenPaymentsApiDao.callCreateSessionApi(checkoutSessionRequest, merchantModel.getAdyenApiKey());
+        CreateCheckoutSessionResponse createCheckoutSessionResponse = adyenPaymentsApiDao.callCreateSessionApi(checkoutSessionRequest, merchantModel);
 
         //Save to Database
         transactionModel.setStatus(TransactionStatus.AWAITING_AUTHORISATION.getStatus());
@@ -157,7 +157,7 @@ public class PaymentsService {
                     .merchantAccount(merchantModel.getAdyenMerchantAccount())
                     .encryptedCardNumber(cardDetails.getEncryptedCardNumber());
             try {
-                adyenPaymentsApiDao.callCardDetailsApi(cardDetailsRequest, merchantModel.getAdyenApiKey());
+                adyenPaymentsApiDao.callCardDetailsApi(cardDetailsRequest, merchantModel);
             } catch (ResponseStatusException e) {
                 logger.warn("Could not retrieve card details.");
             }
@@ -200,7 +200,7 @@ public class PaymentsService {
                 .returnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getId()));
 
         //Call API
-        PaymentResponse paymentResponse = adyenPaymentsApiDao.callPaymentApi(paymentRequest, merchantModel.getAdyenApiKey());
+        PaymentResponse paymentResponse = adyenPaymentsApiDao.callPaymentApi(paymentRequest, merchantModel);
 
         //Save to Database
         transactionModel.setStatus(TransactionStatus.AWAITING_AUTHORISATION.getStatus());
@@ -232,7 +232,7 @@ public class PaymentsService {
         captureRequest.setAmount(amountObject);
 
         //Call API
-        PaymentCaptureResponse captureResponse = adyenPaymentsApiDao.callPaymentCaptureApi(transactionModel.getOriginalPspReference(), captureRequest, merchantModel.getAdyenApiKey());
+        PaymentCaptureResponse captureResponse = adyenPaymentsApiDao.callPaymentCaptureApi(transactionModel.getOriginalPspReference(), captureRequest, merchantModel);
 
         //Update Database
         transactionModel.setStatus(TransactionStatus.AWAITING_CAPTURE.getStatus());
@@ -257,7 +257,7 @@ public class PaymentsService {
         reversalRequest.setMerchantAccount(transactionModel.getMerchantAccountName());
 
         //Call API
-        PaymentReversalResponse reversalResponse = adyenPaymentsApiDao.callPaymentReversalApi(transactionModel.getOriginalPspReference(), reversalRequest, merchantModel.getAdyenApiKey());
+        PaymentReversalResponse reversalResponse = adyenPaymentsApiDao.callPaymentReversalApi(transactionModel.getOriginalPspReference(), reversalRequest, merchantModel);
 
         //Update Database
         transactionModel.setStatus(TransactionStatus.AWAITING_REVERSAL.getStatus());
@@ -276,7 +276,7 @@ public class PaymentsService {
         PaymentDetailsRequest paymentDetailsRequest = new PaymentDetailsRequest()
                 .details(requestModel.getPaymentDetails().getDetails());
 
-        PaymentDetailsResponse paymentDetailsResponse = adyenPaymentsApiDao.callPaymentDetailsApi(paymentDetailsRequest, merchantModel.getAdyenApiKey());
+        PaymentDetailsResponse paymentDetailsResponse = adyenPaymentsApiDao.callPaymentDetailsApi(paymentDetailsRequest, merchantModel);
 
         //Update Database
         TransactionModel transactionModel = transactionRepository.findByMerchantReference(paymentDetailsResponse.getMerchantReference()).
@@ -301,7 +301,7 @@ public class PaymentsService {
         PaymentDetailsRequest paymentDetailsRequest = new PaymentDetailsRequest()
                 .details(paymentCompletionDetails);
 
-        PaymentDetailsResponse paymentDetailsResponse = adyenPaymentsApiDao.callPaymentDetailsApi(paymentDetailsRequest, merchantModel.getAdyenApiKey());
+        PaymentDetailsResponse paymentDetailsResponse = adyenPaymentsApiDao.callPaymentDetailsApi(paymentDetailsRequest, merchantModel);
 
         //Update Database
         TransactionModel transactionModel = transactionRepository.findByMerchantReference(paymentDetailsResponse.getMerchantReference()).orElseThrow(() -> new EntityNotFoundException("Transaction not found"));
