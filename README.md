@@ -29,6 +29,10 @@ The application can be run using the following command:
 
 `./gradlew clean build run`
 
+Or run with a specific profile:
+
+`./gradlew clean build run --args='--spring.profiles.active=https'`
+
 After running, by default the application can be accessed at http://localhost:8080
 
 ### Reference Documentation

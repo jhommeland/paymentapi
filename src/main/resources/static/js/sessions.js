@@ -17,6 +17,7 @@ async function initializeCheckout() {
     const checkoutVersion = localStorage.getItem("selectedCheckoutVersion");
     const merchantId = localStorage.getItem("selectedMerchant");
     const shopperId = localStorage.getItem("selectedShopper");
+    const merchantEnvironment = localStorage.getItem("selectedMerchantEnvironment");
 
     const sessionsResponse = await PaymentsUtil.makeSessionsCall(merchantId, shopperId, amount, currency, countryCode, locale, tdsMode, savePaymentMethod, sessionsMode);
     if (sessionsMode === "hosted") {
@@ -31,7 +32,7 @@ async function initializeCheckout() {
             sessionData: sessionsResponse.sessionData
         },
         clientKey: await PaymentsUtil.getCredentials(merchantId),
-        environment: "test",
+        environment: merchantEnvironment,
         countryCode: countryCode,
         locale: locale,
         onAdditionalDetails: async (state, component, actions) => {
