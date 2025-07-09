@@ -21,6 +21,11 @@ public class WebPaymentsController {
         return "payments";
     }
 
+    @GetMapping("/api")
+    public String api() {
+        return "api";
+    }
+
     @GetMapping("/components")
     public String components() {
         return "components";

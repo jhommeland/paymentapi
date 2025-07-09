@@ -15,11 +15,22 @@ export class CheckoutUtil {
                     countryCode: countryCode
                 },
                 card: {
+                    styles: CheckoutUtil.getCardStyling(),
                     hasHolderName: true,
                     holderNameRequired: true,
                     installmentOptions: {
-                        card: {
-                            values: [1, 2, 3, 4, 5]
+                        mc: {
+                            values: [1,2,3,4,5]
+                        },
+                        visa: {
+                            values: [1,2,3,4,5]
+                        },
+                        jcb: {
+                            values: [1,2,3,4,5]
+                        },
+                        diners: {
+                            values: [1],
+                        	plans: ["revolving"]
                         },
                         showInstallmentAmounts: false
                     },
@@ -31,6 +42,29 @@ export class CheckoutUtil {
             }
         }
         return dropinConfiguration;
+    }
+
+    static getCardStyling() {
+        var styleObject = {
+        	base: {
+        		color: '#001b2b',
+        		fontSize: '16px',
+        		fontSmoothing: 'antialiased',
+        		fontFamily: 'Helvetica',
+        		fontWeight: '400'
+        	},
+        	error: {
+        		color: '#001b2b'
+        	},
+        	placeholder: {
+        		color: '#90a2bd',
+        		fontWeight: '200'
+        	},
+        	validated: {
+        		color: 'green'
+        	}
+        };
+        return styleObject;
     }
 
     static async onSubmitPayment(state, component, actions, merchantId, shopperId, amount, currency, countryCode, locale, tdsMode, origin, savePaymentMethod) {
@@ -128,6 +162,8 @@ export class CheckoutUtil {
                 return new window.AdyenWeb.ApplePay(checkout, dropinConfiguration.paymentMethodsConfiguration.applepay);
             case "card":
                 return new window.AdyenWeb.Card(checkout, dropinConfiguration.paymentMethodsConfiguration.card);
+            case "securedfields":
+                return new window.AdyenWeb.CustomCard(checkout, dropinConfiguration.paymentMethodsConfiguration.card);
             default:
                 return new window.AdyenWeb.Dropin(checkout, dropinConfiguration);
         }

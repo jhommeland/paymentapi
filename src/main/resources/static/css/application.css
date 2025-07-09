@@ -142,10 +142,18 @@ table td:last-child {
     font-size: 16px;
 }
 
-.input-field :focus,
 .input-field :focus {
     outline: none;
     border-color: #007BFF;
+}
+
+.adyen-securefields {
+    height: 35px;
+    width: 100%;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 0.25rem 0.5rem;
 }
 
 /* ---------- Filters and Labels ---------- */

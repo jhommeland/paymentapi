@@ -400,4 +400,9 @@ export class PaymentsUtil {
         document.getElementById(elementId).innerText = message;
     }
 
+    static enableWithMessage(elementId, message) {
+        document.getElementById(elementId).disabled = false;
+        document.getElementById(elementId).innerText = message;
+    }
+
 }
