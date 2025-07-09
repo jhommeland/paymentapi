@@ -3,6 +3,7 @@ import { PaymentsUtil } from './paymentsUtil.js';
 import { CheckoutUtil } from './checkoutUtil.js';
 
 var cardData = {};
+var cardComponent = {};
 
 async function initializeCheckout() {
 
@@ -28,6 +29,7 @@ async function initializeCheckout() {
         locale: locale,
         onChange: async (data) => {
             if (data.isValid) {
+                console.log("Valid Card Data:", data.data)
                 PaymentsUtil.enableWithMessage("payButton", "Pay");
             } else {
                 PaymentsUtil.disableWithMessage("payButton", "Pay");
@@ -37,7 +39,7 @@ async function initializeCheckout() {
     };
 
     const dropinConfiguration = CheckoutUtil.getDropinConfiguration(amount, currency, countryCode);
-    await CheckoutUtil.mountCheckout('securedfields', configuration, dropinConfiguration, checkoutVersion);
+    cardComponent = await CheckoutUtil.mountCheckout('securedfields', configuration, dropinConfiguration, checkoutVersion);
 
     const inputForm = document.getElementById("inputForm");
     const checkoutForm = document.getElementById("checkoutForm");
@@ -65,10 +67,16 @@ window.onload = function() {
         const origin = window.location.origin;
         const savePaymentMethod = document.getElementById("savePaymentMethod").value;
 
-        console.log("Card Data:", cardData)
-
         const result = await PaymentsUtil.makePaymentsCall(cardData, merchantId, shopperId, amount, currency, countryCode, locale, tdsMode, origin, savePaymentMethod);
-        CheckoutUtil.onPaymentEvent(result, "securefields");
+        if (!result.action) {
+            CheckoutUtil.onPaymentEvent(result, "securefields");
+        } else if (result.action.type == "redirect"){
+            PaymentsUtil.disableWithMessage("payButton", "Redirecting...");
+            cardComponent.handleAction(result.action);
+        } else {
+            console.log("Error: Unknown action:", result.action);
+        }
+
     });
 };
 
