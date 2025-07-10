@@ -149,7 +149,7 @@ table td:last-child {
 
 .adyen-securefields {
     height: 35px;
-    width: 100%;
+    width: 80%;
     margin: 5px 0;
     border: 1px solid #ccc;
     border-radius: 5px;

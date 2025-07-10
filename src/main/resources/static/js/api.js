@@ -22,20 +22,46 @@ async function initializeCheckout() {
     const shopperId = localStorage.getItem("selectedShopper");
     const merchantEnvironment = localStorage.getItem("selectedMerchantEnvironment");
 
+    //Initialize Existing cards
+    const paymentMethodsResponse = await PaymentsUtil.makePaymentMethodsCall(merchantId, shopperId, amount, currency, countryCode, locale);
+    if (paymentMethodsResponse.storedPaymentMethods && paymentMethodsResponse.storedPaymentMethods.length > 0) {
+
+        const existingCardTable = document.querySelector("#existingCardTable");
+        existingCardTable.innerHTML = "";
+
+        paymentMethodsResponse.storedPaymentMethods.forEach((storedPaymentMethod, index) => {
+            const row = document.createElement("tr");
+            row.id = storedPaymentMethod.id;
+
+            row.innerHTML = `
+                <td>
+                    <input type="radio" name="cardOption" value=${storedPaymentMethod.id} ${index === 0 ? "checked" : ""}>
+                    <label for="securefield-${storedPaymentMethod.id}">${storedPaymentMethod.brand} ****${storedPaymentMethod.lastFour}</label>
+                </td>
+                <td><div class="adyen-securefields" ${index === 0 ? '' : 'style="visibility: hidden;"'} id="div-${storedPaymentMethod.id}"><span data-cse="encryptedSecurityCode" id="securefield-${storedPaymentMethod.id}"></span></div></td>
+            `;
+            existingCardTable.appendChild(row);
+        });
+
+        document.getElementById('existingCardRadio').disabled = false;
+        document.getElementById('existingCardRadio').checked = true;
+        document.getElementById('newCardRadio').checked = false;
+
+    } else {
+        document.getElementById('existingCardRadio').disabled = true;
+        document.getElementById('newCardRadio').checked = true;
+        document.getElementById('existingCardRadio').checked = false;
+    }
+    handlePaymentOptionSelected();
+    addCardRadioEventListener();
+
+    //Initialize Adyen checkout
     const configuration = {
         clientKey: await PaymentsUtil.getCredentials(merchantId),
         environment: merchantEnvironment,
         countryCode: countryCode,
         locale: locale,
-        onChange: async (data) => {
-            if (data.isValid) {
-                console.log("Valid Card Data:", data.data)
-                PaymentsUtil.enableWithMessage("payButton", "Pay");
-            } else {
-                PaymentsUtil.disableWithMessage("payButton", "Pay");
-            }
-            cardData = data.data;
-        }
+        onChange: handleOnChange
     };
 
     const dropinConfiguration = CheckoutUtil.getDropinConfiguration(amount, currency, countryCode);
@@ -45,6 +71,19 @@ async function initializeCheckout() {
     const checkoutForm = document.getElementById("checkoutForm");
     inputForm.style.display = "none";
     checkoutForm.style.display = "block";
+
+}
+
+async function handleOnChange(data) {
+    const isExistingCardInput = document.getElementById('existingCardRadio').checked;
+    if ((isExistingCardInput && data.valid && data.valid.encryptedSecurityCode) || (!isExistingCardInput && data.isValid)) {
+        console.log("Valid Card Data:", data);
+        PaymentsUtil.enableWithMessage("payButton", "Pay");
+    } else {
+        console.log("Valid Card Data:", data)
+        PaymentsUtil.disableWithMessage("payButton", "Pay");
+    }
+    cardData = data;
 }
 
 window.onload = function() {
@@ -67,7 +106,15 @@ window.onload = function() {
         const origin = window.location.origin;
         const savePaymentMethod = document.getElementById("savePaymentMethod").value;
 
-        const result = await PaymentsUtil.makePaymentsCall(cardData, merchantId, shopperId, amount, currency, countryCode, locale, tdsMode, origin, savePaymentMethod);
+        const useExistingCard = document.getElementById('existingCardRadio').checked;
+        if (useExistingCard) {
+            cardData.data.paymentMethod.encryptedExpiryMonth = null;
+            cardData.data.paymentMethod.encryptedExpiryYear = null;
+            cardData.data.paymentMethod.encryptedCardNumber = null;
+            cardData.data.paymentMethod.storedPaymentMethodId = getSelectedCardId();
+        }
+
+        const result = await PaymentsUtil.makePaymentsCall(cardData.data, merchantId, shopperId, amount, currency, countryCode, locale, tdsMode, origin, savePaymentMethod);
         if (!result.action) {
             CheckoutUtil.onPaymentEvent(result, "securefields");
         } else if (result.action.type == "redirect"){
@@ -78,6 +125,46 @@ window.onload = function() {
         }
 
     });
+    document.querySelectorAll('input[name="paymentOption"]').forEach((radio) => {
+        radio.addEventListener('change', function () {
+            handlePaymentOptionSelected();
+        });
+    });
 };
+
+function getSelectedCardId() {
+    const selected = [...document.querySelectorAll('input[name="cardOption"]')]
+        .find(radio => radio.checked);
+    return selected ? selected.value : null;
+}
+
+function addCardRadioEventListener() {
+    document.querySelectorAll('input[name="cardOption"]').forEach((radio) => {
+        radio.addEventListener('change', function () {
+            document.querySelectorAll('input[name="cardOption"]').forEach((radio) => {
+                const securityCodeField = document.getElementById('div-' + radio.value);
+                if (radio.checked) {
+                    securityCodeField.style.visibility = '';
+                } else {
+                    securityCodeField.style.visibility = 'hidden';
+                }
+            });
+        });
+    });
+}
+
+function handlePaymentOptionSelected() {
+    const existingCardRadio = document.getElementById('existingCardRadio');
+    const newCardForm = document.getElementById('newCardForm');
+    const existingCardForm = document.getElementById('existingCardForm');
+    if (existingCardRadio.checked) {
+        newCardForm.style.display = 'none';
+        existingCardForm.style.display = 'block';
+    } else {
+        newCardForm.style.display = 'block';
+        existingCardForm.style.display = 'none';
+    }
+    handleOnChange(cardData);
+}
 
 PaymentsUtil.populatePaymentOptions();
