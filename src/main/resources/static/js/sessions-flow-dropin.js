@@ -1,6 +1,6 @@
 //Utility Class Import
-import { PaymentsUtil } from './paymentsUtil.js';
-import { CheckoutUtil } from './checkoutUtil.js';
+import { PaymentsUtil } from '../js-util/paymentsUtil.js';
+import { CheckoutUtil } from '../js-util/checkoutUtil.js';
 
 async function initializeCheckout() {
 

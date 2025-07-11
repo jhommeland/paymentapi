@@ -1,4 +1,4 @@
-import { PaymentsUtil } from './paymentsUtil.js';
+import { PaymentsUtil } from '../js-util/paymentsUtil.js';
 
 export class CheckoutUtil {
 

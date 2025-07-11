@@ -1,5 +1,5 @@
 //Utility Class Import
-import { PaymentsUtil } from './paymentsUtil.js';
+import { PaymentsUtil } from '../js-util/paymentsUtil.js';
 
 // DOM references
 const transactionTable = document.querySelector("#elementTable tbody");
