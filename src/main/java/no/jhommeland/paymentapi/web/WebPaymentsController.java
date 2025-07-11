@@ -11,39 +11,39 @@ public class WebPaymentsController {
         return "index";
     }
 
-    @GetMapping("/sessions")
-    public String sessions() {
-        return "sessions";
+    @GetMapping("/sessions-flow-dropin")
+    public String sessionsFlowDropin() {
+        return "sessions-flow-dropin";
     }
 
-    @GetMapping("/payments")
-    public String payments() {
-        return "payments";
+    @GetMapping("/advanced-flow-dropin")
+    public String advancedFlowDropin() {
+        return "advanced-flow-dropin";
     }
 
-    @GetMapping("/api")
-    public String api() {
-        return "api";
+    @GetMapping("/advanced-flow-api-encrypted")
+    public String advancedFlowApiEncrypted() {
+        return "advanced-flow-api-encrypted";
     }
 
-    @GetMapping("/components")
-    public String components() {
-        return "components";
+    @GetMapping("/advanced-flow-components")
+    public String advancedFlowComponents() {
+        return "advanced-flow-components";
     }
 
-    @GetMapping("/terminal")
-    public String terminal() {
-        return "terminal";
+    @GetMapping("/in-person-payments")
+    public String inPersonPayments() {
+        return "in-person-payments";
     }
 
-    @GetMapping("/management")
+    @GetMapping("/transaction-management")
     public String transactionManagement() {
-        return "management";
+        return "transaction-management";
     }
 
-    @GetMapping("/report")
+    @GetMapping("/report-management")
     public String reportManagement() {
-        return "report";
+        return "report-management";
     }
 
 }

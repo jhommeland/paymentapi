@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
-    <title>Terminal Payment</title>
+    <title>In-person Payments</title>
 </head>
 <div layout:fragment="content" class="centered-container">
     <div class="payment-form-container" id="inputForm">
@@ -100,7 +100,8 @@
             <button type="submit" id="startPaymentButton">Start Payment</button>
         </form>
         <p class="note">
-            <a href="/management">Manage Transactions</a>.
+            Integration Type: Integration for Point of Sale<br>
+            <a href="/transaction-management">Manage Transactions</a>.
         </p>
     </div>
     <div class="payment-form-container" id="progressForm" style="display: none;">
@@ -117,10 +118,10 @@
         <p class="note">
             <a href="/" rel="noopener noreferrer">Return to start</a>
             <span style="display: inline-block; width: 20px;"></span>
-            <a href="/management" rel="noopener noreferrer">Manage Transactions</a>
+            <a href="/transaction-management" rel="noopener noreferrer">Manage Transactions</a>
         </p>
     </div>
 
-    <script type="module" src="/js/terminal.js"></script>
+    <script type="module" src="/js/in-person-payments.js"></script>
 
 </div>

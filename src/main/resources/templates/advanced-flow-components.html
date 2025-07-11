@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
-    <title>Session Flow Payment</title>
+    <title>Advanced Flow Components</title>
 </head>
 <div layout:fragment="content" class="centered-container">
 
@@ -12,6 +12,17 @@
     <h2>1. Enter Payment Details</h2>
     <form id="paymentForm" method="post">
         <table>
+            <!-- Payment Method -->
+            <tr>
+                <td><label for="paymentMethod">Payment Method:</label></td>
+                <td>
+                    <select class="input-field" id="paymentMethod" name="paymentMethod" required>
+                        <option value="card" selected>Credit Card</option>
+                        <option value="applepay">Apple Pay</option>
+                    </select>
+                </td>
+            </tr>
+
             <!-- Amount Row -->
             <tr>
                 <td><label for="amount">Amount:</label></td>
@@ -69,23 +80,14 @@
                     </select>
                 </td>
             </tr>
-            <!-- sessionsMode -->
-            <tr>
-                <td><label for="sessionsMode">Sessions Mode:</label></td>
-                <td>
-                    <select class="input-field" id="sessionsMode" name="sessionsMode" required>
-                        <option value="embedded" selected>Embedded</option>
-                        <option value="hosted">Hosted</option>
-                    </select>
-                </td>
-            </tr>
         </table>
 
         <!-- Submit Button -->
         <button type="submit" id="startPaymentButton">Start Payment</button>
     </form>
     <p class="note">
-        <a href="/management">Manage Transactions</a>.
+        Integration Type: Secured Fields using Checkout</br>
+        <a href="/transaction-management">Manage Transactions</a>.
     </p>
 </div>
 <div class="payment-form-container" id="checkoutForm" style="display: none;">
@@ -93,6 +95,6 @@
     <div id="dropin-container"></div>
 </div>
 
-<script type="module" src="/js/sessions.js"></script>
+<script type="module" src="/js/advanced-flow-components.js"></script>
 
 </div>

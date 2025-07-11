@@ -47,10 +47,6 @@ function populateTable(transactionData) {
       </td>
     `;
 
-    row.classList.remove("update-highlight"); // Reset in case it's still applied
-    void row.offsetWidth; // Trigger reflow to restart the animation
-    row.classList.add("update-highlight");
-
     transactionTable.appendChild(row);
   });
 }
