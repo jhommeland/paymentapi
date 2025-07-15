@@ -1,4 +1,4 @@
-import { PaymentsUtil } from '/js/paymentsUtil.js';
+import { PaymentsUtil } from '/js-util/paymentsUtil.js';
 
 const PAYMENT_STATUS_POLL_COUNT = 30;
 
