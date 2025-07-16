@@ -4,6 +4,9 @@ import com.adyen.Client;
 import com.adyen.enums.Environment;
 import com.adyen.model.RequestOptions;
 import com.adyen.model.checkout.*;
+import com.adyen.model.posmobile.CreateSessionRequest;
+import com.adyen.model.posmobile.CreateSessionResponse;
+import com.adyen.service.PosMobileApi;
 import com.adyen.service.checkout.ModificationsApi;
 import com.adyen.service.checkout.PaymentsApi;
 import no.jhommeland.paymentapi.model.MerchantModel;
@@ -32,6 +35,10 @@ public class AdyenPaymentsApiDao {
 
     private ModificationsApi initializeModificationsApi(MerchantModel merchantModel) {
         return new ModificationsApi(initializeClient(merchantModel));
+    }
+
+    private PosMobileApi initializePosMobileApi(MerchantModel merchantModel) {
+        return new PosMobileApi(initializeClient(merchantModel));
     }
 
     public PaymentMethodsResponse callPaymentMethodsApi(PaymentMethodsRequest paymentMethodsRequest, MerchantModel merchantModel) {
@@ -86,6 +93,13 @@ public class AdyenPaymentsApiDao {
         return PaymentUtil.executeApiCall(() ->
                         modificationsApi.refundOrCancelPayment(originalPspReference, reversalRequest, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()))
                 , reversalRequest);
+    }
+
+    public CreateSessionResponse callPosMobileSessionsApi(CreateSessionRequest sessionRequest, MerchantModel merchantModel) {
+        PosMobileApi posMobileApi = initializePosMobileApi(merchantModel);
+        return PaymentUtil.executeApiCall(() ->
+                        posMobileApi.createCommunicationSession(sessionRequest, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()))
+                , sessionRequest);
     }
 
 }
