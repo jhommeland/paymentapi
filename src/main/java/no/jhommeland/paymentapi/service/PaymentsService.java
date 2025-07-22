@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Service class responsible for interacting with the Adyen payment API.
@@ -195,6 +196,7 @@ public class PaymentsService {
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())
                 .shopperStatement(merchantModel.getShopperStatement())
+                .localizedShopperStatement(Map.of("ja-Kana", merchantModel.getShopperStatement()))
                 .paymentMethod(requestModel.getPaymentMethod())
                 .reference(transactionModel.getMerchantReference())
                 .authenticationData(authenticationData)
