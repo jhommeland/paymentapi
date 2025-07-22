@@ -44,6 +44,9 @@ public class MerchantModel {
     @JsonIgnore
     private String securityKeyVersion;
 
+    @JsonIgnore
+    private String shopperStatement;
+
     private String livePrefix;
 
     public String getId() {
@@ -132,6 +135,14 @@ public class MerchantModel {
 
     public void setSecurityKeyVersion(String securityKeyVersion) {
         this.securityKeyVersion = securityKeyVersion;
+    }
+
+    public String getShopperStatement() {
+        return shopperStatement;
+    }
+
+    public void setShopperStatement(String shopperStatement) {
+        this.shopperStatement = shopperStatement;
     }
 
     public String getLivePrefix() {

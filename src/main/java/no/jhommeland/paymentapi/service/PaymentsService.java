@@ -117,6 +117,7 @@ public class PaymentsService {
                 .recurringProcessingModel(CreateCheckoutSessionRequest.RecurringProcessingModelEnum.CARDONFILE)
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())
+                .shopperStatement(merchantModel.getShopperStatement())
                 .reference(transactionModel.getMerchantReference())
                 .mode(modeEnum)
                 .returnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getId()));
@@ -192,6 +193,7 @@ public class PaymentsService {
                 .channel(PaymentRequest.ChannelEnum.WEB)
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())
+                .shopperStatement(merchantModel.getShopperStatement())
                 .paymentMethod(requestModel.getPaymentMethod())
                 .reference(transactionModel.getMerchantReference())
                 .authenticationData(authenticationData)
