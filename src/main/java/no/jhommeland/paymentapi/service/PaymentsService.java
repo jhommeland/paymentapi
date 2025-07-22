@@ -113,6 +113,7 @@ public class PaymentsService {
                 .amount(amountObject)
                 .merchantAccount(transactionModel.getMerchantAccountName())
                 .shopperReference(shopperModel.getShopperReference())
+                .shopperInteraction(CreateCheckoutSessionRequest.ShopperInteractionEnum.fromValue(transactionModel.getShopperInteraction()))
                 .storePaymentMethod(STRING_TRUE_VALUE.equals(requestModel.getSavePaymentMethod()))
                 .recurringProcessingModel(CreateCheckoutSessionRequest.RecurringProcessingModelEnum.CARDONFILE)
                 .countryCode(requestModel.getCountryCode())
