@@ -30,6 +30,8 @@ public class PaymentsService {
 
     private final String STRING_TRUE_VALUE = "true";
 
+    private final String LOCALIZED_SHOPPER_STATEMENT_LOCALE_JP = "ja-Kana";
+
     private final Logger logger = LoggerFactory.getLogger(PaymentsService.class);
 
     private final AdyenPaymentsApiDao adyenPaymentsApiDao;
@@ -184,6 +186,12 @@ public class PaymentsService {
 
         AuthenticationData authenticationData = TdsMode.fromValue(requestModel.getTdsMode()).getAuthenticationData();
 
+        //Create localized shopper statement map
+        Map<String, String> localizedStatementMap = null;
+        if (merchantModel.getShopperStatement() != null) {
+            localizedStatementMap = Map.of(LOCALIZED_SHOPPER_STATEMENT_LOCALE_JP, merchantModel.getShopperStatement());
+        }
+
         //Create Payment Object
         PaymentRequest paymentRequest = new PaymentRequest()
                 .amount(amountObject)
@@ -196,7 +204,7 @@ public class PaymentsService {
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())
                 .shopperStatement(merchantModel.getShopperStatement())
-                .localizedShopperStatement(Map.of("ja-Kana", merchantModel.getShopperStatement()))
+                .localizedShopperStatement(localizedStatementMap)
                 .paymentMethod(requestModel.getPaymentMethod())
                 .reference(transactionModel.getMerchantReference())
                 .authenticationData(authenticationData)
