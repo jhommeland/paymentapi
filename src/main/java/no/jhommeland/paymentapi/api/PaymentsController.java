@@ -74,10 +74,10 @@ public class PaymentsController {
     }
 
     @GetMapping("/payments/complete")
-    public String completePayment(@RequestParam String merchantId, @RequestParam String redirectResult, Model model) throws JsonProcessingException {
+    public String completePayment(@RequestParam String merchantId, @RequestParam String channel, @RequestParam String redirectResult, Model model) throws JsonProcessingException {
         PaymentDetailsResponse paymentDetailsResponse = paymentsService.submitPaymentDetailsRedirect(merchantId, redirectResult);
         model.addAttribute("base64Result", UrlUtil.toBase64(paymentDetailsResponse.toJson()));
-        return "result";
+        return channel.equals(PaymentRequest.ChannelEnum.WEB.toString()) ? "result" : "paymentapp-ios-redirect.html";
     }
 
     @GetMapping("/payments/complete/sessions")

@@ -32,6 +32,8 @@ public class PaymentModel {
 
     private String sessionsMode;
 
+    private String channel = PaymentRequest.ChannelEnum.WEB.toString();
+
     public String getMerchantId() {
         return merchantId;
     }
@@ -134,5 +136,13 @@ public class PaymentModel {
 
     public void setSessionsMode(String sessionsMode) {
         this.sessionsMode = sessionsMode;
+    }
+
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
     }
 }

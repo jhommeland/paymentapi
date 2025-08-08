@@ -12,6 +12,7 @@ import no.jhommeland.paymentapi.util.UrlUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -73,7 +74,7 @@ public class PaymentsService {
                 .shopperReference(shopperModel.getShopperReference())
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())
-                .channel(PaymentMethodsRequest.ChannelEnum.WEB);
+                .channel(PaymentMethodsRequest.ChannelEnum.fromValue(requestModel.getChannel()));
 
         return adyenPaymentsApiDao.callPaymentMethodsApi(paymentMethodsRequest, merchantModel);
     }
@@ -108,8 +109,10 @@ public class PaymentsService {
                 .currency(transactionModel.getCurrency())
                 .value(Long.parseLong(transactionModel.getAmount()));
 
+        //3DS Authentication Data
         AuthenticationData authenticationData = TdsMode.fromValue(requestModel.getTdsMode()).getAuthenticationData();
 
+        //Sessions Mode
         CreateCheckoutSessionRequest.ModeEnum modeEnum = CreateCheckoutSessionRequest.ModeEnum.fromValue(requestModel.getSessionsMode());
 
         CreateCheckoutSessionRequest checkoutSessionRequest = new CreateCheckoutSessionRequest()
@@ -123,15 +126,18 @@ public class PaymentsService {
                 .shopperLocale(requestModel.getLocale())
                 .shopperStatement(merchantModel.getShopperStatement())
                 .reference(transactionModel.getMerchantReference())
-                .mode(modeEnum)
-                .returnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getId()));
+                .mode(modeEnum);
 
         if (modeEnum == CreateCheckoutSessionRequest.ModeEnum.HOSTED) {
-            checkoutSessionRequest.setReturnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl() + "/sessions", "merchantId", merchantModel.getId()));
+            String returnUrl = UrlUtil.addUrlParameter(merchantModel.getReturnUrl() + "/sessions", "merchantId", merchantModel.getId());
+            returnUrl = UrlUtil.addUrlParameter(returnUrl, "channel", requestModel.getChannel());
+            checkoutSessionRequest.setReturnUrl(returnUrl);
         } else {
-            checkoutSessionRequest.setChannel(CreateCheckoutSessionRequest.ChannelEnum.WEB);
+            String returnUrl = UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getId());
+            returnUrl = UrlUtil.addUrlParameter(returnUrl, "channel", requestModel.getChannel());
+            checkoutSessionRequest.setChannel(CreateCheckoutSessionRequest.ChannelEnum.fromValue(requestModel.getChannel()));
             checkoutSessionRequest.setAuthenticationData(authenticationData);
-            checkoutSessionRequest.setReturnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getId()));
+            checkoutSessionRequest.setReturnUrl(returnUrl);
         }
 
         //Call API
@@ -192,6 +198,13 @@ public class PaymentsService {
             localizedStatementMap = Map.of(LOCALIZED_SHOPPER_STATEMENT_LOCALE_JP, merchantModel.getShopperStatement());
         }
 
+        //Channel
+        PaymentRequest.ChannelEnum channel = PaymentRequest.ChannelEnum.fromValue(requestModel.getChannel());
+
+        //ReturnUrl
+        String returnUrl = UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getId());
+        returnUrl = UrlUtil.addUrlParameter(returnUrl, "channel", requestModel.getChannel());
+
         //Create Payment Object
         PaymentRequest paymentRequest = new PaymentRequest()
                 .amount(amountObject)
@@ -200,7 +213,7 @@ public class PaymentsService {
                 .shopperInteraction(PaymentRequest.ShopperInteractionEnum.fromValue(transactionModel.getShopperInteraction()))
                 .storePaymentMethod(STRING_TRUE_VALUE.equals(requestModel.getSavePaymentMethod()))
                 .recurringProcessingModel(PaymentUtil.PAYMENT_TYPE_SCHEME.equals(paymentType) ? PaymentRequest.RecurringProcessingModelEnum.CARDONFILE : null)
-                .channel(PaymentRequest.ChannelEnum.WEB)
+                .channel(channel)
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())
                 .shopperStatement(merchantModel.getShopperStatement())
@@ -210,7 +223,8 @@ public class PaymentsService {
                 .authenticationData(authenticationData)
                 .browserInfo(requestModel.getBrowserInfo())
                 .origin(requestModel.getOrigin())
-                .returnUrl(UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getId()));
+                .redirectToIssuerMethod(channel == PaymentRequest.ChannelEnum.IOS ? HttpMethod.GET.toString() : null)
+                .returnUrl(returnUrl);
 
         //Call API
         PaymentResponse paymentResponse = adyenPaymentsApiDao.callPaymentApi(paymentRequest, merchantModel);

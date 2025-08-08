@@ -1,5 +1,7 @@
 package no.jhommeland.paymentapi.model;
 
+import com.adyen.model.checkout.PaymentMethodsRequest;
+
 public class PaymentMethodsModel {
 
     private String merchantId;
@@ -13,6 +15,8 @@ public class PaymentMethodsModel {
     private String countryCode;
 
     private String locale;
+
+    private String channel = PaymentMethodsRequest.ChannelEnum.WEB.toString();
 
     public String getMerchantId() {
         return merchantId;
@@ -60,5 +64,13 @@ public class PaymentMethodsModel {
 
     public void setLocale(String locale) {
         this.locale = locale;
+    }
+
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
     }
 }
