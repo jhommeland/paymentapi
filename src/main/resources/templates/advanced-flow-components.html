@@ -23,6 +23,17 @@
                 </td>
             </tr>
 
+            <!-- ButtonType -->
+            <tr>
+                <td><label for="buttonType">Button Type:</label></td>
+                <td>
+                    <select class="input-field" id="buttonType" name="buttonType" required>
+                        <option value="standard" selected>Standard</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </td>
+            </tr>
+
             <!-- Amount Row -->
             <tr>
                 <td><label for="amount">Amount:</label></td>
@@ -93,6 +104,8 @@
 <div class="payment-form-container" id="checkoutForm" style="display: none;">
     <h2>2. Checkout</h2>
     <div id="dropin-container"></div>
+    <br>
+    <button id="paymentButton" style="display: none;">Pay</button>
 </div>
 
 <script type="module" src="/js/advanced-flow-components.js"></script>

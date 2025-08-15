@@ -2,11 +2,14 @@
 import { PaymentsUtil } from '../js-util/paymentsUtil.js';
 import { CheckoutUtil } from '../js-util/checkoutUtil.js';
 
+var adyenComponent = null;
+
 async function initializeCheckout() {
 
     PaymentsUtil.disableWithMessage("startPaymentButton", "Loading...");
 
     const paymentMethod = document.getElementById("paymentMethod").value
+    const buttonType = document.getElementById("buttonType").value
     const amount = document.getElementById("amount").value
     const currency = document.getElementById("currency").value;
     const locale = document.getElementById("language").value;
@@ -42,10 +45,18 @@ async function initializeCheckout() {
         onError: (error, component) => {
             CheckoutUtil.onPaymentEvent(error, component);
         }
+
     };
 
     const dropinConfiguration = CheckoutUtil.getDropinConfiguration(amount, currency, countryCode)
-    await CheckoutUtil.mountCheckout(paymentMethod, configuration, dropinConfiguration, checkoutVersion);
+
+    if (buttonType == "custom") {
+        dropinConfiguration.paymentMethodsConfiguration.card.showPayButton = false;
+        const paymentButton = document.getElementById("paymentButton");
+        paymentButton.style.display = "block";
+    }
+
+    adyenComponent = await CheckoutUtil.mountCheckout(paymentMethod, configuration, dropinConfiguration, checkoutVersion);
 
     const inputForm = document.getElementById("inputForm");
     const checkoutForm = document.getElementById("checkoutForm");
@@ -57,6 +68,13 @@ window.onload = function() {
     document.getElementById("paymentForm").addEventListener("submit", function(event) {
         event.preventDefault(); // Prevent the default form submission
         initializeCheckout();
+    });
+    document.getElementById("paymentButton").addEventListener("click", function(event) {
+        console.log(adyenComponent);
+        if (adyenComponent.isValid) {
+            PaymentsUtil.disableWithMessage("paymentButton", "Loading...");
+        }
+        adyenComponent.submit();
     });
 };
 

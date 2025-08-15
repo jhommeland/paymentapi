@@ -15,6 +15,7 @@ export class CheckoutUtil {
                     countryCode: countryCode
                 },
                 card: {
+                    showPayButton: true,
                     styles: CheckoutUtil.getCardStyling(),
                     hasHolderName: true,
                     holderNameRequired: true,
