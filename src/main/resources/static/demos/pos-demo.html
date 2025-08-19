@@ -82,6 +82,17 @@
           margin-top: 1rem;
         }
 
+        .checkout-dropdown {
+          background: #001a33;
+          color: white;
+          width: 100%;
+          padding: 0.7rem;
+          font-size: 1rem;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+
         .checkout-btn:disabled {
           background: #e0e0e0;
           color: #a0a0a0;
@@ -111,6 +122,10 @@
     <div class="products-section" id="productGrid"></div>
 
     <div class="cart" id="cart">
+        <h4>Select Customer</h4>
+        <select class="checkout-dropdown" id="customerName" name="customerName" style="display: none;">
+            <!-- Options will be dynamically added here -->
+        </select>
         <h4>Your cart</h4>
         <div id="cartItems">No items in the cart</div>
         <p><strong>Total:</strong> ¥<span id="cartTotal">0</span></p>

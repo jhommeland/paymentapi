@@ -49,4 +49,11 @@ public class TerminalController {
         return new ResponseEntity<>(paymentResponse, headers, HttpStatus.OK);
     }
 
+    @PostMapping("/terminal/cardAcq/payments")
+    public ResponseEntity<TerminalPaymentResponseModel> makeCardAcqPayment(@RequestBody TerminalPaymentModel requestModel) {
+        HttpHeaders headers = new HttpHeaders();
+        TerminalPaymentResponseModel paymentResponse = terminalService.makePaymentWithCardAcquisition(requestModel);
+        return new ResponseEntity<>(paymentResponse, headers, HttpStatus.OK);
+    }
+
 }

@@ -6,10 +6,13 @@ import java.util.Random;
 
 public class ReferenceUtil {
 
-    public static String generateReference() {
-        // Get the current date in YYYYMMDD format
+    public static String generateDate_yyyyMMdd() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-        String date = dateFormat.format(new Date());
+        return dateFormat.format(new Date());
+    }
+
+    public static String generateReference() {
+        String date = generateDate_yyyyMMdd();
 
         // Generate a random alphanumeric string of length 10
         String randomString = generateRandomAlphanumeric(10);

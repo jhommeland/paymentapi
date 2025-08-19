@@ -12,7 +12,8 @@ public enum TransactionStatus {
     AWAITING_REVERSAL("AWAITING_REVERSAL", List.of()),
     CANCEL_OR_REFUND("CANCEL_OR_REFUND", List.of()),
     CANCELLATION("CANCELLATION", List.of("Cancelled")),
-    REFUND("REFUND", List.of("Refunded", "SentForRefund"));
+    REFUND("REFUND", List.of("Refunded", "SentForRefund")),
+    REFUSED("REFUSED", List.of("Refused"));
 
     private final String status;
 

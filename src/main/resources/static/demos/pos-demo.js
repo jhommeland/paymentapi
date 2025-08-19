@@ -15,8 +15,11 @@ async function doCheckout() {
     PaymentsUtil.disableWithMessage("checkoutButton", "Processing...");
 
     let settings = JSON.parse(atob(settingsBase64));
+    const customerName = document.getElementById("customerName").value;
+    const shopperId = customerName != null ? customerName : settings.shopperId
+
     const serviceId = PaymentsUtil.generateServiceId();
-    let terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(settings.merchantId, serviceId, settings.shopperId, settings.poiId, totalAmount, settings.currency, settings.apiType, settings.localEndpoint, settings.connectionType, settings.printReceipt, settings.connectionTimeout, settings.savePaymentMethod);
+    let terminalResponse = await PaymentsUtil.makeTerminalPaymentWithCardAcqCall(settings.merchantId, serviceId, shopperId, settings.poiId, totalAmount, settings.currency, settings.apiType, settings.localEndpoint, settings.connectionType, settings.printReceipt, settings.connectionTimeout, settings.savePaymentMethod);
     if (terminalResponse == null) {
         console.log("Payment call interrupted. Starting polling.")
         for (let i = 1; i < PAYMENT_STATUS_POLL_COUNT+1; i++) {
@@ -37,27 +40,34 @@ async function doCheckout() {
 
 }
 
-const products = [
-  { name: 'Beer', price: 500 },
-  { name: 'White wine', price: 600 },
-  { name: 'Red wine', price: 600 },
-  { name: 'Coca Cola', price: 300 },
-  { name: 'Iced tea', price: 400 },
-  { name: 'Hot tea', price: 350 },
-  { name: 'Coffee', price: 450 }
+const defaultProducts = [
+  { itemName: 'Beer', itemAmount: 500 },
+  { itemName: 'White wine', itemAmount: 600 },
+  { itemName: 'Red wine', itemAmount: 600 },
+  { itemName: 'Coca Cola', itemAmount: 300 },
+  { itemName: 'Iced tea', itemAmount: 400 },
+  { itemName: 'Hot tea', itemAmount: 350 },
+  { itemName: 'Coffee', itemAmount: 450 }
 ];
+
+var products = await getItems();
+if (products.length == 0) {
+    products = defaultProducts;
+}
+
+const customers = await getCustomers();
 
 const cart = [];
 const cartTotalElement = document.getElementById('cartTotal');
 const cartItemsElement = document.getElementById('cartItems');
 
 const updateCart = () => {
-  let total = cart.reduce((sum, item) => sum + item.price, 0);
+  let total = cart.reduce((sum, item) => sum + Number(item.itemAmount), 0);
   totalAmount = total;
   cartTotalElement.textContent = total.toLocaleString();
   if (cart.length > 0) {
     cartItemsElement.innerHTML = cart.map(item =>
-      `<div class="cart-item">${item.name} - ¥${item.price.toLocaleString()}</div>`
+      `<div class="cart-item">${item.itemName} - ¥${item.itemAmount.toLocaleString()}</div>`
     ).join('');
   } else {
     cartItemsElement.textContent = 'No items in the cart';
@@ -68,11 +78,11 @@ const productGrid = document.getElementById('productGrid');
 products.forEach(product => {
   const btn = document.createElement('button');
   btn.className = 'product-btn';
-  btn.setAttribute('data-name', product.name);
-  btn.setAttribute('data-price', product.price);
+  btn.setAttribute('data-name', product.itemName);
+  btn.setAttribute('data-price', product.itemAmount);
   btn.innerHTML = `
-    <h3>${product.name}</h3>
-    <div class="price">¥${product.price.toLocaleString()}</div>
+    <h3>${product.itemName}</h3>
+    <div class="price">¥${product.itemAmount.toLocaleString()}</div>
   `;
   btn.addEventListener('click', () => {
     cart.push(product);
@@ -81,6 +91,48 @@ products.forEach(product => {
   productGrid.appendChild(btn);
 });
 
+var customerNameDropdown = document.getElementById('customerName');
+if (customers.length > 0) {
+    customerNameDropdown.style.display = "block";
+}
+
+customers.forEach(customer => {
+    const option = document.createElement("option");
+    option.value = customer.id;
+    option.textContent = customer.customerName;
+    customerNameDropdown.appendChild(option);
+});
+
 document.getElementById("checkoutButton").addEventListener("click", function(event) {
     doCheckout();
 });
+
+async function getCustomers() {
+    try {
+        // Direct use of await to wait for the response
+        const response = await axios.get('/pos-demo-customers');
+
+        // Log and return the server response data
+        console.log('PosDemoCustomers retrieved');
+        return response.data;
+    } catch (error) {
+        // Handle error and return null in case of failure
+        console.error('PosDemoCustomers Retrieval Error:', error);
+        return null;
+    }
+}
+
+async function getItems() {
+    try {
+        // Direct use of await to wait for the response
+        const response = await axios.get('/pos-demo-items');
+
+        // Log and return the server response data
+        console.log('PosDemoItems retrieved');
+        return response.data;
+    } catch (error) {
+        // Handle error and return null in case of failure
+        console.error('PosDemoItems Retrieval Error:', error);
+        return null;
+    }
+}

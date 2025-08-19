@@ -302,6 +302,41 @@ export class PaymentsUtil {
         }
     }
 
+    static async makeTerminalPaymentWithCardAcqCall(merchantId, serviceId, shopperId, poiId, amount, currency, apiType, localEndpoint, connectionType, printReceipt, timeout, savePaymentMethod) {
+        console.log('Will do terminals payments with cardAcq call with serviceId:', serviceId);
+        try {
+            // Direct use of await to wait for the response
+            const response = await axios.post('/terminal/cardAcq/payments', {
+                merchantId: merchantId,
+                serviceId: serviceId,
+                shopperId: shopperId,
+                amount: amount,
+                currency: currency,
+                printReceipt: printReceipt,
+                savePaymentMethod: savePaymentMethod,
+                terminalConfig: {
+                    poiId: poiId,
+                    apiType: apiType,
+                    connectionType: connectionType,
+                    localEndpoint: localEndpoint
+                }
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                timeout: timeout
+            });
+
+            // Log and return the server response data
+            console.log('Terminal Payment Response:', response.data);
+            return response.data;
+        } catch (error) {
+            // Handle error and return null in case of failure
+            console.error('Terminal Payment Error:', error);
+            return null;
+        }
+    }
+
     static async getClientKeyForSelectedMerchant() {
         const selectedMerchant = localStorage.getItem("selectedMerchant");
         return PaymentsUtil.getCredentials(selectedMerchant);
