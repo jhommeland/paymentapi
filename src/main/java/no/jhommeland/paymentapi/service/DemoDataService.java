@@ -29,8 +29,14 @@ public class DemoDataService {
         return posDemoCustomerRepository.findAll();
     }
 
-    public List<PosDemoItemModel> getPosDemoItems() {
-        return posDemoItemRepository.findAll();
+    public List<PosDemoItemModel> getPosDemoItems(String storeName) {
+        List<PosDemoItemModel> items;
+        if (storeName != null) {
+            items = posDemoItemRepository.findAllByStoreName(storeName);
+        } else {
+            items = posDemoItemRepository.findAll();
+        }
+        return items;
     }
 
     public List<PosDemoPurchaseModel> getPosDemoPurchases() {

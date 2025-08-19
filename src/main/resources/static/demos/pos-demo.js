@@ -123,9 +123,10 @@ async function getCustomers() {
 }
 
 async function getItems() {
+    const storeName = document.getElementById("storeName").value;
     try {
         // Direct use of await to wait for the response
-        const response = await axios.get('/pos-demo-items');
+        const response = await axios.get('/pos-demo-items?storeName=' + storeName);
 
         // Log and return the server response data
         console.log('PosDemoItems retrieved');

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -29,9 +30,9 @@ public class DemoDataController {
     }
 
     @GetMapping("/pos-demo-items")
-    public ResponseEntity<List<PosDemoItemModel>> getPosDemoItems() {
+    public ResponseEntity<List<PosDemoItemModel>> getPosDemoItems(@RequestParam(required = false) String storeName) {
         HttpHeaders headers = new HttpHeaders();
-        List<PosDemoItemModel> items = demoDataService.getPosDemoItems();
+        List<PosDemoItemModel> items = demoDataService.getPosDemoItems(storeName);
         return new ResponseEntity<>(items, headers, HttpStatus.OK);
     }
 
