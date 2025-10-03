@@ -33,6 +33,12 @@ public class PaymentsService {
 
     private final String LOCALIZED_SHOPPER_STATEMENT_LOCALE_JP = "ja-Kana";
 
+    private final String SAVE_PAYMENT_METHOD_RECURRING_ONLY = "recurring";
+
+    private final String SAVE_PAYMENT_METHOD_ONECLICK_ONLY = "oneClick";
+
+    private final String SAVE_PAYMENT_METHOD_ASK_USER = "askUser";
+
     private final Logger logger = LoggerFactory.getLogger(PaymentsService.class);
 
     private final AdyenPaymentsApiDao adyenPaymentsApiDao;
@@ -120,13 +126,26 @@ public class PaymentsService {
                 .merchantAccount(transactionModel.getMerchantAccountName())
                 .shopperReference(shopperModel.getShopperReference())
                 .shopperInteraction(CreateCheckoutSessionRequest.ShopperInteractionEnum.fromValue(transactionModel.getShopperInteraction()))
-                .storePaymentMethod(STRING_TRUE_VALUE.equals(requestModel.getSavePaymentMethod()))
-                .recurringProcessingModel(CreateCheckoutSessionRequest.RecurringProcessingModelEnum.CARDONFILE)
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())
                 .shopperStatement(merchantModel.getShopperStatement())
                 .reference(transactionModel.getMerchantReference())
                 .mode(modeEnum);
+
+        //Recurring Processing Model
+        if (SAVE_PAYMENT_METHOD_RECURRING_ONLY.equals(requestModel.getSavePaymentMethod())) {
+            checkoutSessionRequest.enableRecurring(true);
+            checkoutSessionRequest.recurringProcessingModel(CreateCheckoutSessionRequest.RecurringProcessingModelEnum.CARDONFILE);
+        } else if (SAVE_PAYMENT_METHOD_ONECLICK_ONLY.equals(requestModel.getSavePaymentMethod())) {
+            checkoutSessionRequest.enableOneClick(true);
+            checkoutSessionRequest.recurringProcessingModel(CreateCheckoutSessionRequest.RecurringProcessingModelEnum.CARDONFILE);
+        }  else if (SAVE_PAYMENT_METHOD_ASK_USER.equals(requestModel.getSavePaymentMethod())) {
+            checkoutSessionRequest.storePaymentMethodMode(CreateCheckoutSessionRequest.StorePaymentMethodModeEnum.ASKFORCONSENT);
+            checkoutSessionRequest.recurringProcessingModel(CreateCheckoutSessionRequest.RecurringProcessingModelEnum.CARDONFILE);
+        } else if (STRING_TRUE_VALUE.equals(requestModel.getSavePaymentMethod())) {
+            checkoutSessionRequest.storePaymentMethod(true);
+            checkoutSessionRequest.recurringProcessingModel(CreateCheckoutSessionRequest.RecurringProcessingModelEnum.CARDONFILE);
+        }
 
         if (modeEnum == CreateCheckoutSessionRequest.ModeEnum.HOSTED) {
             String returnUrl = UrlUtil.addUrlParameter(merchantModel.getReturnUrl() + "/sessions", "merchantId", merchantModel.getId());
@@ -211,8 +230,6 @@ public class PaymentsService {
                 .merchantAccount(transactionModel.getMerchantAccountName())
                 .shopperReference(shopperModel.getShopperReference())
                 .shopperInteraction(PaymentRequest.ShopperInteractionEnum.fromValue(transactionModel.getShopperInteraction()))
-                .storePaymentMethod(STRING_TRUE_VALUE.equals(requestModel.getSavePaymentMethod()))
-                .recurringProcessingModel(PaymentUtil.PAYMENT_TYPE_SCHEME.equals(paymentType) ? PaymentRequest.RecurringProcessingModelEnum.CARDONFILE : null)
                 .channel(channel)
                 .countryCode(requestModel.getCountryCode())
                 .shopperLocale(requestModel.getLocale())
@@ -225,6 +242,20 @@ public class PaymentsService {
                 .origin(requestModel.getOrigin())
                 .redirectToIssuerMethod(channel == PaymentRequest.ChannelEnum.IOS ? HttpMethod.GET.toString() : null)
                 .returnUrl(returnUrl);
+
+        //Recurring Processing Model
+        if (SAVE_PAYMENT_METHOD_RECURRING_ONLY.equals(requestModel.getSavePaymentMethod())) {
+            paymentRequest.enableRecurring(true);
+            paymentRequest.recurringProcessingModel(PaymentRequest.RecurringProcessingModelEnum.CARDONFILE);
+        } else if (SAVE_PAYMENT_METHOD_ONECLICK_ONLY.equals(requestModel.getSavePaymentMethod())) {
+            paymentRequest.enableOneClick(true);
+            paymentRequest.recurringProcessingModel(PaymentRequest.RecurringProcessingModelEnum.CARDONFILE);
+        } else if (STRING_TRUE_VALUE.equals(requestModel.getSavePaymentMethod())) {
+            paymentRequest.storePaymentMethod(true);
+            paymentRequest.recurringProcessingModel(PaymentRequest.RecurringProcessingModelEnum.CARDONFILE);
+        } else if (PaymentUtil.isUsingStoredCard(requestModel.getPaymentMethod())) {
+            paymentRequest.recurringProcessingModel(PaymentRequest.RecurringProcessingModelEnum.CARDONFILE);
+        }
 
         //Call API
         PaymentResponse paymentResponse = adyenPaymentsApiDao.callPaymentApi(paymentRequest, merchantModel);

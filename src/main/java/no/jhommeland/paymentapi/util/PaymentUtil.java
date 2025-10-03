@@ -1,5 +1,6 @@
 package no.jhommeland.paymentapi.util;
 
+import com.adyen.model.checkout.CheckoutPaymentMethod;
 import com.adyen.service.exception.ApiException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,6 +40,10 @@ public class PaymentUtil {
 
     public static String getPaymentType(Object paymentMethod) {
         return objectMapper.convertValue(paymentMethod, PaymentType.class).getType();
+    }
+
+    public static Boolean isUsingStoredCard(CheckoutPaymentMethod paymentMethod) {
+        return paymentMethod.getCardDetails() != null && paymentMethod.getCardDetails().getStoredPaymentMethodId() != null;
     }
 
     public static String convertToJsonString(Object object, boolean prettyPrint) {
