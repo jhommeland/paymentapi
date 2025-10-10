@@ -38,6 +38,12 @@ export class CheckoutUtil {
                     showInstallmentAmounts: false,
                     onBinLookup: (binData) => {
                         console.log("BIN data retrieved:", binData)
+                    },
+                    onBinValue: (binValue) => {
+                        console.log("BIN value retrieved:", binValue)
+                    },
+                    onFieldValid: (data) => {
+                        console.log("Field validation:", data)
                     }
                 }
             }
