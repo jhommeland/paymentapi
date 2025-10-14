@@ -1,6 +1,8 @@
 package no.jhommeland.paymentapi.util;
 
+import com.adyen.model.checkout.CardDetails;
 import com.adyen.model.checkout.CheckoutPaymentMethod;
+import com.adyen.model.checkout.JSON;
 import com.adyen.service.exception.ApiException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashSet;
 import java.util.UUID;
 
 public class PaymentUtil {
@@ -43,6 +46,10 @@ public class PaymentUtil {
     }
 
     public static Boolean isUsingStoredCard(CheckoutPaymentMethod paymentMethod) {
+        if (!JSON.isInstanceOf(CardDetails.class, paymentMethod, new HashSet<Class<?>>())) {
+            return false;
+        }
+
         return paymentMethod.getCardDetails() != null && paymentMethod.getCardDetails().getStoredPaymentMethodId() != null;
     }
 

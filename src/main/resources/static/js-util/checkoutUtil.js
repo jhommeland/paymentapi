@@ -167,6 +167,8 @@ export class CheckoutUtil {
         switch (component) {
             case "applepay":
                 return new window.AdyenWeb.ApplePay(checkout, dropinConfiguration.paymentMethodsConfiguration.applepay);
+            case "googlepay":
+                return new window.AdyenWeb.GooglePay(checkout, dropinConfiguration.paymentMethodsConfiguration.googlepay);
             case "card":
                 return new window.AdyenWeb.Card(checkout, dropinConfiguration.paymentMethodsConfiguration.card);
             case "securedfields":
