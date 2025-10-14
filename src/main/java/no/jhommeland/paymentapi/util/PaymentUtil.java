@@ -46,11 +46,11 @@ public class PaymentUtil {
     }
 
     public static Boolean isUsingStoredCard(CheckoutPaymentMethod paymentMethod) {
-        if (!JSON.isInstanceOf(CardDetails.class, paymentMethod, new HashSet<Class<?>>())) {
+        try {
+            return paymentMethod.getCardDetails() != null && paymentMethod.getCardDetails().getStoredPaymentMethodId() != null;
+        } catch (ClassCastException e ) {
             return false;
         }
-
-        return paymentMethod.getCardDetails() != null && paymentMethod.getCardDetails().getStoredPaymentMethodId() != null;
     }
 
     public static String convertToJsonString(Object object, boolean prettyPrint) {
