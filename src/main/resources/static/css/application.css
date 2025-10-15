@@ -239,6 +239,9 @@ button:disabled {
 }
 
 /* ---------- Miscellaneous ---------- */
+.result-div {
+    text-align: center;
+}
 
 textarea {
     width: 100%;

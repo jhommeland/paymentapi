@@ -7,8 +7,11 @@ window.onload = function () {
     const decodedString = atob(data);
     console.log("Decoded Result: " + decodedString);
     const jsonData = JSON.parse(decodedString);
-    const tableBody = document.getElementById("result-table");
 
+    const resultImage = document.getElementById("result-image");
+    resultImage.src = jsonData["resultCode"] === "Authorised" ? "/images/success.svg" : "/images/error.svg";
+
+    const tableBody = document.getElementById("result-table");
     Object.entries(jsonData).forEach(([key, value]) => {
         const row = document.createElement("tr");
 
@@ -18,10 +21,19 @@ window.onload = function () {
 
         // Create a cell for the value
         const valueCell = document.createElement("td");
-        valueCell.textContent = JSON.stringify(value);
+
+        // Insert into input field
+        const inputField = document.createElement("input");
+        inputField.value = JSON.stringify(value).replaceAll('"', '');
+        inputField.className = "input-field";
+        inputField.disabled = true;
+
+        valueCell.appendChild(inputField);
         row.appendChild(valueCell);
 
-        tableBody.appendChild(row);
+        if (inputField.value !== "null") {
+            tableBody.appendChild(row);
+        }
     });
 
 };
