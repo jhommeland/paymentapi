@@ -10,6 +10,8 @@ public class AdyenTerminalConfig {
 
     public String localEndpoint;
 
+    public String inputMode;
+
     public String getPoiId() {
         return poiId;
     }
@@ -40,5 +42,13 @@ public class AdyenTerminalConfig {
 
     public void setLocalEndpoint(String localEndpoint) {
         this.localEndpoint = localEndpoint;
+    }
+
+    public String getInputMode() {
+        return inputMode;
+    }
+
+    public void setInputMode(String inputMode) {
+        this.inputMode = inputMode;
     }
 }

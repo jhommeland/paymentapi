@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 public class TerminalController {
 
+    private final String INPUT_MODE_MULTI = "multi";
+
     private TerminalService terminalService;
 
     public TerminalController(TerminalService terminalService) {
@@ -31,7 +33,13 @@ public class TerminalController {
     @PostMapping("/terminal/payments")
     public ResponseEntity<TerminalPaymentResponseModel> makePayment(@RequestBody TerminalPaymentModel requestModel) {
         HttpHeaders headers = new HttpHeaders();
-        TerminalPaymentResponseModel paymentResponse = terminalService.makePayment(requestModel);
+        TerminalPaymentResponseModel paymentResponse = null;
+        if (requestModel.getTerminalConfig().getInputMode().equals(INPUT_MODE_MULTI)) {
+            paymentResponse = terminalService.makePaymentWithMultiChoice(requestModel);
+        } else {
+            paymentResponse = terminalService.makePayment(requestModel);
+
+        }
         return new ResponseEntity<>(paymentResponse, headers, HttpStatus.OK);
     }
 

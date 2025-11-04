@@ -23,11 +23,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+import java.math.BigInteger;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class TerminalService {
@@ -264,6 +263,27 @@ public class TerminalService {
         return responseModel;
     }
 
+    public TerminalPaymentResponseModel makePaymentWithMultiChoice(TerminalPaymentModel requestModel) {
+
+        MerchantModel merchantModel = merchantRepository.findById(requestModel.getMerchantId()).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Merchant not found"));
+
+        //TODO: Temporary
+        String header = "User Input";
+        String subHeader = "Please select";
+        List<String> choices = Arrays.asList("Apple", "Pear", "Orange", "Grape", "Banana");
+
+        TerminalAPIRequest inputRequest = createTerminalApiMultiEntryRequest(header, subHeader, choices, requestModel.getTerminalConfig());
+
+        TerminalAPIResponse inputResponse = adyenTerminalApiDao.callTerminalApiSync(inputRequest, merchantModel, requestModel.getTerminalConfig());
+        TerminalPaymentResponseModel inputResponseModel = buildResponseModel(inputResponse.getSaleToPOIResponse().getInputResponse().getInputResult().getResponse());
+        if (!inputResponseModel.getResult().equals(TERMINAL_SYNC_RESPONSE_SUCCESS)) {
+            return inputResponseModel;
+        }
+
+        return makePayment(requestModel);
+    }
+
     private TerminalAPIRequest createTerminalApiPaymentRequest(String transactionId, TerminalPaymentModel requestModel, ShopperModel shopperModel, TransactionIdentification cardAcqReference) {
 
         var messageHeader = new MessageHeader();
@@ -397,6 +417,72 @@ public class TerminalService {
         var saleToPOIRequest = new SaleToPOIRequest();
         saleToPOIRequest.setMessageHeader(messageHeader);
         saleToPOIRequest.setPrintRequest(printRequest);
+
+        var terminalAPIRequest = new TerminalAPIRequest();
+        terminalAPIRequest.setSaleToPOIRequest(saleToPOIRequest);
+
+        return terminalAPIRequest;
+
+    }
+
+    private TerminalAPIRequest createTerminalApiMultiEntryRequest(String header, String subHeader, List<String> choices, AdyenTerminalConfig adyenTerminalConfig) {
+
+        var messageHeader = new MessageHeader();
+        messageHeader.setMessageCategory(MessageCategoryType.INPUT);
+        messageHeader.setMessageClass(MessageClassType.DEVICE);
+        messageHeader.setMessageType(MessageType.REQUEST);
+        messageHeader.setPOIID(adyenTerminalConfig.getPoiId());
+        messageHeader.setSaleID(TERMINAL_SALE_ID);
+        messageHeader.setServiceID(PaymentUtil.generateServiceId());
+
+        var predefinedContent = new PredefinedContent();
+        predefinedContent.setReferenceID("MenuButtons");
+
+        var outputTextHeader = new OutputText();
+        outputTextHeader.setText(header);
+        var outputTextSubHeader = new OutputText();
+        outputTextSubHeader.setText(subHeader);
+
+        var outputTextList = new ArrayList<OutputText>();
+        outputTextList.add(outputTextHeader);
+        outputTextList.add(outputTextSubHeader);
+
+        var outputContent = new OutputContent();
+        outputContent.setOutputFormat(OutputFormatType.TEXT);
+        outputContent.setPredefinedContent(predefinedContent);
+        outputContent.setOutputText(outputTextList);
+
+        var menuEntryList = new ArrayList<MenuEntry>();
+        choices.forEach(choice -> {
+            var element = new MenuEntry();
+            var elementOutputTextList = new ArrayList<OutputText>();
+            var elementOutputText = new OutputText();
+            elementOutputTextList.add(elementOutputText);
+            elementOutputText.setText(choice);
+            element.setOutputFormat(OutputFormatType.TEXT);
+            element.setOutputText(elementOutputTextList);
+            menuEntryList.add(element);
+        });
+
+        var displayOutput = new DisplayOutput();
+        displayOutput.setDevice(DeviceType.CUSTOMER_DISPLAY);
+        displayOutput.setInfoQualify(InfoQualifyType.DISPLAY);
+        displayOutput.setOutputContent(outputContent);
+        displayOutput.getMenuEntry().addAll(menuEntryList);
+
+        var inputData = new InputData();
+        inputData.setDevice(DeviceType.CUSTOMER_INPUT);
+        inputData.setInfoQualify(InfoQualifyType.INPUT);
+        inputData.setInputCommand(InputCommandType.GET_MENU_ENTRY);
+        inputData.setMaxInputTime(new BigInteger("120"));
+
+        var inputRequest = new InputRequest();
+        inputRequest.setDisplayOutput(displayOutput);
+        inputRequest.setInputData(inputData);
+
+        var saleToPOIRequest = new SaleToPOIRequest();
+        saleToPOIRequest.setMessageHeader(messageHeader);
+        saleToPOIRequest.setInputRequest(inputRequest);
 
         var terminalAPIRequest = new TerminalAPIRequest();
         terminalAPIRequest.setSaleToPOIRequest(saleToPOIRequest);

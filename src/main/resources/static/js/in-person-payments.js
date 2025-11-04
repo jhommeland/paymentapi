@@ -26,6 +26,7 @@ async function processPayment() {
     const connectionTypeText = connectionTypeElement.options[connectionTypeElement.selectedIndex].text;
     const connectionTimeout = document.getElementById("connectionTimeout").value;
     const savePaymentMethod = document.getElementById("savePaymentMethod").value;
+    const inputMode = document.getElementById("inputMode").value;
     const merchantId = localStorage.getItem("selectedMerchant");
     const shopperId = localStorage.getItem("selectedShopper");
     const printReceipt = document.getElementById("printReceipt").value;
@@ -36,7 +37,7 @@ async function processPayment() {
         const serviceId = PaymentsUtil.generateServiceId();
         localStorage.setItem("currentServiceId", serviceId);
 
-        terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, shopperId, poiId, amount, currency, apiType, localEndpoint, connectionTypeValue, printReceipt, connectionTimeout, savePaymentMethod);
+        terminalResponse = await PaymentsUtil.makeTerminalPaymentCall(merchantId, serviceId, shopperId, poiId, amount, currency, apiType, localEndpoint, connectionTypeValue, inputMode, printReceipt, connectionTimeout, savePaymentMethod);
         if (terminalResponse == null) {
             console.log("Payment call interrupted. Starting polling.")
             for (let i = 1; i < PAYMENT_STATUS_POLL_COUNT+1; i++) {

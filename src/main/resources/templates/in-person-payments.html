@@ -73,6 +73,17 @@
                     <td><input class="input-field" type="number" id="connectionTimeout" name="connectionTimeout" placeholder="Enter request timeout" value="30000" required></td>
                 </tr>
 
+                <!-- inputMode -->
+                <tr>
+                    <td><label for="inputMode">User Input Mode:</label></td>
+                    <td>
+                        <select class="input-field" id="inputMode" name="inputMode" required>
+                            <option value="none" selected>None</option>
+                            <option value="multi">Multi</option>
+                        </select>
+                    </td>
+                </tr>
+
                 <!-- printReceipt -->
                 <tr>
                     <td><label for="printReceipt">Print Receipt:</label></td>
@@ -84,6 +95,7 @@
                         </select>
                     </td>
                 </tr>
+
                 <!-- savePaymentMethod -->
                 <tr>
                     <td><label for="savePaymentMethod">Save Payment Method:</label></td>
