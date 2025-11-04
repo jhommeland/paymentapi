@@ -3,6 +3,7 @@ import { PaymentsUtil } from '../js-util/paymentsUtil.js';
 export class CheckoutUtil {
 
     static MOUNT_CONTAINER = "#dropin-container";
+    static SAVED_CARD_MOUNT_CONTAINER = "#stored-card";
 
     static getDropinConfiguration(amount, currency, countryCode) {
         const dropinConfiguration = {
@@ -162,6 +163,25 @@ export class CheckoutUtil {
         }
 
     }
+
+    static async mountSavedCards(checkoutConfiguration, dropinConfiguration, version) {
+
+        if (version.startsWith("6.")) {
+            const { AdyenCheckout } = window.AdyenWeb;
+            const checkout = await AdyenCheckout(checkoutConfiguration);
+            //TBD
+        } else if (version.startsWith("5.")) {
+            //For 5.x.x paymentsMethodsConfiguration is part of the checkoutConfiguration
+            checkoutConfiguration.paymentMethodsConfiguration = dropinConfiguration.paymentMethodsConfiguration
+            const checkout = await window.AdyenCheckout(checkoutConfiguration);
+            const storedPaymentMethod = checkout.paymentMethodsResponse.storedPaymentMethods[0];
+            return checkout.create("card", storedPaymentMethod).mount(CheckoutUtil.SAVED_CARD_MOUNT_CONTAINER);
+        } else {
+            console.error("Unsupported checkout version");
+        }
+
+    }
+
 
     static initiateCheckoutV6FromComponent(component, checkout, dropinConfiguration) {
         switch (component) {
