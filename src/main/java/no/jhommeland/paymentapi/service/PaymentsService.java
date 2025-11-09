@@ -149,11 +149,11 @@ public class PaymentsService {
 
         if (modeEnum == CreateCheckoutSessionRequest.ModeEnum.HOSTED) {
             String returnUrl = UrlUtil.addUrlParameter(merchantModel.getReturnUrl() + "/sessions", "merchantId", merchantModel.getId());
-            returnUrl = UrlUtil.addUrlParameter(returnUrl, "channel", requestModel.getChannel());
+            returnUrl = UrlUtil.addUrlParameter(returnUrl, "appType", requestModel.getAppType());
             checkoutSessionRequest.setReturnUrl(returnUrl);
         } else {
             String returnUrl = UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getId());
-            returnUrl = UrlUtil.addUrlParameter(returnUrl, "channel", requestModel.getChannel());
+            returnUrl = UrlUtil.addUrlParameter(returnUrl, "appType", requestModel.getAppType());
             checkoutSessionRequest.setChannel(CreateCheckoutSessionRequest.ChannelEnum.fromValue(requestModel.getChannel()));
             checkoutSessionRequest.setAuthenticationData(authenticationData);
             checkoutSessionRequest.setReturnUrl(returnUrl);
@@ -222,7 +222,7 @@ public class PaymentsService {
 
         //ReturnUrl
         String returnUrl = UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getId());
-        returnUrl = UrlUtil.addUrlParameter(returnUrl, "channel", requestModel.getChannel());
+        returnUrl = UrlUtil.addUrlParameter(returnUrl, "appType", requestModel.getAppType());
 
         //Create Payment Object
         PaymentRequest paymentRequest = new PaymentRequest()

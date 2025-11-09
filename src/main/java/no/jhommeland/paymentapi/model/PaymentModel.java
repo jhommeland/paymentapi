@@ -34,6 +34,8 @@ public class PaymentModel {
 
     private String channel = PaymentRequest.ChannelEnum.WEB.toString();
 
+    private String appType;
+
     public String getMerchantId() {
         return merchantId;
     }
@@ -144,5 +146,13 @@ public class PaymentModel {
 
     public void setChannel(String channel) {
         this.channel = channel;
+    }
+
+    public String getAppType() {
+        return appType;
+    }
+
+    public void setAppType(String appType) {
+        this.appType = appType;
     }
 }

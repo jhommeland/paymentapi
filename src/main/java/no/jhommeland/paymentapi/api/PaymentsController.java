@@ -74,10 +74,23 @@ public class PaymentsController {
     }
 
     @GetMapping("/payments/complete")
-    public String completePayment(@RequestParam String merchantId, @RequestParam String channel, @RequestParam String redirectResult, Model model) throws JsonProcessingException {
-        PaymentDetailsResponse paymentDetailsResponse = paymentsService.submitPaymentDetailsRedirect(merchantId, redirectResult);
-        model.addAttribute("base64Result", UrlUtil.toBase64(paymentDetailsResponse.toJson()));
-        return channel.equals(PaymentRequest.ChannelEnum.WEB.toString()) ? "result" : "paymentapp-ios-redirect.html";
+    public String completePayment(@RequestParam String merchantId, @RequestParam String appType, @RequestParam String redirectResult, Model model) throws JsonProcessingException {
+        //TODO: Fix to do all details call from client side
+        //TODO: Any benefits of going to the server before returning to the client??
+        AppType appTypeEnum = AppType.getAppTypeFromName(appType);
+        if (appTypeEnum == null) {
+            PaymentDetailsResponse paymentDetailsResponse = paymentsService.submitPaymentDetailsRedirect(merchantId, redirectResult);
+            model.addAttribute("base64Result", UrlUtil.toBase64(paymentDetailsResponse.toJson()));
+            return "result";
+        } else if (appTypeEnum == AppType.IOS) {
+            PaymentDetailsResponse paymentDetailsResponse = paymentsService.submitPaymentDetailsRedirect(merchantId, redirectResult);
+            model.addAttribute("base64Result", UrlUtil.toBase64(paymentDetailsResponse.toJson()));
+            return "paymentapp-ios-redirect.html";
+        } else {
+            model.addAttribute("redirectResult", redirectResult);
+            model.addAttribute("deepLinkPrefix", appTypeEnum.getDeepLinkPrefix());
+            return "paymentapp-redirect-alt.html";
+        }
     }
 
     @GetMapping("/payments/complete/sessions")

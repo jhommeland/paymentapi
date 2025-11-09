@@ -1,0 +1,16 @@
+<html>
+<head>
+    <title>Returning to App...</title>
+    <script>
+        const redirectResult = "[[${redirectResult}]]";
+        const deepLinkPrefix = "[[${deepLinkPrefix}]]";
+        window.onload = function () {
+          window.location.href = `${deepLinkPrefix}result?redirectResult=${redirectResult}`
+        };
+    </script>
+</head>
+<body>
+<h1>Returning to App...</h1>
+</body>
+</div>
+</html>

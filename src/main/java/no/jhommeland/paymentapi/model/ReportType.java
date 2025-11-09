@@ -4,7 +4,7 @@ public enum ReportType {
     SETTLEMENT_DETAIL_REPORT("settlement_detail_report"),
     PAYMENTS_ACCOUNTING_REPORT("payments_accounting_report");
 
-    private String filenamePrefix;
+    private final String filenamePrefix;
 
     public String getFilenamePrefix() {
         return filenamePrefix;
