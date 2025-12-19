@@ -117,11 +117,8 @@ window.onload = function() {
         const result = await PaymentsUtil.makePaymentsCall(cardData.data, merchantId, shopperId, amount, currency, countryCode, locale, tdsMode, origin, savePaymentMethod);
         if (!result.action) {
             CheckoutUtil.onPaymentEvent(result, "securefields");
-        } else if (result.action.type == "redirect"){
-            PaymentsUtil.disableWithMessage("payButton", "Redirecting...");
-            cardComponent.handleAction(result.action);
         } else {
-            console.log("Error: Unknown action:", result.action);
+            cardComponent.handleAction(result.action); //TODO: Fix native flow
         }
 
     });

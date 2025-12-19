@@ -182,6 +182,26 @@ export class CheckoutUtil {
 
     }
 
+    static async mountCheckoutV6FromAction(action, checkoutConfiguration, version) {
+
+        const configuration = {
+            onAdditionalDetails: async (state, component, actions) => {
+                await CheckoutUtil.onAdditionalDetails(merchantId, state, component, actions);
+            },
+            onError: (error, component) => {
+                CheckoutUtil.onPaymentEvent(error, component);
+            }
+        };
+
+        if (version.startsWith("6.")) {
+            const { AdyenCheckout } = window.AdyenWeb;
+            const checkout = await AdyenCheckout(checkoutConfiguration);
+            return checkout.createFromAction(action, configuration).mount(CheckoutUtil.MOUNT_CONTAINER);
+        } else {
+            console.error("Unsupported checkout version");
+        }
+    }
+
 
     static initiateCheckoutV6FromComponent(component, checkout, dropinConfiguration) {
         switch (component) {
