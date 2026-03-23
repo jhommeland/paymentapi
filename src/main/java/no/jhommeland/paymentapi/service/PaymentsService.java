@@ -241,7 +241,8 @@ public class PaymentsService {
                 .browserInfo(requestModel.getBrowserInfo())
                 .origin(requestModel.getOrigin())
                 .redirectToIssuerMethod(channel == PaymentRequest.ChannelEnum.IOS ? HttpMethod.GET.toString() : null)
-                .returnUrl(returnUrl);
+                .returnUrl(returnUrl)
+                .additionalData(requestModel.getAdditionalData());
 
         //Recurring Processing Model
         if (SAVE_PAYMENT_METHOD_RECURRING_ONLY.equals(requestModel.getSavePaymentMethod())) {

@@ -4,6 +4,8 @@ import com.adyen.model.checkout.BrowserInfo;
 import com.adyen.model.checkout.CheckoutPaymentMethod;
 import com.adyen.model.checkout.PaymentRequest;
 
+import java.util.Map;
+
 public class PaymentModel {
 
     private String merchantId;
@@ -35,6 +37,8 @@ public class PaymentModel {
     private String channel = PaymentRequest.ChannelEnum.WEB.toString();
 
     private String appType;
+
+    private Map<String, String> additionalData;
 
     public String getMerchantId() {
         return merchantId;
@@ -154,5 +158,13 @@ public class PaymentModel {
 
     public void setAppType(String appType) {
         this.appType = appType;
+    }
+
+    public Map<String, String> getAdditionalData() {
+        return additionalData;
+    }
+
+    public void setAdditionalData(Map<String, String> additionalData) {
+        this.additionalData = additionalData;
     }
 }

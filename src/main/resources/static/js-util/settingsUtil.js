@@ -104,6 +104,7 @@ function refreshMerchantLocalStorage(merchants, selectedValue) {
         if (merchant.id === selectedValue) {
             localStorage.setItem("selectedMerchantSettings", merchant.merchantSettings);
             localStorage.setItem("selectedMerchantEnvironment", merchant.livePrefix ? "live" : "test");
+            //TODO: Add support for different live environments
         }
     });
 }

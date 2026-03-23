@@ -22,12 +22,15 @@ export class CheckoutUtil {
                     holderNameRequired: true,
                     installmentOptions: {
                         mc: {
+                            plans: ["regular", "revolving", "bonus"],
                             values: [1,2,3,4,5]
                         },
                         visa: {
+                            plans: ["regular", "revolving", "bonus"],
                             values: [1,2,3,4,5]
                         },
                         jcb: {
+                            plans: ["regular", "revolving", "bonus"],
                             values: [1,2,3,4,5]
                         },
                         diners: {
