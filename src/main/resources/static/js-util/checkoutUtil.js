@@ -33,6 +33,10 @@ export class CheckoutUtil {
                             plans: ["regular", "revolving", "bonus"],
                             values: [1,2,3,4,5]
                         },
+                        amex: { //Note: Not supported in Japan!
+                            plans: ["regular", "revolving", "bonus"],
+                            values: [1,2,3,4,5]
+                        },
                         diners: {
                             values: [1],
                         	plans: ["revolving"]
