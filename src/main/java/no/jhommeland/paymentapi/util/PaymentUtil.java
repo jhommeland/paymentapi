@@ -1,11 +1,10 @@
 package no.jhommeland.paymentapi.util;
 
-import com.adyen.model.checkout.CardDetails;
-import com.adyen.model.checkout.CheckoutPaymentMethod;
-import com.adyen.model.checkout.JSON;
+import com.adyen.model.checkout.*;
 import com.adyen.service.exception.ApiException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import no.jhommeland.paymentapi.exception.InternalServerErrorException;
@@ -14,8 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PaymentUtil {
 
@@ -39,6 +39,29 @@ public class PaymentUtil {
         } catch (Exception e) {
             throw new InternalServerErrorException(e.getMessage());
         }
+    }
+
+    public static void addRequiredData(PaymentRequest paymentRequest, JsonNode clientStateData) {
+        String paymentType = getPaymentType(paymentRequest.getPaymentMethod());
+        if (PAYMENT_TYPE_SCHEME.equals(paymentType) && clientStateData.path("installments") != null) {
+            paymentRequest.setInstallments(new Installments());
+            if (!clientStateData.path("installments").path("plan").asText().isEmpty()) {
+                paymentRequest.getInstallments().setPlan(Installments.PlanEnum.fromValue(clientStateData.path("installments").path("plan").asText()));
+            }
+            paymentRequest.getInstallments().setValue(clientStateData.path("installments").path("value").asInt());
+        }
+        if (extractTypeList(EcontextVoucherDetails.TypeEnum.class).contains(paymentType)) {
+            paymentRequest.getPaymentMethod().getEcontextVoucherDetails().setFirstName(clientStateData.path("shopperName").path("firstName").asText());
+            paymentRequest.getPaymentMethod().getEcontextVoucherDetails().setLastName(clientStateData.path("shopperName").path("lastName").asText());
+            paymentRequest.getPaymentMethod().getEcontextVoucherDetails().setShopperEmail(clientStateData.path("shopperEmail").asText());
+            paymentRequest.getPaymentMethod().getEcontextVoucherDetails().setTelephoneNumber(clientStateData.path("telephoneNumber").asText());
+        }
+    }
+
+    public static List<String> extractTypeList(Class<? extends Enum<?>> enumClass) {
+        return Stream.of(enumClass.getEnumConstants())
+                .map(e -> objectMapper.convertValue(e, String.class))
+                .collect(Collectors.toList());
     }
 
     public static String getPaymentType(Object paymentMethod) {

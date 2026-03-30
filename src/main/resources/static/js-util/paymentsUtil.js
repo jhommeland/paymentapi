@@ -81,7 +81,8 @@ export class PaymentsUtil {
                 paymentMethod: data.paymentMethod,
                 browserInfo: data.browserInfo,
                 origin: origin,
-                savePaymentMethod: savePaymentMethod
+                savePaymentMethod: savePaymentMethod,
+                clientStateData: data
             });
 
             // Log and return the resolved response data

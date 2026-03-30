@@ -244,6 +244,9 @@ public class PaymentsService {
                 .returnUrl(returnUrl)
                 .additionalData(requestModel.getAdditionalData());
 
+        //Add required data for some payment methods
+        PaymentUtil.addRequiredData(paymentRequest, requestModel.getClientStateData());
+
         //Recurring Processing Model
         if (SAVE_PAYMENT_METHOD_RECURRING_ONLY.equals(requestModel.getSavePaymentMethod())) {
             paymentRequest.enableRecurring(true);

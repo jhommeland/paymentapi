@@ -3,6 +3,7 @@ package no.jhommeland.paymentapi.model;
 import com.adyen.model.checkout.BrowserInfo;
 import com.adyen.model.checkout.CheckoutPaymentMethod;
 import com.adyen.model.checkout.PaymentRequest;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.Map;
 
@@ -39,6 +40,8 @@ public class PaymentModel {
     private String appType;
 
     private Map<String, String> additionalData;
+
+    private JsonNode clientStateData;
 
     public String getMerchantId() {
         return merchantId;
@@ -166,5 +169,13 @@ public class PaymentModel {
 
     public void setAdditionalData(Map<String, String> additionalData) {
         this.additionalData = additionalData;
+    }
+
+    public JsonNode getClientStateData() {
+        return clientStateData;
+    }
+
+    public void setClientStateData(JsonNode clientStateData) {
+        this.clientStateData = clientStateData;
     }
 }
