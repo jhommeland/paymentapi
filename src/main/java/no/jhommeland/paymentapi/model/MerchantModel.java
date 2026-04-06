@@ -49,6 +49,8 @@ public class MerchantModel {
 
     private String livePrefix;
 
+    private String merchantEnvironment;
+
     public String getId() {
         return id;
     }
@@ -151,5 +153,13 @@ public class MerchantModel {
 
     public void setLivePrefix(String livePrefix) {
         this.livePrefix = livePrefix;
+    }
+
+    public String getMerchantEnvironment() {
+        return merchantEnvironment;
+    }
+
+    public void setMerchantEnvironment(String merchantEnvironment) {
+        this.merchantEnvironment = merchantEnvironment;
     }
 }

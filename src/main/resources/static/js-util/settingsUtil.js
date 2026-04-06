@@ -37,7 +37,7 @@ async function initializeDropdown() {
     //Select Merchant Dropdown
     merchants = await getMerchants();
     merchants.forEach(merchant => {
-        const textPrefix = merchant.livePrefix ? "[LIVE]" : "[TEST]";
+        const textPrefix = "[" + merchant.merchantEnvironment + "]";
         const option = document.createElement("option");
         option.value = merchant.id;
         option.textContent = textPrefix + " " + merchant.adyenMerchantAccount;
@@ -103,8 +103,7 @@ function refreshMerchantLocalStorage(merchants, selectedValue) {
     merchants.forEach(merchant => {
         if (merchant.id === selectedValue) {
             localStorage.setItem("selectedMerchantSettings", merchant.merchantSettings);
-            localStorage.setItem("selectedMerchantEnvironment", merchant.livePrefix ? "live" : "test");
-            //TODO: Add support for different live environments
+            localStorage.setItem("selectedMerchantEnvironment", merchant.merchantEnvironment);
         }
     });
 }
