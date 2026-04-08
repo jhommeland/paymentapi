@@ -27,7 +27,8 @@ export class PaymentsUtil {
                 locale: locale,
                 tdsMode: tdsMode,
                 savePaymentMethod: savePaymentMethod,
-                sessionsMode: sessionsMode
+                sessionsMode: sessionsMode,
+                additionalData: JSON.parse(localStorage.getItem("additionalSettings"))
             }, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -82,7 +83,8 @@ export class PaymentsUtil {
                 browserInfo: data.browserInfo,
                 origin: origin,
                 savePaymentMethod: savePaymentMethod,
-                clientStateData: data
+                clientStateData: data,
+                additionalData: JSON.parse(localStorage.getItem("additionalSettings"))
             });
 
             // Log and return the resolved response data

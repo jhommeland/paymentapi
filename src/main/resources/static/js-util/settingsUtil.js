@@ -2,6 +2,12 @@
 let merchants = [];
 let shoppers = [];
 
+const merchantDropdown = document.getElementById("merchant-select");
+const shopperDropdown = document.getElementById("shopper-select");
+const checkoutVersionDropdown = document.getElementById("checkout-version-select");
+const additionalSettingsDropdowns = document.querySelectorAll('#additional-settings .settings-dropdown');
+const panelToggle = document.getElementById("panel-toggle");
+
 async function getMerchants() {
     try {
         // Direct use of await to wait for the response
@@ -62,26 +68,40 @@ async function initializeDropdown() {
     //Select Checkout version dropdown
     checkoutVersionDropdown.value = localStorage.getItem("selectedCheckoutVersion");
 
+    //Additional settings dropdowns & Data init
+    let additionalSettings = JSON.parse(localStorage.getItem("additionalSettings"));
+    if (additionalSettings) {
+        Object.entries(additionalSettings).forEach(([key, value]) => {
+            const element = document.getElementById(key);
+            if (element) {
+                element.value = value;
+            }
+        });
+    } else {
+        let additionalSettings = {};
+        const settings = document.querySelectorAll('#additional-settings .settings-dropdown');
+        settings.forEach(select => {
+            additionalSettings[select.id] = select.value;
+        });
+        localStorage.setItem("additionalSettings", JSON.stringify(additionalSettings));
+    }
+
     //Set red background color if live
-    if (merchantDropdown.options[merchantDropdown.selectedIndex].text.startsWith("[LIVE]")) {
+    if (merchantDropdown.options[merchantDropdown.selectedIndex].text.includes("live")) {
         document.body.style.backgroundColor = "lightcoral";
     } else {
         document.body.style.backgroundColor = "";
     }
 }
 
-const merchantDropdown = document.getElementById("merchant-select");
-const shopperDropdown = document.getElementById("shopper-select");
-const checkoutVersionDropdown = document.getElementById("checkout-version-select");
-
 merchantDropdown.addEventListener("change", async function(event) {
     const selectedValue = event.target.value;
     localStorage.setItem("selectedMerchant", selectedValue);
     merchants = await getMerchants();
     refreshMerchantLocalStorage(merchants, selectedValue);
-
     window.location.reload();
 });
+
 shopperDropdown.addEventListener("change", function(event) {
     const selectedValue = event.target.value;
     localStorage.setItem("selectedShopper", selectedValue);
@@ -90,13 +110,26 @@ shopperDropdown.addEventListener("change", function(event) {
             localStorage.setItem("selectedShopperSettings", shopper.shopperSettings);
         }
     });
-
     window.location.reload();
 });
+
 checkoutVersionDropdown.addEventListener("change", function(event) {
     const selectedValue = event.target.value;
     localStorage.setItem("selectedCheckoutVersion", selectedValue);
     window.location.reload();
+});
+
+panelToggle.addEventListener("change", function(event) {
+    localStorage.setItem("panelToggleCheckedStatus", event.target.checked);
+});
+
+additionalSettingsDropdowns.forEach((dropdown) => {
+    dropdown.addEventListener("change", function(event) {
+        let additionalSettings = JSON.parse(localStorage.getItem("additionalSettings"));
+        additionalSettings[event.target.id] = event.target.value;
+        console.log(event);
+        localStorage.setItem("additionalSettings", JSON.stringify(additionalSettings));
+    });
 });
 
 function refreshMerchantLocalStorage(merchants, selectedValue) {
