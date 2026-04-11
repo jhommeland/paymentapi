@@ -43,7 +43,7 @@ public class PaymentUtil {
 
     public static void addRequiredData(PaymentRequest paymentRequest, JsonNode clientStateData) {
         String paymentType = getPaymentType(paymentRequest.getPaymentMethod());
-        if (PAYMENT_TYPE_SCHEME.equals(paymentType) && clientStateData.path("installments") != null) {
+        if (PAYMENT_TYPE_SCHEME.equals(paymentType) && !clientStateData.path("installments").isMissingNode()) {
             paymentRequest.setInstallments(new Installments());
             if (!clientStateData.path("installments").path("plan").asText().isEmpty()) {
                 paymentRequest.getInstallments().setPlan(Installments.PlanEnum.fromValue(clientStateData.path("installments").path("plan").asText()));

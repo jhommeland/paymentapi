@@ -79,3 +79,4 @@ window.onload = function() {
 };
 
 PaymentsUtil.populatePaymentOptions();
+PaymentsUtil.populatePaymentMethodOptions();

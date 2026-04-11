@@ -69,9 +69,11 @@ public class PaymentsService {
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Shopper not found"));
 
         //Create Amount Object
-        Amount amountObject = new Amount()
-                .currency(requestModel.getCurrency())
-                .value(Long.parseLong(requestModel.getAmount()));
+        Amount amountObject = new Amount();
+        if (!StringUtils.isEmpty(requestModel.getCurrency()) && !StringUtils.isEmpty(requestModel.getAmount())) {
+            amountObject.currency(requestModel.getCurrency());
+            amountObject.value(Long.parseLong(requestModel.getAmount()));
+        }
 
         //Create Payment Methods Object
         PaymentMethodsRequest paymentMethodsRequest = new PaymentMethodsRequest()

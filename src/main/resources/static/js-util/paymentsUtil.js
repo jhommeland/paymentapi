@@ -346,6 +346,18 @@ export class PaymentsUtil {
         return PaymentsUtil.getCredentials(selectedMerchant);
     }
 
+    static async populatePaymentMethodOptions() {
+        const merchantId = localStorage.getItem("selectedMerchant");
+        const paymentMethodsResponse = await PaymentsUtil.makePaymentMethodsCall(merchantId, null, null, null, null, null);
+        const paymentMethodDropdown = document.getElementById("paymentMethod");
+        paymentMethodsResponse.paymentMethods.forEach((paymentMethod) => {
+            const option = document.createElement("option");
+            option.value = paymentMethod.type;
+            option.textContent = paymentMethod.name;
+            paymentMethodDropdown.appendChild(option);
+        });
+    }
+
     static populatePaymentOptions() {
 
         const merchantSettings = JSON.parse(localStorage.getItem("selectedMerchantSettings"));

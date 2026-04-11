@@ -209,20 +209,26 @@ export class CheckoutUtil {
         }
     }
 
+static initiateCheckoutV6FromComponent(component, checkout, dropinConfiguration) {
+    const pmConfig = dropinConfiguration.paymentMethodsConfiguration || {};
 
-    static initiateCheckoutV6FromComponent(component, checkout, dropinConfiguration) {
-        switch (component) {
-            case "applepay":
-                return new window.AdyenWeb.ApplePay(checkout, dropinConfiguration.paymentMethodsConfiguration.applepay);
-            case "googlepay":
-                return new window.AdyenWeb.GooglePay(checkout, dropinConfiguration.paymentMethodsConfiguration.googlepay);
-            case "card":
-                return new window.AdyenWeb.Card(checkout, dropinConfiguration.paymentMethodsConfiguration.card);
-            case "securedfields":
-                return new window.AdyenWeb.CustomCard(checkout, dropinConfiguration.paymentMethodsConfiguration.card);
-            default:
-                return new window.AdyenWeb.Dropin(checkout, dropinConfiguration);
+    if (component === 'scheme' && window.AdyenWeb.Card) {
+        return new window.AdyenWeb.Card(checkout, pmConfig.card || pmConfig.scheme || {});
+    }
+
+    for (const key in window.AdyenWeb) {
+        const AdyenClass = window.AdyenWeb[key];
+
+        if (typeof AdyenClass === 'function' && Array.isArray(AdyenClass.txVariants)) {
+            if (AdyenClass.txVariants.includes(component)) {
+                const config = pmConfig[component] || {};
+                return new AdyenClass(checkout, config);
+            }
         }
     }
+
+    console.warn("Component not found, defaulting to dropin:", component);
+    return new window.AdyenWeb.Dropin(checkout, dropinConfiguration);
+}
 
 }
