@@ -214,6 +214,8 @@ static initiateCheckoutV6FromComponent(component, checkout, dropinConfiguration)
 
     if (component === 'scheme' && window.AdyenWeb.Card) {
         return new window.AdyenWeb.Card(checkout, pmConfig.card || pmConfig.scheme || {});
+    } else if (component === 'securedfields' && window.AdyenWeb.Card) {
+        return new window.AdyenWeb.CustomCard(checkout, pmConfig.card || pmConfig.scheme || {})
     }
 
     for (const key in window.AdyenWeb) {

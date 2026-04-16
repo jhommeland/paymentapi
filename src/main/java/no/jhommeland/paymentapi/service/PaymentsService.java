@@ -132,6 +132,7 @@ public class PaymentsService {
                 .shopperLocale(requestModel.getLocale())
                 .shopperStatement(merchantModel.getShopperStatement())
                 .reference(transactionModel.getMerchantReference())
+                .additionalData(requestModel.getAdditionalData())
                 .mode(modeEnum);
 
         //Recurring Processing Model
