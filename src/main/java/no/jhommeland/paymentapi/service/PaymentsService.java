@@ -227,10 +227,18 @@ public class PaymentsService {
         String returnUrl = UrlUtil.addUrlParameter(merchantModel.getReturnUrl(), "merchantId", merchantModel.getId());
         returnUrl = UrlUtil.addUrlParameter(returnUrl, "appType", requestModel.getAppType());
 
+        //Determine merchantAccount
+        String merchantAccount = transactionModel.getMerchantAccountName();
+        if (merchantModel.getAdyenMerchantAccountOverride() != null) {
+            merchantAccount = merchantModel.getAdyenMerchantAccountOverride();
+        }
+
+        logger.info("Using merchantAccount={} for payment", merchantAccount);
+
         //Create Payment Object
         PaymentRequest paymentRequest = new PaymentRequest()
                 .amount(amountObject)
-                .merchantAccount(transactionModel.getMerchantAccountName())
+                .merchantAccount(merchantAccount)
                 .shopperReference(shopperModel.getShopperReference())
                 .shopperInteraction(PaymentRequest.ShopperInteractionEnum.fromValue(transactionModel.getShopperInteraction()))
                 .channel(channel)

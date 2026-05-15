@@ -21,6 +21,9 @@ public class MerchantModel {
     private String adyenMerchantAccount;
 
     @JsonIgnore
+    private String adyenMerchantAccountOverride;
+
+    @JsonIgnore
     private String returnUrl;
 
     @JsonIgnore
@@ -73,6 +76,14 @@ public class MerchantModel {
 
     public void setAdyenMerchantAccount(String adyenMerchantAccount) {
         this.adyenMerchantAccount = adyenMerchantAccount;
+    }
+
+    public String getAdyenMerchantAccountOverride() {
+        return adyenMerchantAccountOverride;
+    }
+
+    public void setAdyenMerchantAccountOverride(String adyenMerchantAccountOverride) {
+        this.adyenMerchantAccountOverride = adyenMerchantAccountOverride;
     }
 
     public String getReturnUrl() {
