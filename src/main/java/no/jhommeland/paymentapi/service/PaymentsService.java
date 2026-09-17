@@ -39,6 +39,8 @@ public class PaymentsService {
 
     private final String SAVE_PAYMENT_METHOD_ASK_USER = "askUser";
 
+    private final String TWO_STEP_SESSIONS_MODE = "two-step";
+
     private final Logger logger = LoggerFactory.getLogger(PaymentsService.class);
 
     private final AdyenPaymentsApiDao adyenPaymentsApiDao;
@@ -122,6 +124,9 @@ public class PaymentsService {
 
         //Sessions Mode
         CreateCheckoutSessionRequest.ModeEnum modeEnum = CreateCheckoutSessionRequest.ModeEnum.fromValue(requestModel.getSessionsMode());
+        if (TWO_STEP_SESSIONS_MODE.equals(requestModel.getSessionsMode())) {
+            modeEnum = CreateCheckoutSessionRequest.ModeEnum.EMBEDDED;
+        }
 
         CreateCheckoutSessionRequest checkoutSessionRequest = new CreateCheckoutSessionRequest()
                 .amount(amountObject)

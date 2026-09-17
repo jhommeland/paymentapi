@@ -2,6 +2,15 @@
 import { PaymentsUtil } from '../js-util/paymentsUtil.js';
 import { CheckoutUtil } from '../js-util/checkoutUtil.js';
 
+var adyenComponent = null;
+var cardLastFour = "";
+var cardBrand = "";
+const inputForm = document.getElementById("inputForm");
+const checkoutForm = document.getElementById("checkoutForm");
+const confirmationForm = document.getElementById("confirmationForm");
+const nextButton = document.getElementById("nextButton");
+const cardInformation = document.getElementById("cardInformation");
+
 async function initializeCheckout() {
 
     PaymentsUtil.disableWithMessage("startPaymentButton", "Loading...");
@@ -49,19 +58,52 @@ async function initializeCheckout() {
         }
     };
 
-    const dropinConfiguration = CheckoutUtil.getDropinConfiguration(amount, currency, countryCode);
-    await CheckoutUtil.mountCheckout('dropin', configuration, dropinConfiguration, checkoutVersion);
+    var dropinConfiguration = CheckoutUtil.getDropinConfiguration(amount, currency, countryCode);
+    if (sessionsMode === "two-step") {
+        dropinConfiguration.paymentMethodsConfiguration.card.showPayButton = false;
+        dropinConfiguration.paymentMethodsConfiguration.card.onBinLookup =  (binData) => {
+            console.log("BIN data retrieved:", binData)
+            cardBrand = binData.detectedBrands.at(0);
+        }
+        dropinConfiguration.paymentMethodsConfiguration.card.onFieldValid = (data) => {
+            console.log("Field validation:", data)
+            if (data.encryptedFieldName === "encryptedCardNumber") {
+                cardLastFour = data.endDigits;
+            }
+        }
+    }
+    adyenComponent = await CheckoutUtil.mountCheckout('dropin', configuration, dropinConfiguration, checkoutVersion);
 
-    const inputForm = document.getElementById("inputForm");
-    const checkoutForm = document.getElementById("checkoutForm");
     inputForm.style.display = "none";
     checkoutForm.style.display = "block";
+
+    if (sessionsMode === "two-step") {
+        nextButton.style.display = "block";
+    }
 }
 
 window.onload = function() {
     document.getElementById("paymentForm").addEventListener("submit", function(event) {
         event.preventDefault(); // Prevent the default form submission
         initializeCheckout();
+    });
+    document.getElementById("nextButton").addEventListener("click", function(event) {
+        adyenComponent.showValidation();
+        if (adyenComponent.isValid) {
+            console.log(adyenComponent);
+            checkoutForm.style.display = "none";
+            confirmationForm.style.display = "block";
+            nextButton.style.display = "none";
+            cardInformation.innerHTML = `
+                <h2>${cardBrand} ****${cardLastFour}</h2>
+            `
+        }
+    });
+    document.getElementById("paymentButton").addEventListener("click", function(event) {
+        if (adyenComponent.isValid) {
+            PaymentsUtil.disableWithMessage("paymentButton", "Loading...");
+        }
+        adyenComponent.submit();
     });
 };
 

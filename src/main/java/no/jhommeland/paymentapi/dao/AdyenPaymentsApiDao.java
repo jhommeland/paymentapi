@@ -60,8 +60,25 @@ public class AdyenPaymentsApiDao {
                 , createCheckoutSessionRequest);
     }
 
-    public CardDetailsResponse callCardDetailsApi(CardDetailsRequest cardDetailsRequest, MerchantModel merchantModel) {
-        PaymentsApi paymentsApi = initializePaymentsApi(merchantModel);
+//    public CreateCheckoutSessionResponse callCreateSessionApi_payable(CreateCheckoutSessionRequest createCheckoutSessionRequest, boolean payable, MerchantModel merchantModel) {
+//        PaymentsApi paymentsApi = initializePaymentsApi(merchantModel);
+//        try {
+//            ObjectMapper mapper = new ObjectMapper();
+//            ObjectNode requestObject = (ObjectNode) mapper.readTree(createCheckoutSessionRequest.toJson());
+//            requestObject.put("payable", payable ? "true": "false");
+//            final String requestBody = mapper.writeValueAsString(requestObject);
+//            return PaymentUtil.executeApiCall(() -> {
+//                Resource resource = new Resource(paymentsApi, "https://checkout-test.adyen.com/v72/sessions", null);
+//                String jsonResult = resource.request(requestBody, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()), ApiConstants.HttpMethod.POST, null);
+//                return CreateCheckoutSessionResponse.fromJson(jsonResult);
+//            }, null);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
+public CardDetailsResponse callCardDetailsApi(CardDetailsRequest cardDetailsRequest, MerchantModel merchantModel) {
+    PaymentsApi paymentsApi = initializePaymentsApi(merchantModel);
         return PaymentUtil.executeApiCall(() ->
                         paymentsApi.cardDetails(cardDetailsRequest, new RequestOptions().idempotencyKey(java.util.UUID.randomUUID().toString()))
                 , cardDetailsRequest);
